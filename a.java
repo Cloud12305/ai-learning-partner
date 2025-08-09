@@ -1,6 +1,5 @@
-public class Jasmine {
+public class a {
     public static void main(String[] args) {
-        System.out.println("My name is Jasmine");
         System.out.println("My name is zmj");
         System.out.println("hello");
     }
