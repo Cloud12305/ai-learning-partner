@@ -1,0 +1,50 @@
+/* footer-styles.css */
+/* 页脚容器基础样式 */
+.page-footer {
+    background-color: #1E293B;
+    color: white;
+    margin-top: 4rem;
+    padding: 3rem 0;
+}
+/* 容器宽度控制 */
+.page-footer .container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+/* 网格布局 */
+.page-footer .grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 2rem;
+}
+@media (min-width: 768px) {
+    .page-footer .grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+/* 标题样式 */
+.page-footer h3,
+.page-footer h4 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+/* 底部边框及文本 */
+.page-footer .border-t {
+    border-top: 1px solid #4B5563;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    text-align: center;
+    color: #9CA3AF;
+    font-size: 0.875rem;
+}
+/* 链接 hover 效果（如果需要覆盖默认） */
+.page-footer a {
+    color: #9CA3AF;
+    transition: color 0.3s ease-in-out;
+}
+.page-footer a:hover {
+    color: white;
+}
