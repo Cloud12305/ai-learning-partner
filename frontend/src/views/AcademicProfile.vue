@@ -10,7 +10,7 @@
             </div>
             <div>
               <h2 class="text-xl font-bold">张明</h2>
-              <p class="text-neutral-500 text-sm">计算机科学与技术 | 大三 | 学号: 2021001234</p>
+              <p class="text-neutral-500 text-sm">计算机科学与技术 | 大yi | 学号: 2021001234</p>
             </div>
           </div>
           <div class="flex items-center space-x-4">

@@ -159,64 +159,6 @@
           </div>
         </div>
       </section>
-
-      <!-- 联系我们 -->
-      <section id="contact" class="py-20 bg-neutral-50">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="max-w-3xl mx-auto text-center">
-            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">联系我们</h2>
-            <p class="text-neutral-600 mb-10">如有任何问题或建议，请随时与我们联系</p>
-            <Form layout="vertical" class="space-y-6" @finish="handleSubmit">
-              <Row :gutter="[16, 16]">
-                <Col :md="12">
-                  <Form.Item
-                      label="姓名"
-                      name="name"
-                      :rules="nameRules"
-                  >
-                    <Input placeholder="请输入您的姓名" />
-                  </Form.Item>
-                </Col>
-                <Col :md="12">
-                  <Form.Item
-                      label="邮箱"
-                      name="email"
-                      :rules="emailRules"
-                  >
-                    <Input placeholder="请输入您的邮箱" />
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Form.Item
-                  label="主题"
-                  name="subject"
-                  :rules="subjectRules"
-              >
-                <Input placeholder="请输入主题" />
-              </Form.Item>
-
-              <Form.Item
-                  label="留言"
-                  name="message"
-                  :rules="messageRules"
-              >
-                <TextArea :rows="5" placeholder="请输入您的留言内容" />
-              </Form.Item>
-
-              <Form.Item>
-                <Button
-                    type="primary"
-                    htmlType="submit"
-                    class="w-full md:w-auto px-8 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
-                >
-                  发送留言
-                </Button>
-              </Form.Item>
-            </Form>
-          </div>
-        </div>
-      </section>
     </main>
 
     <!-- 3. 登录注册悬浮窗 -->
@@ -231,7 +173,6 @@
 
 <script>
 import { ref, onMounted } from 'vue'
-import { Button, Form, Input, TextArea, Row, Col, message } from 'ant-design-vue'
 import TopNavbar from '../components/TopNavbar.vue'
 import LoginRegister from '../views/LoginRegister.vue'
 import FeatureCard from '../components/FeatureCard.vue'
@@ -241,12 +182,6 @@ export default {
     TopNavbar,
     LoginRegister,
     FeatureCard,
-    Button,
-    Form,
-    Input,
-    TextArea,
-    Row,
-    Col
   },
   setup() {
     // 登录/注册悬浮窗状态
@@ -271,27 +206,6 @@ export default {
       authMode.value = mode
     }
 
-    // 联系表单验证规则
-    const nameRules = [
-      { required: true, message: '请输入您的姓名', trigger: 'blur' }
-    ]
-    const emailRules = [
-      { required: true, message: '请输入您的邮箱', trigger: 'blur' },
-      { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
-    ]
-    const subjectRules = [
-      { required: true, message: '请输入主题', trigger: 'blur' }
-    ]
-    const messageRules = [
-      { required: true, message: '请输入您的留言内容', trigger: 'blur' }
-    ]
-
-    // 处理联系表单提交
-    const handleSubmit = (values) => {
-      console.log('留言内容:', values)
-      message.success('留言发送成功，我们会尽快回复您！')
-    }
-
     // 生命周期钩子
     onMounted(() => {
       // 页面加载动画
@@ -306,15 +220,6 @@ export default {
       openAuthModal,
       closeAuthModal,
       setAuthMode,
-
-      // 表单验证规则
-      nameRules,
-      emailRules,
-      subjectRules,
-      messageRules,
-
-      // 事件处理
-      handleSubmit
     }
   }
 }
@@ -324,8 +229,8 @@ export default {
 /* 全局样式补充 */
 body {
   transition: opacity 0.5s ease;
-  -webkit-text-size-adjust: 100%; /* 兼容旧 Safari/Chrome */
-  -ms-text-size-adjust: 100%; /* 兼容旧 IE（可选，现代浏览器已不用） */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 
