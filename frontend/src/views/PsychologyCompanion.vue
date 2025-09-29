@@ -10,13 +10,13 @@
       </div>
     </div>
 
-    <!-- 核心内容区 -->
+    <!-- 核心内容区：移除图表后，调整为单栏布局（居中显示） -->
     <main class="container mx-auto px-4 py-12">
-      <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        <!-- 左侧：情绪输入与激励结果 -->
-        <div class="md:col-span-1 space-y-6">
+      <div class="max-w-2xl mx-auto">
+        <!-- 情绪输入与激励结果：合并为单栏，居中展示 -->
+        <div class="space-y-8">
           <!-- 情绪输入卡片 -->
-          <div class="bg-white rounded-xl shadow-lg p-6">
+          <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
             <h2 class="text-xl font-semibold mb-4">分享你的感受</h2>
             <a-textarea
                 v-model:value="userText"
@@ -24,8 +24,8 @@
                 rows="5"
                 @keyup.enter="handleSubmitEmotion"
                 :disabled="isLoading"
-                class="mb-4"
-            />
+                class="mb-6"
+            ></a-textarea>
             <a-button
                 type="primary"
                 block
@@ -36,56 +36,44 @@
             >
               发送并获取建议
             </a-button>
-            <p class="text-xs text-gray-500 mt-3 text-center">
+            <p class="text-xs text-gray-500 mt-4 text-center">
               AI会严格保护你的隐私，所有内容仅用于情绪分析
             </p>
           </div>
 
-          <!-- 激励结果卡片 -->
-          <div
-              class="bg-white rounded-xl shadow-lg p-6"
-              v-if="emotionResult"
-              animation="fadeIn 0.3s ease-in-out"
-          >
-            <h2 class="text-xl font-semibold mb-4">AI的回应</h2>
-            <!-- 情绪标签 -->
-            <div class="flex items-center mb-4">
-              <span class="text-gray-600">AI识别到你的情绪：</span>
-              <a-tag
-                  :color="emotionColorMap[emotionResult.emotion]"
-                  class="ml-3 text-base"
-              >
-                {{ emotionResult.emotion }}
-              </a-tag>
+          <!-- 激励结果卡片：延迟渲染避免实例冲突 -->
+          <transition name="fade-in">
+            <div
+                class="bg-white rounded-xl shadow-lg p-6 md:p-8"
+                v-if="emotionResult"
+            >
+              <h2 class="text-xl font-semibold mb-4">AI的回应</h2>
+              <!-- 情绪标签：添加默认值容错 -->
+              <div class="flex items-center mb-6 flex-wrap">
+                <span class="text-gray-600">AI识别到你的情绪：</span>
+                <a-tag
+                    :color="emotionColorMap[emotionResult.emotion || '中性']"
+                    class="ml-3 text-base mt-1 md:mt-0"
+                >
+                  {{ emotionResult.emotion || '未知情绪' }}
+                </a-tag>
+              </div>
+              <!-- 激励文案：增加行高和内边距，提升阅读体验 -->
+              <div class="encouragement-content text-gray-800 line-height-2.5 text-base mb-6 p-4 bg-gray-50 rounded-lg">
+                {{ emotionResult.encouragement || '请稍后再试～' }}
+              </div>
+              <!-- 附加资源 -->
+              <div v-if="emotionResult.encouragement?.includes('链接')" class="mt-6 pt-6 border-t border-gray-100">
+                <a
+                    href="javascript:;"
+                    class="text-primary flex items-center hover:underline text-base"
+                    @click="message.info('已为你推荐《框架入门实战指南》，可在“我的学习-资源库”查看')"
+                >
+                  <i class="fa fa-link mr-2"></i> 查看相关学习资源/调整建议
+                </a>
+              </div>
             </div>
-            <!-- 激励文案 -->
-            <div class="encouragement-content text-gray-800 line-height-2 mb-4">
-              {{ emotionResult.encouragement }}
-            </div>
-            <!-- 附加资源（如学习案例、调整方法） -->
-            <div v-if="emotionResult.encouragement.includes('链接')" class="mt-4 pt-4 border-t border-gray-100">
-              <a
-                  href="javascript:;"
-                  class="text-primary flex items-center hover:underline"
-                  @click="message.info('已为你推荐《框架入门实战指南》，可在“我的学习-资源库”查看')"
-              >
-                <i class="fa fa-link mr-2"></i> 查看相关学习资源/调整建议
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- 右侧：情绪趋势图 -->
-        <div class="md:col-span-2">
-          <div class="bg-white rounded-xl shadow-lg p-6 h-full">
-            <h2 class="text-xl font-semibold mb-6">7天情绪趋势</h2>
-            <div class="chart-container" style="height: 420px; width: 100%;">
-              <ECharts :option="chartOption" ref="emotionChart" />
-            </div>
-            <p class="text-xs text-gray-500 mt-4 text-center">
-              记录你的情绪变化，AI会根据趋势调整激励策略
-            </p>
-          </div>
+          </transition>
         </div>
       </div>
     </main>
@@ -93,31 +81,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { message, TextArea, Button, Tag} from 'ant-design-vue';
-import { ECharts } from 'vue-echarts';
-import { use } from 'echarts/core';
-// 引入echarts组件
-import { LineChart, Line } from 'echarts/charts';
-import { XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'echarts/components';
-import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
+// 1. 基础导入：仅保留核心依赖（移除所有ECharts相关导入）
+import { ref, onMounted, nextTick } from 'vue';
+import { message } from 'ant-design-vue'; // Ant Design 组件（需全局注册）
+import request from '@/utils/request'; // HTTP请求工具（确认路径与项目一致）
 
-
-// 注册echarts组件
-use([
-  LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  GridComponent, TooltipComponent, LegendComponent
-]);
-
-// 状态管理
+// 2. 状态管理：移除ECharts相关状态（emotionChart、echartsInitialized、chartOption等）
 const userText = ref(''); // 用户输入的情绪文本
 const emotionResult = ref(null); // 情感分析结果
 const isLoading = ref(false); // 加载状态
-const emotionChart = ref(null); // echarts实例
 const userId = ref(''); // 用户ID（从登录态获取）
 
-// 情绪-颜色映射（与Ant Design主题匹配）
+// 3. 情绪-颜色映射（保留，用于AI回应的情绪标签）
 const emotionColorMap = {
   中性: 'gray',
   积极: 'green',
@@ -125,159 +100,113 @@ const emotionColorMap = {
   挫败: 'red'
 };
 
-// 情绪趋势图配置
-const chartOption = ref({
-  tooltip: {
-    trigger: 'axis',
-    formatter: (params) => {
-      const emotionMap = { 0: '中性', 1: '积极', 2: '焦虑', 3: '挫败' };
-      return `${params[0].name}<br/>情绪状态：${emotionMap[params[0].value]}`;
-    },
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderColor: '#eee',
-    borderWidth: 1,
-    textStyle: { color: '#333' }
-  },
-  grid: {
-    left: '3%',
-    right: '4%',
-    bottom: '15%',
-    containLabel: true
-  },
-  xAxis: {
-    type: 'category',
-    data: [], // 7天日期（如["10-01", "10-02"]）
-    axisLabel: {
-      interval: 0,
-      rotate: 30 // 日期横向显示时旋转，避免重叠
-    }
-  },
-  yAxis: {
-    type: 'value',
-    min: 0,
-    max: 3,
-    axisLabel: {
-      formatter: (value) => {
-        const emotionMap = { 0: '中性', 1: '积极', 2: '焦虑', 3: '挫败' };
-        return emotionMap[value] || '';
-      }
-    },
-    splitLine: {
-      lineStyle: { color: '#f0f0f0' }
-    }
-  },
-  series: [
-    {
-      name: '情绪趋势',
-      type: 'line',
-      data: [], // 每天的情绪值（0-3）
-      symbol: 'circle',
-      symbolSize: 10,
-      itemStyle: {
-        color: (params) => {
-          const colorMap = { 0: '#888888', 1: '#52c41a', 2: '#fa8c16', 3: '#f5222d' };
-          return colorMap[params.data] || '#888888';
-        }
-      },
-      lineStyle: {
-        color: '#1890ff',
-        width: 2
-      },
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 8,
-          shadowColor: 'rgba(24, 144, 255, 0.3)'
-        }
-      }
-    }
-  ]
-});
-
-// 初始化：获取用户ID + 加载情绪历史
-const init = () => {
-  // 1. 获取用户ID（登录态判断）
+// 4. 页面初始化：仅保留登录态判断（移除ECharts初始化逻辑）
+const init = async () => {
+  await nextTick(); // 等待DOM挂载完成
+  // 读取登录态（用于后续接口请求，未登录也可提交情绪）
   const userInfo = localStorage.getItem('userInfo');
   if (userInfo) {
     userId.value = JSON.parse(userInfo).id;
   } else {
-    message.warning("未登录，无法查看情绪历史，登录后可同步记录");
-    return;
+    message.warning("未登录，情绪记录无法同步，登录后可查看历史记录");
   }
-
-  // 2. 加载7天情绪历史（后端返回）
-  fetchEmotionHistory();
 };
 
-// 提交情绪文本，调用后端情感分析API
+// 5. 提交情绪文本：保留核心逻辑（移除图表刷新相关代码）
 const handleSubmitEmotion = async () => {
   const text = userText.value.trim();
-  if (!text) return;
+  if (!text || isLoading.value) return;
 
   try {
     isLoading.value = true;
+    // 调用后端情感分析API（传递用户ID，未登录则为空）
     const res = await request.post('/api/psychology', {
       text,
-      user_id: userId.value
+      user_id: userId.value || ''
     });
 
-    // 保存分析结果
-    emotionResult.value = res.data;
-    // 清空输入框
-    userText.value = '';
-    // 刷新情绪趋势图
-    fetchEmotionHistory();
+    // 延迟100ms赋值：避免DOM渲染冲突，确保组件实例正常创建
+    setTimeout(async () => {
+      emotionResult.value = res.data || {}; // 容错：避免接口返回空数据
+      userText.value = ''; // 清空输入框
+      await nextTick(); // 等待回应卡片渲染完成
+    }, 100);
   } catch (err) {
+    // 错误提示：兼容接口返回异常或网络错误
     message.error(err.response?.data?.msg || "情绪分析请求失败，请重试");
   } finally {
-    isLoading.value = false;
+    isLoading.value = false; // 无论成功失败，都关闭加载状态
   }
 };
 
-// 获取7天情绪历史，更新趋势图
-const fetchEmotionHistory = async () => {
-  try {
-    const res = await request.get('/api/psychology/history', {
-      params: { user_id: userId.value }
-    });
-    const history = res.data.history || []; // 格式：[{date: "10-01", value: 2}, ...]
-
-    // 更新图表数据
-    chartOption.value.xAxis.data = history.map(item => item.date);
-    chartOption.value.series[0].data = history.map(item => item.value);
-    // 刷新图表
-    emotionChart.value?.setOption(chartOption.value);
-  } catch (err) {
-    console.error("加载情绪历史失败：", err);
-    message.warning("无法加载情绪历史，仅展示当前分析结果");
-  }
-};
-
-// 页面挂载时初始化
+// 6. 页面挂载时初始化（仅执行登录态判断）
 onMounted(() => {
   init();
 });
 </script>
 
 <style scoped>
+/* 页面基础样式：保留，确保页面布局正常 */
 .psychology-companion-page {
-  padding-top: 80px; /* 与导航栏高度匹配 */
+  padding-top: 80px; /* 与导航栏高度匹配，可根据实际导航栏调整 */
   background-color: #fafafa;
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 80px); /* 确保页面占满屏幕高度 */
 }
 
+/* 头部样式：保留渐变背景，提升视觉效果 */
 .page-header {
   background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
 }
 
-.chart-container {
-  overflow: hidden;
-  border-radius: 8px;
-  border: 1px solid #f0f0f0;
-}
-
-/* 动画效果 */
+/* 过渡动画：保留，确保AI回应卡片显示时有平滑动画 */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* 进入动画：与transition组件的name="fade-in"对应 */
+.fade-in-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.fade-in-enter-active {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* 离开动画（可选保留，确保卡片消失时平滑） */
+.fade-in-leave-from {
+  opacity: 1;
+}
+.fade-in-leave-active {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+/* 响应式调整：确保移动端体验正常 */
+@media (max-width: 768px) {
+  .psychology-companion-page {
+    padding-top: 60px; /* 移动端导航栏通常更矮，调整顶部间距 */
+    min-height: calc(100vh - 60px);
+  }
+}
 </style>
+
+<!-- 重要注释：
+1. 确保 Ant Design Vue 已全局注册（main.js 中需添加）：
+   import { createApp } from 'vue';
+   import Antd from 'ant-design-vue';
+   import 'ant-design-vue/dist/antd.css'; // 若使用Vite，需改为 'ant-design-vue/dist/reset.css'
+   import App from './App.vue';
+   const app = createApp(App);
+   app.use(Antd);
+   app.mount('#app');
+
+2. 确认 request 工具路径正确：
+   若项目中 HTTP 请求工具路径不是 '@/utils/request'，需修改为实际路径（如 '@/api/request'）。
+
+3. 功能说明：
+   - 保留核心功能：情绪输入、AI情感分析、AI回应展示、附加资源提示；
+   - 移除图表相关功能：7天情绪趋势图、情绪历史加载；
+   - 优化布局：从双栏改为单栏居中，提升移动端和桌面端的视觉体验。
+-->
