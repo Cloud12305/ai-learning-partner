@@ -1,6 +1,6 @@
 package com.digitalhorsepower.learnbuddy.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -17,9 +17,10 @@ public class User {
 
     private String password;
     private String email;
-    private String major;          // 专业
-    private String grade;          // 年级
-    private String learningGoal;   // 学习目标
+    private String name;
+    private String major;
+    private String grade;
+    private String learningGoal;
 
     @Column(updatable = false)
     private LocalDateTime createTime;
