@@ -39,6 +39,7 @@ public class UserService {
     public User updateUser(Long id, User userDetails) {
         return userRepository.findById(id).map(user -> {
             user.setEmail(userDetails.getEmail());
+            user.setName(userDetails.getName());
             user.setMajor(userDetails.getMajor());
             user.setGrade(userDetails.getGrade());
             user.setLearningGoal(userDetails.getLearningGoal());
@@ -48,5 +49,11 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    // 添加登录验证方法
+    public Optional<User> validateLogin(String username, String password) {
+        return userRepository.findByUsername(username)
+                .filter(user -> user.getPassword().equals(password));
     }
 }
