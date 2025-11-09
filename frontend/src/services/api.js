@@ -53,6 +53,10 @@ class ApiService {
         return this.request(`/users/username/${username}`);
     }
 
+    async getUserByStudentId(studentId) {
+        return this.request(`/users/student/${studentId}`);
+    }
+
     async updateUser(id, userData) {
         return this.request(`/users/${id}`, {
             method: 'PUT',

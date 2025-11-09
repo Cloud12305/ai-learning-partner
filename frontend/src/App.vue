@@ -1,27 +1,60 @@
 <template>
-  <div id="app" class="font-inter bg-neutral-100 text-neutral-800 min-h-screen flex flex-col">
-    <!-- 导航栏 -->
-    <Navbar />
+  <div id="app">
+    <TopNavbar @show-login="showLoginModal = true" />
 
-    <!-- 主内容区域 -->
-    <main class="flex-grow transition-all duration-300">
-      <router-view/>
+    <!-- 主要内容 -->
+    <main class="pt-16">
+      <router-view />
     </main>
 
-    <!-- 页脚 -->
-    <Footer />
+    <!-- 登录注册弹窗 -->
+    <LoginRegister
+        :visible="showLoginModal"
+        @close="showLoginModal = false"
+        @login-success="handleLoginSuccess"
+    />
   </div>
 </template>
 
 <script>
-import Navbar from './components/TopNavbar.vue'
-import Footer from './components/PageFooter.vue'
+import { ref, provide } from 'vue'
+import { message } from 'ant-design-vue'
+import TopNavbar from './components/TopNavbar.vue'
+import LoginRegister from './views/LoginRegister.vue'
 
 export default {
   name: 'App',
   components: {
-    Navbar,
-    Footer,
+    TopNavbar,
+    LoginRegister
+  },
+  setup() {
+    const showLoginModal = ref(false)
+
+    // 提供全局更新用户信息的函数
+    const updateGlobalUserInfo = () => {
+      // 触发自定义事件，通知所有组件更新用户信息
+      window.dispatchEvent(new CustomEvent('user-info-updated'))
+    }
+
+    // 提供全局状态
+    provide('globalUser', {
+      updateUserInfo: updateGlobalUserInfo
+    })
+
+    // 登录成功处理
+    const handleLoginSuccess = () => {
+      showLoginModal.value = false
+      message.success('登录成功！')
+
+      // 触发全局用户信息更新
+      updateGlobalUserInfo()
+    }
+
+    return {
+      showLoginModal,
+      handleLoginSuccess
+    }
   }
 }
 </script>
