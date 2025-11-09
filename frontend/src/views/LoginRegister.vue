@@ -125,16 +125,17 @@
         </div>
 
         <form @submit.prevent="handleRegister" class="space-y-5">
+          <!-- 添加学号输入 -->
           <div class="form-group">
-            <label class="block text-gray-700 mb-2">学号/工号</label>
+            <label class="block text-gray-700 mb-2">学号 <span class="text-red-500">*</span></label>
             <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                <i class="fa fa-user"></i>
-              </span>
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+            <i class="fa fa-id-card"></i>
+          </span>
               <input
-                  v-model="registerForm.username"
+                  v-model="registerForm.studentId"
                   type="text"
-                  placeholder="请输入学号或工号"
+                  placeholder="请输入学号"
                   class="w-full pl-10 pr-4 py-3 bg-white/80 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-gray-900 placeholder-gray-500 transition-all duration-300"
                   required
               >
@@ -142,11 +143,27 @@
           </div>
 
           <div class="form-group">
-            <label class="block text-gray-700 mb-2">姓名</label>
+            <label class="block text-gray-700 mb-2">用户名 <span class="text-red-500">*</span></label>
             <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                <i class="fa fa-id-card-o"></i>
-              </span>
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+            <i class="fa fa-user"></i>
+          </span>
+              <input
+                  v-model="registerForm.username"
+                  type="text"
+                  placeholder="请输入用户名"
+                  class="w-full pl-10 pr-4 py-3 bg-white/80 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-gray-900 placeholder-gray-500 transition-all duration-300"
+                  required
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="block text-gray-700 mb-2">姓名 <span class="text-red-500">*</span></label>
+            <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+            <i class="fa fa-id-card-o"></i>
+          </span>
               <input
                   v-model="registerForm.name"
                   type="text"
@@ -160,15 +177,14 @@
           <div class="form-group">
             <label class="block text-gray-700 mb-2">邮箱</label>
             <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                <i class="fa fa-envelope-o"></i>
-              </span>
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+            <i class="fa fa-envelope-o"></i>
+          </span>
               <input
                   v-model="registerForm.email"
                   type="email"
                   placeholder="请输入您的邮箱"
                   class="w-full pl-10 pr-4 py-3 bg-white/80 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-gray-900 placeholder-gray-500 transition-all duration-300"
-                  required
               >
             </div>
           </div>
@@ -251,6 +267,7 @@
 <script>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
 import apiService from '../services/api'
 
 export default {
@@ -265,7 +282,7 @@ export default {
       default: 'login'
     }
   },
-  emits: ['close', 'mode-change'],
+  emits: ['close', 'mode-change', 'login-success'],
   setup(props, { emit }) {
     const router = useRouter()
 
@@ -287,8 +304,9 @@ export default {
       password: ''
     })
 
-    // 注册表单数据
+    // 注册表单数据 - 添加 studentId 字段
     const registerForm = reactive({
+      studentId: '',
       username: '',
       name: '',
       email: '',
@@ -326,11 +344,37 @@ export default {
 
         if (result.success) {
           localStorage.setItem('isAuthenticated', 'true')
-          localStorage.setItem('user', JSON.stringify(result.data))
-          localStorage.setItem('token', 'mock-jwt-token') // 实际项目中应该是后端返回的token
 
-          console.log('登录成功:', result.data)
+          // 确保存储完整的用户信息，兼容后端返回的字段命名
+          const userData = result.data
+          const userInfo = {
+            id: userData.id,
+            username: userData.username,
+            name: userData.name,
+            // 兼容多种可能的字段命名
+            student_id: userData.studentId || userData.student_id || userData.username,
+            email: userData.email,
+            major: userData.major,
+            grade: userData.grade,
+            college: userData.college,
+            class_name: userData.className || userData.class_name,
+            avatar_url: userData.avatarUrl || userData.avatar_url || 'https://picsum.photos/100/100?random=1',
+            learning_goal: userData.learningGoal || userData.learning_goal
+          }
+
+          localStorage.setItem('user', JSON.stringify(userInfo))
+          localStorage.setItem('token', 'mock-jwt-token')
+
+          console.log('登录成功，存储的用户信息:', userInfo)
           handleClose()
+
+          // 显示登录成功消息
+          message.success('登录成功！')
+
+          // 触发登录成功事件
+          emit('login-success')
+
+          // 跳转到个人画像页面
           router.push('/profile')
         } else {
           loginError.value = result.message || '登录失败'
@@ -345,6 +389,22 @@ export default {
 
     // 处理注册
     const handleRegister = async () => {
+      // 验证表单
+      if (!registerForm.studentId) {
+        loginError.value = '请输入学号'
+        return
+      }
+
+      if (!registerForm.username) {
+        loginError.value = '请输入用户名'
+        return
+      }
+
+      if (!registerForm.name) {
+        loginError.value = '请输入姓名'
+        return
+      }
+
       if (registerForm.password !== registerForm.confirmPassword) {
         loginError.value = '两次输入的密码不一致'
         return
@@ -360,12 +420,15 @@ export default {
 
       try {
         const result = await apiService.register({
+          studentId: registerForm.studentId,
           username: registerForm.username,
           password: registerForm.password,
           email: registerForm.email,
           name: registerForm.name,
           major: '计算机科学与技术',
           grade: '2023',
+          college: '计算机学院',
+          className: '计科2301',
           learningGoal: '提升学习效率'
         })
 
@@ -381,6 +444,9 @@ export default {
           // 切换到登录模式
           setMode('login')
           loginError.value = '' // 清除错误信息
+
+          // 显示注册成功消息
+          message.success('注册成功，请登录！')
         } else {
           loginError.value = result.message || '注册失败'
         }

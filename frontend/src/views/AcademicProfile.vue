@@ -6,11 +6,11 @@
         <div class="flex flex-col md:flex-row justify-between items-center py-4">
           <div class="flex items-center mb-4 md:mb-0">
             <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
-              <img src="https://picsum.photos/100/100?random=10" alt="用户头像" class="w-full h-full object-cover">
+              <img :src="userInfo.avatar_url || 'https://picsum.photos/100/100?random=10'" alt="用户头像" class="w-full h-full object-cover">
             </div>
             <div>
-              <h2 class="text-xl font-bold">张明</h2>
-              <p class="text-neutral-500 text-sm">计算机科学与技术 | 大yi | 学号: 2021001234</p>
+              <h2 class="text-xl font-bold">{{ userInfo.name || '加载中...' }}</h2>
+              <p class="text-neutral-500 text-sm">{{ userInfo.major }} | {{ userInfo.grade }} | 学号: {{ userInfo.student_id }}</p>
             </div>
           </div>
           <div class="flex items-center space-x-4">
@@ -39,25 +39,25 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div class="text-center">
             <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary/10 mb-3">
-              <span class="text-3xl font-bold text-primary">88</span>
+              <span class="text-3xl font-bold text-primary">{{ academicStats.comprehensiveScore }}</span>
             </div>
             <p class="text-neutral-600">综合评分</p>
           </div>
           <div class="text-center">
             <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-secondary/10 mb-3">
-              <span class="text-3xl font-bold text-secondary">3.7</span>
+              <span class="text-3xl font-bold text-secondary">{{ academicStats.averageGPA }}</span>
             </div>
             <p class="text-neutral-600">平均GPA</p>
           </div>
           <div class="text-center">
             <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-accent/10 mb-3">
-              <span class="text-3xl font-bold text-accent">12</span>
+              <span class="text-3xl font-bold text-accent">{{ academicStats.labProjects }}</span>
             </div>
             <p class="text-neutral-600">实验项目</p>
           </div>
           <div class="text-center">
             <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-success/10 mb-3">
-              <span class="text-3xl font-bold text-success">36</span>
+              <span class="text-3xl font-bold text-success">{{ academicStats.borrowedBooks }}</span>
             </div>
             <p class="text-neutral-600">借阅书籍</p>
           </div>
@@ -199,14 +199,27 @@ export default {
   setup() {
     const router = useRouter()
 
+    // 用户信息
+    const userInfo = ref({
+      name: '',
+      student_id: '',
+      major: '',
+      grade: '',
+      avatar_url: '',
+      college: '',
+      class_name: ''
+    })
+
+    // 学业统计数据
+    const academicStats = ref({
+      comprehensiveScore: 0,
+      averageGPA: 0,
+      labProjects: 0,
+      borrowedBooks: 0
+    })
+
     // 课程数据
-    const courses = ref([
-      { id: 1, name: '数据结构与算法', credit: 4, score: 92, grade: 'A', semester: '大二上' },
-      { id: 2, name: '计算机组成原理', credit: 4, score: 85, grade: 'A-', semester: '大二上' },
-      { id: 3, name: '操作系统', credit: 4, score: 88, grade: 'A-', semester: '大二下' },
-      { id: 4, name: '计算机网络', credit: 3, score: 80, grade: 'B+', semester: '大二下' },
-      { id: 5, name: '人工智能导论', credit: 3, score: 95, grade: 'A', semester: '大三上' }
-    ])
+    const courses = ref([])
 
     // 技能数据
     const skills = ref([
@@ -280,6 +293,68 @@ export default {
         image: 'https://picsum.photos/200/300?random=23'
       }
     ])
+
+    // 获取用户信息
+    const fetchUserInfo = async () => {
+      try {
+        // 从localStorage获取当前登录用户信息
+        const storedUser = localStorage.getItem('user')
+        if (storedUser) {
+          const userData = JSON.parse(storedUser)
+          userInfo.value = {
+            name: userData.name || '',
+            // 优先使用 student_id，如果没有则使用 username
+            student_id: userData.student_id || userData.studentId || userData.username || '',
+            major: userData.major || '',
+            grade: userData.grade || '',
+            avatar_url: userData.avatar_url || userData.avatarUrl || '',
+            college: userData.college || '',
+            class_name: userData.class_name || userData.className || ''
+          }
+
+          console.log('学业画像用户信息:', userInfo.value)
+
+          // 根据用户信息计算学业统计数据
+          calculateAcademicStats()
+        } else {
+          // 如果没有用户信息，重定向到登录页
+          message.warning('请先登录')
+          router.push('/')
+        }
+      } catch (error) {
+        console.error('获取用户信息失败:', error)
+        message.error('获取用户信息失败')
+      }
+    }
+
+    // 计算学业统计数据
+    const calculateAcademicStats = () => {
+      // 这里可以根据用户的实际数据计算统计值
+      // 目前使用模拟数据，实际项目中应该从后端API获取
+      academicStats.value = {
+        comprehensiveScore: 88,
+        averageGPA: 3.7,
+        labProjects: 12,
+        borrowedBooks: 36
+      }
+    }
+
+    // 获取课程成绩数据
+    const fetchCourseData = async () => {
+      try {
+        // 模拟从后端获取课程数据
+        // 实际项目中应该调用后端API
+        courses.value = [
+          { id: 1, name: '数据结构与算法', credit: 4, score: 92, grade: 'A', semester: '大二上' },
+          { id: 2, name: '计算机组成原理', credit: 4, score: 85, grade: 'A-', semester: '大二上' },
+          { id: 3, name: '操作系统', credit: 4, score: 88, grade: 'A-', semester: '大二下' },
+          { id: 4, name: '计算机网络', credit: 3, score: 80, grade: 'B+', semester: '大二下' },
+          { id: 5, name: '人工智能导论', credit: 3, score: 95, grade: 'A', semester: '大三上' }
+        ]
+      } catch (error) {
+        console.error('获取课程数据失败:', error)
+      }
+    }
 
     // 初始化图表
     const initCharts = () => {
@@ -361,16 +436,22 @@ export default {
 
     // 退出登录
     const handleLogout = () => {
-      localStorage.setItem('isAuthenticated', 'false')
+      localStorage.removeItem('isAuthenticated')
+      localStorage.removeItem('user')
+      localStorage.removeItem('token')
       message.success('退出登录成功')
       router.push('/')
     }
 
-    onMounted(() => {
+    onMounted(async () => {
+      await fetchUserInfo()
+      await fetchCourseData()
       initCharts()
     })
 
     return {
+      userInfo,
+      academicStats,
       courses,
       skills,
       labProjects,
