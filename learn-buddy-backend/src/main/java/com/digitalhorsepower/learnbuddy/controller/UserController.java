@@ -45,6 +45,14 @@ public class UserController {
                 .orElse(ApiResponse.error("用户不存在"));
     }
 
+    @GetMapping("/student/{studentId}")
+    public ApiResponse<User> getUserByStudentId(@PathVariable String studentId) {
+        logger.info("根据学号获取用户: {}", studentId);
+        Optional<User> user = userService.getUserByStudentId(studentId);
+        return user.map(value -> ApiResponse.success("获取用户成功", value))
+                .orElse(ApiResponse.error("用户不存在"));
+    }
+
     @PostMapping
     public ApiResponse<User> createUser(@RequestBody User user) {
         logger.info("创建用户: {}", user.getUsername());
@@ -86,13 +94,14 @@ public class UserController {
     public ApiResponse<User> login(@RequestBody LoginRequest loginRequest) {
         logger.info("用户登录尝试: {}", loginRequest.getUsername());
         try {
+            // 支持用户名和学号登录
             Optional<User> user = userService.validateLogin(loginRequest.getUsername(), loginRequest.getPassword());
             if (user.isPresent()) {
                 logger.info("用户登录成功: {}", loginRequest.getUsername());
                 return ApiResponse.success("登录成功", user.get());
             } else {
                 logger.warn("用户登录失败: {}", loginRequest.getUsername());
-                return ApiResponse.error("用户名或密码错误");
+                return ApiResponse.error("用户名/学号或密码错误");
             }
         } catch (Exception e) {
             logger.error("登录过程发生错误: {}", e.getMessage());

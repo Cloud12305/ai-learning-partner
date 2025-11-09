@@ -24,11 +24,11 @@ CREATE TABLE IF NOT EXISTS `academic_records` (
   `record_id` bigint NOT NULL AUTO_INCREMENT,
   `student_id` varchar(20) NOT NULL COMMENT '学号',
   `course_id` varchar(20) NOT NULL COMMENT '课程ID',
-  `academic_year` varchar(9) NOT NULL COMMENT '学年，如: 2023-2024',
-  `semester` tinyint NOT NULL COMMENT '学期: 1第一学期, 2第二学期',
-  `score` decimal(5,2) DEFAULT NULL COMMENT '成绩(百分制)',
+  `academic_year` varchar(9) NOT NULL COMMENT '学年',
+  `semester` tinyint NOT NULL COMMENT '学期',
+  `score` decimal(5,2) DEFAULT NULL COMMENT '成绩',
   `grade_point` decimal(3,2) DEFAULT NULL COMMENT '绩点',
-  `grade_level` varchar(10) DEFAULT NULL COMMENT '等级: 优秀/良好/中等/及格/不及格',
+  `grade_level` varchar(10) DEFAULT NULL COMMENT '等级',
   `class_rank` smallint DEFAULT NULL COMMENT '班级排名',
   `major_rank` smallint DEFAULT NULL COMMENT '专业排名',
   `exam_date` date DEFAULT NULL COMMENT '考试日期',
@@ -39,57 +39,47 @@ CREATE TABLE IF NOT EXISTS `academic_records` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`record_id`),
   UNIQUE KEY `uk_student_course_semester` (`student_id`,`course_id`,`academic_year`,`semester`),
-  KEY `course_id` (`course_id`),
-  KEY `idx_academic_year` (`academic_year`),
-  KEY `idx_semester` (`semester`),
-  KEY `idx_score` (`score`),
-  CONSTRAINT `academic_records_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`),
-  CONSTRAINT `academic_records_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='学生学业成绩记录表';
+  KEY `fk_academic_course` (`course_id`),
+  CONSTRAINT `fk_academic_course` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`),
+  CONSTRAINT `fk_academic_student` FOREIGN KEY (`student_id`) REFERENCES `users` (`student_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='学业成绩表';
 
 -- 正在导出表  ai_learning_partner.academic_records 的数据：~0 rows (大约)
 
 -- 导出  表 ai_learning_partner.courses 结构
 CREATE TABLE IF NOT EXISTS `courses` (
-  `course_id` varchar(20) NOT NULL COMMENT '课程ID，如: CS101',
+  `course_id` varchar(20) NOT NULL COMMENT '课程ID',
   `course_name` varchar(100) NOT NULL COMMENT '课程名称',
   `course_name_en` varchar(100) DEFAULT NULL COMMENT '课程英文名称',
   `credits` decimal(3,1) NOT NULL COMMENT '学分',
   `department` varchar(50) NOT NULL COMMENT '开课院系',
-  `course_category` varchar(30) DEFAULT NULL COMMENT '课程类别: 必修/选修/通识',
+  `course_category` varchar(30) DEFAULT NULL COMMENT '课程类别',
   `difficulty_level` tinyint DEFAULT '3' COMMENT '难度等级 1-5',
   `total_hours` smallint DEFAULT NULL COMMENT '总学时',
   `theory_hours` smallint DEFAULT NULL COMMENT '理论学时',
   `practice_hours` smallint DEFAULT NULL COMMENT '实践学时',
-  `syllabus_text` text COMMENT '教学大纲内容',
+  `syllabus_text` text COMMENT '教学大纲',
   `course_description` text COMMENT '课程描述',
   `assessment_method` varchar(50) DEFAULT NULL COMMENT '考核方式',
   `is_active` tinyint(1) DEFAULT '1' COMMENT '是否激活',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`course_id`),
-  KEY `idx_department` (`department`),
-  KEY `idx_category` (`course_category`),
-  KEY `idx_difficulty` (`difficulty_level`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='课程基本信息表';
+  PRIMARY KEY (`course_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='课程表';
 
--- 正在导出表  ai_learning_partner.courses 的数据：~15 rows (大约)
+-- 正在导出表  ai_learning_partner.courses 的数据：~11 rows (大约)
 REPLACE INTO `courses` (`course_id`, `course_name`, `course_name_en`, `credits`, `department`, `course_category`, `difficulty_level`, `total_hours`, `theory_hours`, `practice_hours`, `syllabus_text`, `course_description`, `assessment_method`, `is_active`, `created_at`, `updated_at`) VALUES
-	('CS101', '计算机导论', NULL, 3.0, '计算机学院', '必修', 3, 64, NULL, NULL, NULL, '计算机科学基础知识入门', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('CS102', 'C语言程序设计', NULL, 4.0, '计算机学院', '必修', 4, 80, NULL, NULL, NULL, 'C语言编程基础与算法', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('CS201', '数据结构', NULL, 4.0, '计算机学院', '必修', 4, 80, NULL, NULL, NULL, '线性表、树、图等数据结构', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('CS202', '操作系统', NULL, 3.0, '计算机学院', '必修', 4, 64, NULL, NULL, NULL, '进程管理、内存管理、文件系统', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('CS301', '数据库系统', NULL, 3.0, '计算机学院', '必修', 3, 64, NULL, NULL, NULL, 'SQL、数据库设计与优化', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('CS302', '计算机网络', NULL, 3.0, '计算机学院', '必修', 4, 64, NULL, NULL, NULL, 'TCP/IP协议、网络编程', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('GE101', '大学英语', NULL, 2.0, '外语学院', '必修', 2, 48, NULL, NULL, NULL, '英语听说读写训练', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('GE102', '大学物理', NULL, 3.0, '物理学院', '必修', 3, 64, NULL, NULL, NULL, '力学、热学、电磁学', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('GE201', '毛泽东思想和中国特色社会主义理论体系概论', NULL, 2.0, '马克思主义学院', '必修', 2, 48, NULL, NULL, NULL, '政治理论课程', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('MA101', '高等数学A', NULL, 5.0, '数学学院', '必修', 4, 96, NULL, NULL, NULL, '微积分、极限、导数', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('MA102', '线性代数', NULL, 3.0, '数学学院', '必修', 3, 64, NULL, NULL, NULL, '矩阵、向量空间、线性变换', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('MA201', '概率论与数理统计', NULL, 3.0, '数学学院', '必修', 4, 64, NULL, NULL, NULL, '概率分布、假设检验', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('SE101', '软件工程导论', NULL, 2.0, '软件学院', '必修', 2, 48, NULL, NULL, NULL, '软件开发流程与方法论', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('SE201', 'Java程序设计', NULL, 4.0, '软件学院', '必修', 3, 80, NULL, NULL, NULL, '面向对象编程、Java核心技术', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02'),
-	('SE301', 'Web开发技术', NULL, 3.0, '软件学院', '选修', 3, 64, NULL, NULL, NULL, 'HTML/CSS/JavaScript前后端开发', NULL, 1, '2025-09-23 07:16:02', '2025-09-23 07:16:02');
+	('CS101', '计算机导论', 'Introduction to Computer Science', 3.0, '计算机学院', '必修', 3, 64, 48, 16, NULL, '计算机科学基础知识入门，包括计算机组成、操作系统、网络等基础概念', '考试+作业', 1, '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
+	('CS102', 'C语言程序设计', 'C Programming Language', 4.0, '计算机学院', '必修', 4, 80, 48, 32, NULL, 'C语言编程基础与算法，培养程序设计思维和编程能力', '考试+实验', 1, '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
+	('CS201', '数据结构', 'Data Structures', 4.0, '计算机学院', '必修', 4, 80, 48, 32, NULL, '线性表、树、图等数据结构的基本原理和算法实现', '考试+编程作业', 1, '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
+	('CS202', '操作系统', 'Operating Systems', 3.0, '计算机学院', '必修', 4, 64, 48, 16, NULL, '进程管理、内存管理、文件系统等操作系统核心概念', '考试+课程设计', 1, '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
+	('GE101', '大学英语', 'College English', 2.0, '外语学院', '必修', 2, 48, 48, 0, NULL, '英语听说读写综合训练，提升英语应用能力', '考试+平时表现', 1, '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
+	('GE102', '大学物理', 'College Physics', 3.0, '物理学院', '必修', 3, 64, 48, 16, NULL, '力学、热学、电磁学等物理学基础理论和实验', '考试+实验', 1, '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
+	('MA101', '高等数学A', 'Advanced Mathematics A', 5.0, '数学学院', '必修', 4, 96, 96, 0, NULL, '微积分、极限、导数等数学基础，为后续课程奠定数学基础', '考试', 1, '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
+	('MA102', '线性代数', 'Linear Algebra', 3.0, '数学学院', '必修', 3, 64, 64, 0, NULL, '矩阵、向量空间、线性变换等线性代数核心内容', '考试', 1, '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
+	('SE101', '软件工程导论', 'Introduction to Software Engineering', 2.0, '软件学院', '必修', 2, 48, 48, 0, NULL, '软件开发流程与方法论，了解软件生命周期', '大作业+报告', 1, '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
+	('SE201', 'Java程序设计', 'Java Programming', 4.0, '软件学院', '必修', 3, 80, 48, 32, NULL, '面向对象编程、Java核心技术、GUI编程等', '考试+项目', 1, '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
+	('SE301', 'Web开发技术', 'Web Development Technologies', 3.0, '软件学院', '选修', 3, 64, 32, 32, NULL, 'HTML/CSS/JavaScript前后端开发技术', '项目实战', 1, '2025-11-07 09:31:33', '2025-11-07 09:31:33');
 
 -- 导出  表 ai_learning_partner.lab_attendance 结构
 CREATE TABLE IF NOT EXISTS `lab_attendance` (
@@ -101,22 +91,47 @@ CREATE TABLE IF NOT EXISTS `lab_attendance` (
   `experiment_name` varchar(100) DEFAULT NULL COMMENT '实验名称',
   `check_in_time` datetime NOT NULL COMMENT '签到时间',
   `check_out_time` datetime DEFAULT NULL COMMENT '签退时间',
-  `duration_minutes` int DEFAULT NULL COMMENT '停留时长(分钟)',
-  `attendance_type` enum('course','self_study','competition') DEFAULT NULL COMMENT '类型: 课程实验/自主学习/竞赛',
-  `equipment_used` json DEFAULT NULL COMMENT '使用设备列表',
+  `duration_minutes` int DEFAULT NULL COMMENT '停留时长',
+  `attendance_type` enum('course','self_study','competition') DEFAULT NULL COMMENT '类型',
   `supervisor` varchar(50) DEFAULT NULL COMMENT '指导老师',
   `notes` text COMMENT '备注',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`attendance_id`),
-  KEY `student_id` (`student_id`),
-  KEY `idx_check_in_time` (`check_in_time`),
-  KEY `idx_course_id` (`course_id`),
-  KEY `idx_attendance_type` (`attendance_type`),
-  CONSTRAINT `lab_attendance_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`),
-  CONSTRAINT `lab_attendance_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='实验室签到记录表';
+  KEY `fk_lab_student` (`student_id`),
+  KEY `fk_lab_course` (`course_id`),
+  CONSTRAINT `fk_lab_course` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`),
+  CONSTRAINT `fk_lab_student` FOREIGN KEY (`student_id`) REFERENCES `users` (`student_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='实验室考勤表';
 
 -- 正在导出表  ai_learning_partner.lab_attendance 的数据：~0 rows (大约)
+
+-- 导出  表 ai_learning_partner.learning_progress 结构
+CREATE TABLE IF NOT EXISTS `learning_progress` (
+  `progress_id` bigint NOT NULL AUTO_INCREMENT,
+  `student_id` varchar(20) NOT NULL COMMENT '学号',
+  `plan_id` bigint DEFAULT NULL COMMENT '学习计划ID',
+  `course_id` varchar(20) DEFAULT NULL COMMENT '课程ID',
+  `chapter` varchar(100) NOT NULL COMMENT '章节名称',
+  `completion_rate` decimal(5,2) DEFAULT '0.00' COMMENT '完成进度',
+  `time_spent` int DEFAULT '0' COMMENT '学习时长(分钟)',
+  `study_date` date NOT NULL COMMENT '学习日期',
+  `notes` text COMMENT '学习笔记',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `id` bigint NOT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`progress_id`),
+  KEY `fk_progress_student` (`student_id`),
+  KEY `fk_progress_plan` (`plan_id`),
+  KEY `fk_progress_course` (`course_id`),
+  KEY `FKkex4pny6sl5affwroon8lfbjt` (`user_id`),
+  CONSTRAINT `fk_progress_course` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`),
+  CONSTRAINT `fk_progress_plan` FOREIGN KEY (`plan_id`) REFERENCES `study_plans` (`plan_id`),
+  CONSTRAINT `fk_progress_student` FOREIGN KEY (`student_id`) REFERENCES `users` (`student_id`),
+  CONSTRAINT `FKkex4pny6sl5affwroon8lfbjt` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='学习进度表';
+
+-- 正在导出表  ai_learning_partner.learning_progress 的数据：~0 rows (大约)
 
 -- 导出  表 ai_learning_partner.library_records 结构
 CREATE TABLE IF NOT EXISTS `library_records` (
@@ -133,58 +148,91 @@ CREATE TABLE IF NOT EXISTS `library_records` (
   `due_date` date NOT NULL COMMENT '应还日期',
   `return_date` date DEFAULT NULL COMMENT '实际归还日期',
   `renewal_count` tinyint DEFAULT '0' COMMENT '续借次数',
-  `borrow_duration` int DEFAULT NULL COMMENT '借阅天数',
   `is_overdue` tinyint(1) DEFAULT '0' COMMENT '是否逾期',
   `related_course_id` varchar(20) DEFAULT NULL COMMENT '关联课程ID',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`record_id`),
-  KEY `student_id` (`student_id`),
-  KEY `idx_borrow_date` (`borrow_date`),
-  KEY `idx_book_category` (`book_category`),
-  KEY `idx_related_course` (`related_course_id`),
-  CONSTRAINT `library_records_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`),
-  CONSTRAINT `library_records_ibfk_2` FOREIGN KEY (`related_course_id`) REFERENCES `courses` (`course_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='图书馆借阅记录表';
+  KEY `fk_library_student` (`student_id`),
+  KEY `fk_library_course` (`related_course_id`),
+  CONSTRAINT `fk_library_course` FOREIGN KEY (`related_course_id`) REFERENCES `courses` (`course_id`),
+  CONSTRAINT `fk_library_student` FOREIGN KEY (`student_id`) REFERENCES `users` (`student_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='图书馆借阅表';
 
 -- 正在导出表  ai_learning_partner.library_records 的数据：~0 rows (大约)
 
--- 导出  表 ai_learning_partner.students 结构
-CREATE TABLE IF NOT EXISTS `students` (
+-- 导出  表 ai_learning_partner.study_plans 结构
+CREATE TABLE IF NOT EXISTS `study_plans` (
+  `plan_id` bigint NOT NULL AUTO_INCREMENT,
   `student_id` varchar(20) NOT NULL COMMENT '学号',
+  `plan_name` varchar(100) NOT NULL COMMENT '计划名称',
+  `course_id` varchar(20) DEFAULT NULL COMMENT '关联课程ID',
+  `description` text COMMENT '计划描述',
+  `start_date` date NOT NULL COMMENT '开始日期',
+  `end_date` date NOT NULL COMMENT '结束日期',
+  `target_score` decimal(5,2) DEFAULT NULL COMMENT '目标成绩',
+  `study_hours_per_week` int DEFAULT NULL COMMENT '每周学习时长',
+  `status` enum('PLANNING','IN_PROGRESS','COMPLETED','CANCELLED') DEFAULT 'PLANNING' COMMENT '状态',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` bigint NOT NULL,
+  `course_name` varchar(255) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `user_id` bigint NOT NULL,
+  PRIMARY KEY (`plan_id`),
+  KEY `fk_plan_student` (`student_id`),
+  KEY `fk_plan_course` (`course_id`),
+  KEY `FKsmw1bta843doo6k3a23lskryk` (`user_id`),
+  CONSTRAINT `fk_plan_course` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`),
+  CONSTRAINT `fk_plan_student` FOREIGN KEY (`student_id`) REFERENCES `users` (`student_id`),
+  CONSTRAINT `FKsmw1bta843doo6k3a23lskryk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='学习计划表';
+
+-- 正在导出表  ai_learning_partner.study_plans 的数据：~0 rows (大约)
+
+-- 导出  表 ai_learning_partner.users 结构
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `student_id` varchar(20) NOT NULL COMMENT '学号',
+  `username` varchar(50) NOT NULL COMMENT '用户名',
   `name` varchar(50) NOT NULL COMMENT '姓名',
-  `gender` enum('M','F','U') DEFAULT NULL COMMENT '性别: M男, F女, U未知',
+  `password` varchar(100) NOT NULL DEFAULT '123456' COMMENT '密码',
+  `gender` enum('M','F','U') DEFAULT NULL COMMENT '性别',
   `major` varchar(50) NOT NULL COMMENT '专业',
   `college` varchar(50) NOT NULL COMMENT '学院',
-  `grade` varchar(10) NOT NULL COMMENT '年级，如: 2023',
+  `grade` varchar(10) NOT NULL COMMENT '年级',
   `class_name` varchar(30) DEFAULT NULL COMMENT '班级',
-  `enrollment_date` date DEFAULT NULL COMMENT '入学日期',
-  `graduation_date` date DEFAULT NULL COMMENT '预计毕业日期',
   `email` varchar(100) DEFAULT NULL COMMENT '邮箱',
   `phone` varchar(20) DEFAULT NULL COMMENT '手机号',
   `avatar_url` varchar(200) DEFAULT NULL COMMENT '头像URL',
-  `learning_preferences` json DEFAULT NULL COMMENT '学习偏好设置',
+  `enrollment_date` date DEFAULT NULL COMMENT '入学日期',
+  `graduation_date` date DEFAULT NULL COMMENT '毕业日期',
+  `learning_goal` text COMMENT '学习目标',
+  `learning_preferences` json DEFAULT NULL COMMENT '学习偏好',
+  `account_status` varchar(20) DEFAULT 'ACTIVE' COMMENT '账户状态',
+  `login_count` int DEFAULT '0' COMMENT '登录次数',
+  `last_login_time` datetime DEFAULT NULL COMMENT '最后登录时间',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`student_id`),
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_student_id` (`student_id`),
+  UNIQUE KEY `uk_username` (`username`),
+  UNIQUE KEY `uk_email` (`email`),
   KEY `idx_major` (`major`),
   KEY `idx_grade` (`grade`),
   KEY `idx_college` (`college`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='学生基本信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表（合并学生信息）';
 
--- 正在导出表  ai_learning_partner.students 的数据：~0 rows (大约)
-REPLACE INTO `students` (`student_id`, `name`, `gender`, `major`, `college`, `grade`, `class_name`, `enrollment_date`, `graduation_date`, `email`, `phone`, `avatar_url`, `learning_preferences`, `created_at`, `updated_at`) VALUES
-	('202101001', '李十三', 'M', '软件工程', '软件学院', '2021', '软工2101', '2021-09-01', NULL, 'lishisan@edu.cn', '13800138011', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16'),
-	('202101002', '张十四', 'F', '电子信息工程', '电子信息学院', '2021', '电信2101', '2021-09-01', NULL, 'zhangshisi@edu.cn', '13800138012', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16'),
-	('202201001', '郑十一', 'M', '计算机科学与技术', '计算机学院', '2022', '计科2201', '2022-09-01', NULL, 'zhengshiyi@edu.cn', '13800138009', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16'),
-	('202201002', '王十二', 'F', '计算机科学与技术', '计算机学院', '2022', '计科2201', '2022-09-01', NULL, 'wangshier@edu.cn', '13800138010', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16'),
-	('202301001', '张三', 'M', '计算机科学与技术', '计算机学院', '2023', '计科2301', '2023-09-01', NULL, 'zhangsan@edu.cn', '13800138001', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16'),
-	('202301002', '李四', 'M', '计算机科学与技术', '计算机学院', '2023', '计科2301', '2023-09-01', NULL, 'lisi@edu.cn', '13800138002', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16'),
-	('202301003', '王五', 'F', '计算机科学与技术', '计算机学院', '2023', '计科2301', '2023-09-01', NULL, 'wangwu@edu.cn', '13800138003', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16'),
-	('202302001', '赵六', 'M', '软件工程', '软件学院', '2023', '软工2301', '2023-09-01', NULL, 'zhaoliu@edu.cn', '13800138004', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16'),
-	('202302002', '钱七', 'F', '软件工程', '软件学院', '2023', '软工2301', '2023-09-01', NULL, 'qianqi@edu.cn', '13800138005', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16'),
-	('202302003', '孙八', 'M', '软件工程', '软件学院', '2023', '软工2301', '2023-09-01', NULL, 'sunba@edu.cn', '13800138006', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16'),
-	('202303001', '周九', 'F', '电子信息工程', '电子信息学院', '2023', '电信2301', '2023-09-01', NULL, 'zhoujiu@edu.cn', '13800138007', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16'),
-	('202303002', '吴十', 'M', '电子信息工程', '电子信息学院', '2023', '电信2301', '2023-09-01', NULL, 'wushi@edu.cn', '13800138008', NULL, NULL, '2025-09-23 07:13:16', '2025-09-23 07:13:16');
+-- 正在导出表  ai_learning_partner.users 的数据：~7 rows (大约)
+REPLACE INTO `users` (`id`, `student_id`, `username`, `name`, `password`, `gender`, `major`, `college`, `grade`, `class_name`, `email`, `phone`, `avatar_url`, `enrollment_date`, `graduation_date`, `learning_goal`, `learning_preferences`, `account_status`, `login_count`, `last_login_time`, `created_at`, `updated_at`, `create_time`, `update_time`) VALUES
+	(1, '202301001', 'zhangsan', '张三', '123456', 'M', '计算机科学与技术', '计算机学院', '2023', '计科2301', 'zhangsan@edu.cn', '13800138001', 'https://picsum.photos/100/100?random=1', '2023-09-01', '2027-06-30', '成为全栈工程师，掌握AI开发技术', '{"learning_style": "visual", "difficulty_level": "medium", "preferred_subjects": ["编程", "算法"], "preferred_study_time": "evening"}', 'ACTIVE', 156, '2024-02-20 08:30:00', '2023-08-31 16:00:00', '2025-11-07 09:37:54', NULL, NULL),
+	(2, '202301002', 'lisi', '李四', '123456', 'M', '计算机科学与技术', '计算机学院', '2023', '计科2301', 'lisi@edu.cn', '13800138002', 'https://picsum.photos/100/100?random=2', '2023-09-01', '2027-06-30', '深入算法研究，参加ACM竞赛并获得奖项', '{"learning_style": "logical", "difficulty_level": "high", "preferred_subjects": ["算法", "数学"], "preferred_study_time": "morning"}', 'ACTIVE', 203, '2024-02-20 09:15:00', '2023-08-31 16:00:00', '2025-11-07 09:37:55', NULL, NULL),
+	(3, '202301003', 'wangwu', '王五', '123456', 'F', '计算机科学与技术', '计算机学院', '2023', '计科2301', 'wangwu@edu.cn', '13800138003', 'https://picsum.photos/100/100?random=3', '2023-09-01', '2027-06-30', '提升编程能力，学习数据科学和机器学习', '{"learning_style": "practical", "difficulty_level": "medium", "preferred_subjects": ["数据科学", "统计学"], "preferred_study_time": "afternoon"}', 'ACTIVE', 89, '2024-02-19 14:20:00', '2023-08-31 16:00:00', '2025-11-07 09:37:57', NULL, NULL),
+	(4, '202302001', 'zhaoliu', '赵六', '123456', 'M', '软件工程', '软件学院', '2023', '软工2301', 'zhaoliu@edu.cn', '13800138004', 'https://picsum.photos/100/100?random=4', '2023-09-01', '2027-06-30', '掌握软件开发全流程，参与大型项目实战', '{"learning_style": "practical", "difficulty_level": "medium", "preferred_subjects": ["软件开发", "项目管理"], "preferred_study_time": "evening"}', 'ACTIVE', 134, '2024-02-20 10:05:00', '2023-08-31 16:00:00', '2025-11-07 09:38:02', NULL, NULL),
+	(5, '202302002', 'qianqi', '钱七', '123456', 'F', '软件工程', '软件学院', '2023', '软工2301', 'qianqi@edu.cn', '13800138005', 'https://picsum.photos/100/100?random=5', '2023-09-01', '2027-06-30', '学习前端开发技术，成为专业的UI/UX设计师', '{"learning_style": "creative", "difficulty_level": "low", "preferred_subjects": ["设计", "前端开发"], "preferred_study_time": "flexible"}', 'ACTIVE', 78, '2024-02-18 16:45:00', '2023-08-31 16:00:00', '2025-11-07 09:38:04', NULL, NULL),
+	(6, '202201001', 'zhengshiyi', '郑十一', '123456', 'M', '计算机科学与技术', '计算机学院', '2022', '计科2201', 'zhengshiyi@edu.cn', '13800138009', 'https://picsum.photos/100/100?random=6', '2022-09-01', '2026-06-30', '深入学习人工智能和机器学习，为研究生阶段做准备', '{"learning_style": "theoretical", "difficulty_level": "high", "preferred_subjects": ["人工智能", "机器学习"], "preferred_study_time": "morning"}', 'ACTIVE', 287, '2024-02-20 07:50:00', '2022-08-31 16:00:00', '2025-11-07 09:38:06', NULL, NULL),
+	(7, '202101001', 'lishisan', '李十三', '123456', 'M', '软件工程', '软件学院', '2021', '软工2101', 'lishisan@edu.cn', '13800138011', 'https://picsum.photos/100/100?random=7', '2021-09-01', '2025-06-30', '准备考研，深入研究分布式系统和云计算技术', '{"learning_style": "comprehensive", "difficulty_level": "high", "preferred_subjects": ["分布式系统", "云计算"], "preferred_study_time": "whole_day"}', 'ACTIVE', 345, '2024-02-20 11:20:00', '2021-08-31 16:00:00', '2025-11-07 09:38:10', NULL, NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
