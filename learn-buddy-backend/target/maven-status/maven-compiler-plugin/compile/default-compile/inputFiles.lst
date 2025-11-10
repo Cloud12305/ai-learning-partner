@@ -1,6 +1,7 @@
 D:\001_ZJNUThird\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\ApiResponse.java
 D:\001_ZJNUThird\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\UserDto.java
 D:\001_ZJNUThird\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserRepository.java
+D:\001_ZJNUThird\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\SimpleCorsFilter.java
 D:\001_ZJNUThird\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\EmotionRecordRepository.java
 D:\001_ZJNUThird\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\WebConfig.java
 D:\001_ZJNUThird\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\UserController.java

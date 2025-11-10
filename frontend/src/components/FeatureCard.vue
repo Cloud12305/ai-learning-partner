@@ -10,57 +10,28 @@
 
 <script>
 export default {
+  name: 'FeatureCard',
   props: {
     icon: {
       type: String,
-      required: true,
-      description: "Font Awesome图标类名（不含fa-前缀）"
+      required: true
     },
     title: {
       type: String,
-      required: true,
-      description: "功能标题"
+      required: true
     },
     description: {
       type: String,
-      required: true,
-      description: "功能描述"
+      required: true
     },
     bgClass: {
       type: String,
-      required: true,
-      description: "背景颜色类名"
+      required: true
     },
     textClass: {
       type: String,
-      required: true,
-      description: "文本颜色类名"
+      required: true
     }
   }
 }
 </script>
-
-<style scoped>
-/* 组件内部样式 */
-.rounded-xl {
-  border-radius: 0.75rem;
-}
-
-.shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-.hover\:-translate-y-1:hover {
-  transform: translateY(-0.25rem);
-}
-</style>
