@@ -169,6 +169,9 @@
       </section>
     </main>
 
+    <!-- 4. 页脚 -->
+    <PageFooter />
+
     <!-- 3. 登录注册悬浮窗 -->
     <LoginRegister
         :visible="authModalVisible"
@@ -184,6 +187,7 @@ import { ref, onMounted } from 'vue'
 import TopNavbar from '../components/TopNavbar.vue'
 import LoginRegister from './LoginRegister.vue'
 import FeatureCard from '../components/FeatureCard.vue'
+import PageFooter from '../components/PageFooter.vue'  // 导入页脚组件
 
 export default {
   name: 'HomeView',
@@ -191,6 +195,7 @@ export default {
     TopNavbar,
     LoginRegister,
     FeatureCard,
+    PageFooter,  // 注册页脚组件
   },
   setup() {
     // 登录/注册悬浮窗状态
