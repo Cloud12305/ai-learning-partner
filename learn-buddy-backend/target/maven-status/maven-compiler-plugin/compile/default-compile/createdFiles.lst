@@ -2,6 +2,7 @@ com\digitalhorsepower\learnbuddy\service\ProgressService.class
 com\digitalhorsepower\learnbuddy\service\UserService.class
 com\digitalhorsepower\learnbuddy\dto\UserDto.class
 com\digitalhorsepower\learnbuddy\service\DeepSeekService.class
+com\digitalhorsepower\learnbuddy\config\SimpleCorsFilter.class
 com\digitalhorsepower\learnbuddy\entity\LearningProgress.class
 com\digitalhorsepower\learnbuddy\controller\ProgressController.class
 com\digitalhorsepower\learnbuddy\repository\StudyPlanRepository.class

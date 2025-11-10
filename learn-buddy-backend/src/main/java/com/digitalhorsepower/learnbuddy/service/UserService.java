@@ -31,42 +31,44 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        // 简单的校验逻辑
+        // 校验必填字段
+        if (user.getStudentId() == null || user.getStudentId().trim().isEmpty()) {
+            throw new RuntimeException("学号不能为空");
+        }
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+            throw new RuntimeException("用户名不能为空");
+        }
+        if (user.getName() == null || user.getName().trim().isEmpty()) {
+            throw new RuntimeException("姓名不能为空");
+        }
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            throw new RuntimeException("密码不能为空");
+        }
+        if (user.getMajor() == null || user.getMajor().trim().isEmpty()) {
+            throw new RuntimeException("专业不能为空");
+        }
+        if (user.getCollege() == null || user.getCollege().trim().isEmpty()) {
+            throw new RuntimeException("学院不能为空");
+        }
+        if (user.getGrade() == null || user.getGrade().trim().isEmpty()) {
+            throw new RuntimeException("年级不能为空");
+        }
+
+        // 检查唯一性约束
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("用户名已存在");
         }
-        if (user.getEmail() != null && userRepository.existsByEmail(user.getEmail())) {
+        if (userRepository.existsByStudentId(user.getStudentId())) {
+            throw new RuntimeException("学号已存在");
+        }
+        if (user.getEmail() != null && !user.getEmail().trim().isEmpty()
+                && userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("邮箱已存在");
         }
 
-        // 设置默认值
-        if (user.getStudentId() == null || user.getStudentId().trim().isEmpty()) {
-            // 生成基于时间的临时学号
-            user.setStudentId("TEMP_" + System.currentTimeMillis());
-        }
-
-        if (user.getCollege() == null) {
-            user.setCollege("计算机学院");
-        }
-
-        if (user.getGrade() == null) {
-            user.setGrade("2023");
-        }
-
-        if (user.getMajor() == null) {
-            user.setMajor("计算机科学与技术");
-        }
-
-        if (user.getClassName() == null) {
-            user.setClassName("计科2301");
-        }
-
-        if (user.getAvatarUrl() == null) {
+        // 只设置头像默认值，其他字段必须由前端提供
+        if (user.getAvatarUrl() == null || user.getAvatarUrl().trim().isEmpty()) {
             user.setAvatarUrl("https://picsum.photos/100/100?random=" + (int)(Math.random() * 100));
-        }
-
-        if (user.getEnrollmentDate() == null) {
-            user.setEnrollmentDate(LocalDateTime.now());
         }
 
         return userRepository.save(user);
@@ -74,26 +76,41 @@ public class UserService {
 
     public User updateUser(Long id, User userDetails) {
         return userRepository.findById(id).map(user -> {
+            // 只更新允许修改的字段
             if (userDetails.getEmail() != null) {
+                // 检查邮箱是否被其他用户使用
+                if (!user.getEmail().equals(userDetails.getEmail())
+                        && userRepository.existsByEmail(userDetails.getEmail())) {
+                    throw new RuntimeException("邮箱已被其他用户使用");
+                }
                 user.setEmail(userDetails.getEmail());
             }
-            if (userDetails.getName() != null) {
+            if (userDetails.getName() != null && !userDetails.getName().trim().isEmpty()) {
                 user.setName(userDetails.getName());
             }
-            if (userDetails.getMajor() != null) {
+            if (userDetails.getMajor() != null && !userDetails.getMajor().trim().isEmpty()) {
                 user.setMajor(userDetails.getMajor());
             }
-            if (userDetails.getGrade() != null) {
+            if (userDetails.getGrade() != null && !userDetails.getGrade().trim().isEmpty()) {
                 user.setGrade(userDetails.getGrade());
             }
             if (userDetails.getLearningGoal() != null) {
                 user.setLearningGoal(userDetails.getLearningGoal());
             }
-            if (userDetails.getCollege() != null) {
+            if (userDetails.getCollege() != null && !userDetails.getCollege().trim().isEmpty()) {
                 user.setCollege(userDetails.getCollege());
             }
             if (userDetails.getClassName() != null) {
                 user.setClassName(userDetails.getClassName());
+            }
+            if (userDetails.getAvatarUrl() != null) {
+                user.setAvatarUrl(userDetails.getAvatarUrl());
+            }
+            if (userDetails.getGender() != null) {
+                user.setGender(userDetails.getGender());
+            }
+            if (userDetails.getPhone() != null) {
+                user.setPhone(userDetails.getPhone());
             }
             return userRepository.save(user);
         }).orElseThrow(() -> new RuntimeException("用户不存在"));
@@ -103,25 +120,30 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    // 添加登录验证方法，支持用户名和学号登录
     public Optional<User> validateLogin(String username, String password) {
-        // 先尝试用用户名查找
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        Optional<User> userOptional;
 
-        // 如果用户名找不到，尝试用学号查找
-        if (!userOptional.isPresent()) {
+        // 判断是学号还是用户名登录
+        if (username.matches("\\d+")) { // 如果是纯数字，尝试学号登录
             userOptional = userRepository.findByStudentId(username);
+        } else { // 否则尝试用户名登录
+            userOptional = userRepository.findByUsername(username);
         }
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            // 更新登录信息
-            user.setLoginCount(user.getLoginCount() + 1);
-            user.setLastLoginTime(LocalDateTime.now());
-            userRepository.save(user);
+
+            // 检查账户状态
+            if (!"ACTIVE".equals(user.getAccountStatus())) {
+                throw new RuntimeException("账户已被禁用");
+            }
 
             // 验证密码
             if (user.getPassword().equals(password)) {
+                // 更新登录信息
+                user.setLoginCount(user.getLoginCount() != null ? user.getLoginCount() + 1 : 1);
+                user.setLastLoginTime(LocalDateTime.now());
+                userRepository.save(user);
                 return Optional.of(user);
             }
         }

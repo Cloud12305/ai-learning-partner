@@ -19,37 +19,44 @@ public class User {
     private String username;
 
     @Column(nullable = false)
-    private String password;
-
-    @Column(unique = true)
-    private String email;
-
-    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String password;
+
+    private String gender;
+
+    @Column(nullable = false)
     private String major;
-    private String grade;
 
-    @Column(name = "learning_goal")
-    private String learningGoal;
-
+    @Column(nullable = false)
     private String college;
+
+    @Column(nullable = false)
+    private String grade;
 
     @Column(name = "class_name")
     private String className;
 
-    @Column(name = "avatar_url")
-    private String avatarUrl;
-
-    private String gender;
+    @Column(unique = true)
+    private String email;
 
     private String phone;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
     @Column(name = "enrollment_date")
     private LocalDateTime enrollmentDate;
 
     @Column(name = "graduation_date")
     private LocalDateTime graduationDate;
+
+    @Column(name = "learning_goal")
+    private String learningGoal;
+
+    @Column(name = "learning_preferences")
+    private String learningPreferences;
 
     @Column(name = "account_status")
     private String accountStatus = "ACTIVE";
@@ -60,7 +67,13 @@ public class User {
     @Column(name = "last_login_time")
     private LocalDateTime lastLoginTime;
 
-    @Column(name = "create_time", updatable = false)
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "create_time")
     private LocalDateTime createTime;
 
     @Column(name = "update_time")
@@ -68,22 +81,26 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
-        createTime = LocalDateTime.now();
-        updateTime = LocalDateTime.now();
-        if (loginCount == null) {
-            loginCount = 0;
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+        this.createTime = now;
+        this.updateTime = now;
+
+        if (this.loginCount == null) {
+            this.loginCount = 0;
         }
-        if (accountStatus == null) {
-            accountStatus = "ACTIVE";
+        if (this.accountStatus == null) {
+            this.accountStatus = "ACTIVE";
         }
-        // 如果 studentId 为空，根据用户名生成一个临时的
-        if (studentId == null || studentId.trim().isEmpty()) {
-            studentId = "TEMP_" + System.currentTimeMillis();
+        if (this.avatarUrl == null) {
+            this.avatarUrl = "https://picsum.photos/100/100?random=" + (int)(Math.random() * 100);
         }
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updateTime = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.updateTime = LocalDateTime.now();
     }
 }
