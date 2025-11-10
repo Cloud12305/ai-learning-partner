@@ -399,6 +399,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import apiService from '../services/api'
+import { auth } from '@/utils/auth'  // 导入统一的登录管理工具
 
 export default {
   name: 'LoginRegister',
@@ -511,7 +512,7 @@ export default {
 
           message.success('登录成功！')
           emit('login-success')
-          router.push('/profile')
+          router.push('/academic-profile')
         } else {
           loginError.value = result.message || '用户名/学号或密码错误'
         }
