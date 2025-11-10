@@ -1,7 +1,7 @@
 package com.digitalhorsepower.learnbuddy.controller;
 
 import com.digitalhorsepower.learnbuddy.dto.ApiResponse;
-import com.digitalhorsepower.learnbuddy.entity.LearningProgress;
+import com.digitalhorsepower.learnbuddy.entity.LearningProgress; // 添加导入
 import com.digitalhorsepower.learnbuddy.service.ProgressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

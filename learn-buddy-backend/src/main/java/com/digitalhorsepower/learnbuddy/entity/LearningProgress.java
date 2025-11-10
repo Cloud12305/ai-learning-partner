@@ -1,40 +1,52 @@
 package com.digitalhorsepower.learnbuddy.entity;
 
-import javax.persistence.*;
 import lombok.Data;
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
 @Entity
 @Table(name = "learning_progress")
 public class LearningProgress {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "progress_id")
+    private Long progressId;
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", referencedColumnName = "student_id", nullable = false)
+    private User student;
+
+    @ManyToOne
+    @JoinColumn(name = "plan_id")
+    private StudyPlan plan;
+
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
+
+    @Column(name = "chapter", nullable = false, length = 100)
+    private String chapter;
+
+    @Column(name = "completion_rate", precision = 5, scale = 2)
+    private BigDecimal completionRate = BigDecimal.ZERO;
+
+    @Column(name = "time_spent")
+    private Integer timeSpent = 0;
+
+    @Column(name = "study_date", nullable = false)
+    private LocalDate studyDate;
+
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "plan_id", nullable = false)
-    private StudyPlan studyPlan;
-
-    private String chapter;        // 章节名称
-    private Double completionRate; // 完成率 0-100
-    private Integer timeSpent;     // 学习时长（分钟）
-    private String notes;          // 学习笔记
-
-    private LocalDateTime studyDate; // 学习日期
-
-    @Column(updatable = false)
-    private LocalDateTime createTime;
-
-    @PrePersist
-    protected void onCreate() {
-        createTime = LocalDateTime.now();
-        if (studyDate == null) {
-            studyDate = LocalDateTime.now();
-        }
-    }
 }

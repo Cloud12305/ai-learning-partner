@@ -30,6 +30,17 @@ public class UserService {
         return userRepository.findByStudentId(studentId);
     }
 
+    // 新增方法：支持用户名或学号查找
+    private Optional<User> findUserByIdentifier(String identifier) {
+        // 先尝试按用户名查找
+        Optional<User> user = userRepository.findByUsername(identifier);
+        if (user.isPresent()) {
+            return user;
+        }
+
+        // 再尝试按学号查找
+        return userRepository.findByStudentId(identifier);
+    }
     public User createUser(User user) {
         // 校验必填字段
         if (user.getStudentId() == null || user.getStudentId().trim().isEmpty()) {
