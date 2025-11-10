@@ -6,30 +6,44 @@
     <!-- 2. 首页主内容 -->
     <main class="pt-16">
       <!-- 英雄区域 -->
-      <div class="gradient-bg text-white py-20 md:py-32 relative overflow-hidden">
-        <!-- 背景装饰（增强视觉层次） -->
+      <div
+          class="text-white relative overflow-hidden"
+          :style="heroStyle"
+      >
+        <!-- 背景装饰（恢复原来的遮罩） -->
         <div class="absolute inset-0 bg-dark/20 z-0"></div>
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold mb-6 leading-tight text-shadow">
-              全方位掌握你的<span class="text-cyan-300">学习轨迹</span>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+          <div class="max-w-5xl mx-auto text-center py-16 md:py-24">
+            <!-- 优化主标题 - 改为一行 -->
+            <!-- 优化主标题 - 改为一行 -->
+            <h1 class="text-[clamp(2.8rem,6vw,4.2rem)] font-bold mb-8 leading-[1.1] tracking-tight">
+  <span class="bg-gradient-to-r from-white via-cyan-50 to-blue-50 bg-clip-text text-transparent">
+    全方位掌握你的
+  </span>
+              <span class="bg-gradient-to-r from-purple-400 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent drop-shadow-2xl">
+  学习轨迹
+</span>
             </h1>
-            <p class="text-[clamp(1rem,2vw,1.25rem)] text-white/90 mb-10 max-w-2xl mx-auto">
-              整合教务系统、实验室和图书馆数据，生成个性化学业画像，助你全面了解学习状况，规划未来发展
+
+            <!-- 优化副标题 -->
+            <p class="text-[clamp(1.2rem,2.5vw,1.5rem)] text-white/90 mb-12 max-w-3xl mx-auto font-normal leading-relaxed tracking-wide">
+              整合教学系统、实验室和图书馆数据，生成个性化学业画像，助你全面了解学习状况，规划未来发展
             </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
+
+            <!-- 优化按钮布局 -->
+            <div class="flex flex-col sm:flex-row justify-center gap-6">
               <!-- 立即开始按钮（登录后隐藏） -->
               <button
                   v-if="!isAuthenticated"
                   @click="openAuthModal('login')"
-                  class="px-8 py-4 bg-white text-indigo-600 font-bold rounded-2xl hover:bg-neutral-100 transition-all duration-300 transform hover:-translate-y-1 shadow-2xl hover:shadow-2xl text-lg"
+                  class="px-12 py-5 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold rounded-2xl hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1 shadow-2xl hover:shadow-3xl text-xl backdrop-blur-sm border border-purple-400/30 hover:glow"
               >
                 <i class="fas fa-rocket mr-3"></i>
                 立即开始
               </button>
               <router-link
                   to="/academic-profile"
-                  class="px-8 py-4 bg-white/20 backdrop-blur-sm border-2 border-white/30 text-white font-bold rounded-2xl hover:bg-white/30 transition-all duration-300 transform hover:-translate-y-1 text-lg"
+                  class="px-12 py-5 bg-white/10 backdrop-blur-lg border-2 border-white/30 text-white font-bold rounded-2xl hover:bg-white/20 hover:border-white/50 transition-all duration-300 transform hover:-translate-y-1 text-xl shadow-xl hover:shadow-2xl"
               >
                 <i class="fas fa-chart-line mr-3"></i>
                 {{ isAuthenticated ? '进入个人中心' : '探索功能' }}
@@ -186,11 +200,14 @@
 </template>
 
 <script>
-import { ref, onMounted, computed, onUnmounted } from 'vue'
+import { ref, onMounted, computed, onUnmounted, reactive } from 'vue'
 import TopNavbar from '../components/TopNavbar.vue'
 import LoginRegister from './LoginRegister.vue'
 import FeatureCard from '../components/FeatureCard.vue'
 import PageFooter from '../components/PageFooter.vue'
+
+// 导入背景图片
+import bgImage from '@/assets/bg1.jpg'
 
 export default {
   name: 'HomeView',
@@ -204,6 +221,20 @@ export default {
     // 登录/注册悬浮窗状态
     const authModalVisible = ref(false)
     const authMode = ref('login')
+
+    // 英雄区域样式
+    const heroStyle = reactive({
+      backgroundImage: `url(${bgImage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center 20%', // 调整图片显示位置，让重要内容显示在顶部
+      backgroundRepeat: 'no-repeat',
+      position: 'relative',
+      marginTop: '-64px',
+      paddingTop: '64px',
+      minHeight: '70vh', // 增加高度但不覆盖整个视口
+      display: 'flex',
+      alignItems: 'center'
+    })
 
     // 检查用户是否已登录
     const isAuthenticated = computed(() => {
@@ -252,6 +283,7 @@ export default {
       authModalVisible,
       authMode,
       isAuthenticated,
+      heroStyle, // 确保返回 heroStyle
       openAuthModal,
       closeAuthModal,
       setAuthMode,
@@ -261,18 +293,9 @@ export default {
 </script>
 
 <style scoped>
-/* 新的渐变背景 - 蓝紫色系，与导航栏协调 */
-.gradient-bg {
-  background: linear-gradient(135deg, #3B82F6 0%, #6366F1 30%, #8B5CF6 60%, #A855F7 80%, #EC4899 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-  opacity: 0.9;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50% }
-  50% { background-position: 100% 50% }
-  100% { background-position: 0% 50% }
+/* 按钮发光效果 - 改为紫色系 */
+.hover\:glow:hover {
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
 }
 
 /* 自定义工具类 */

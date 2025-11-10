@@ -1,92 +1,100 @@
 <template>
   <nav class="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-500 to-purple-600 shadow-2xl z-50 border-b border-white/20">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="container mx-auto px-6">
       <div class="flex justify-between items-center h-20">
-        <!-- 左侧Logo和导航菜单 -->
-        <div class="flex items-center space-x-10">
-          <!-- Logo -->
+        <!-- 左侧Logo和标题 -->
+        <div class="flex items-center">
           <router-link to="/" class="flex items-center space-x-4 group">
-            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-300">
-              <i class="fas fa-robot text-2xl bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent"></i>
+            <!-- Logo -->
+            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-300 overflow-hidden">
+              <img src="https://api.iconify.design/noto:owl.svg" alt="Logo" class="w-8 h-8">
             </div>
-            <div>
-              <div class="text-2xl font-bold text-white tracking-wide">
-                智能学习伙伴
+            <div class="flex flex-col">
+              <div class="text-2xl font-bold text-white tracking-wide drop-shadow-lg">
+                Ai智能学习搭子
               </div>
-              <div class="text-white/80 text-sm font-light">AI Learning Companion</div>
+              <div class="text-white/90 text-sm font-light tracking-wider">AI Learning Companion</div>
             </div>
           </router-link>
+        </div>
 
-          <!-- 导航菜单 -->
-          <div class="hidden lg:flex items-center space-x-1">
-            <!-- 个人中心 -->
-            <router-link
-                to="/academic-profile"
-                class="nav-menu-item text-white hover:bg-white/20"
-                :class="{ 'nav-menu-item-active': $route.path === '/academic-profile' }"
-            >
-              <i class="fas fa-user-graduate mr-3 text-lg"></i>
-              <span class="text-lg font-semibold">个人中心</span>
-            </router-link>
+        <!-- 中间导航菜单 -->
+        <div class="hidden lg:flex items-center space-x-2">
+          <!-- 个人中心 -->
+          <router-link
+              to="/academic-profile"
+              class="nav-menu-item text-white hover:bg-white/20"
+              :class="{ 'nav-menu-item-active': $route.path === '/academic-profile' }"
+          >
+            <i class="fas fa-user-graduate mr-3 text-lg"></i>
+            <span class="text-lg font-semibold">个人中心</span>
+          </router-link>
 
-            <!-- 校园学习 - 下拉菜单 -->
-            <div class="relative group">
-              <button class="nav-menu-item text-white hover:bg-white/20">
-                <i class="fas fa-university mr-3 text-lg"></i>
-                <span class="text-lg font-semibold">校园学习</span>
-                <i class="fas fa-chevron-down ml-2 text-sm transition-transform group-hover:rotate-180"></i>
-              </button>
-              <div class="absolute top-full left-0 mt-1 w-48 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                <div class="py-2">
-                  <router-link
-                      v-for="item in campusLearningItems"
-                      :key="item.path"
-                      :to="item.path"
-                      class="dropdown-item text-gray-700 hover:text-blue-600"
-                      :class="{ 'dropdown-item-active': $route.path === item.path }"
-                  >
-                    <i :class="['mr-3', item.icon]"></i>
-                    {{ item.name }}
-                  </router-link>
-                </div>
+          <!-- 校园学习 - 下拉菜单 -->
+          <div class="relative group">
+            <button class="nav-menu-item text-white hover:bg-white/20">
+              <i class="fas fa-university mr-3 text-lg"></i>
+              <span class="text-lg font-semibold">校园学习</span>
+              <i class="fas fa-chevron-down ml-2 text-sm transition-transform group-hover:rotate-180"></i>
+            </button>
+            <div class="absolute top-full left-0 mt-1 w-48 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+              <div class="py-2">
+                <router-link
+                    v-for="item in campusLearningItems"
+                    :key="item.path"
+                    :to="item.path"
+                    class="dropdown-item text-gray-700 hover:text-blue-600"
+                    :class="{ 'dropdown-item-active': $route.path === item.path }"
+                >
+                  <i :class="['mr-3', item.icon]"></i>
+                  {{ item.name }}
+                </router-link>
               </div>
             </div>
-
-            <!-- 就业准备 - 下拉菜单 -->
-            <div class="relative group">
-              <button class="nav-menu-item text-white hover:bg-white/20">
-                <i class="fas fa-briefcase mr-3 text-lg"></i>
-                <span class="text-lg font-semibold">就业准备</span>
-                <i class="fas fa-chevron-down ml-2 text-sm transition-transform group-hover:rotate-180"></i>
-              </button>
-              <div class="absolute top-full left-0 mt-1 w-48 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                <div class="py-2">
-                  <router-link
-                      v-for="item in careerPreparationItems"
-                      :key="item.path"
-                      :to="item.path"
-                      class="dropdown-item text-gray-700 hover:text-blue-600"
-                      :class="{ 'dropdown-item-active': $route.path === item.path }"
-                  >
-                    <i :class="['mr-3', item.icon]"></i>
-                    {{ item.name }}
-                  </router-link>
-                </div>
-              </div>
-            </div>
-
-            <!-- 独立菜单项 -->
-            <router-link
-                v-for="item in independentItems"
-                :key="item.path"
-                :to="item.path"
-                class="nav-menu-item text-white hover:bg-white/20"
-                :class="{ 'nav-menu-item-active': $route.path === item.path }"
-            >
-              <i :class="['mr-3', item.icon]"></i>
-              <span class="text-lg font-semibold">{{ item.name }}</span>
-            </router-link>
           </div>
+
+          <!-- 就业准备 - 下拉菜单 -->
+          <div class="relative group">
+            <button class="nav-menu-item text-white hover:bg-white/20">
+              <i class="fas fa-briefcase mr-3 text-lg"></i>
+              <span class="text-lg font-semibold">就业准备</span>
+              <i class="fas fa-chevron-down ml-2 text-sm transition-transform group-hover:rotate-180"></i>
+            </button>
+            <div class="absolute top-full left-0 mt-1 w-48 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+              <div class="py-2">
+                <router-link
+                    v-for="item in careerPreparationItems"
+                    :key="item.path"
+                    :to="item.path"
+                    class="dropdown-item text-gray-700 hover:text-blue-600"
+                    :class="{ 'dropdown-item-active': $route.path === item.path }"
+                >
+                  <i :class="['mr-3', item.icon]"></i>
+                  {{ item.name }}
+                </router-link>
+              </div>
+            </div>
+          </div>
+
+          <!-- 知识答疑 -->
+          <router-link
+              to="/knowledge-answering"
+              class="nav-menu-item text-white hover:bg-white/20"
+              :class="{ 'nav-menu-item-active': $route.path === '/knowledge-answering' }"
+          >
+            <i class="fas fa-comments mr-3 text-lg"></i>
+            <span class="text-lg font-semibold">知识答疑</span>
+          </router-link>
+
+          <!-- 心理陪伴 -->
+          <router-link
+              to="/psychology-companion"
+              class="nav-menu-item text-white hover:bg-white/20"
+              :class="{ 'nav-menu-item-active': $route.path === '/psychology-companion' }"
+          >
+            <i class="fas fa-heartbeat mr-3 text-lg"></i>
+            <span class="text-lg font-semibold">心理陪伴</span>
+          </router-link>
         </div>
 
         <!-- 右侧用户信息 -->
