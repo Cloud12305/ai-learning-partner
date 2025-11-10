@@ -1,60 +1,130 @@
 <template>
-  <nav class="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-50 to-cyan-50 shadow-lg z-50 border-b border-blue-100">
+  <nav class="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-500 to-purple-600 shadow-2xl z-50 border-b border-white/20">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16">
+      <div class="flex justify-between items-center h-20">
         <!-- 左侧Logo和导航菜单 -->
-        <div class="flex items-center space-x-8">
+        <div class="flex items-center space-x-10">
           <!-- Logo -->
-          <router-link to="/" class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-md">
-              <i class="fas fa-graduation-cap text-white text-lg"></i>
+          <router-link to="/" class="flex items-center space-x-4 group">
+            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-300">
+              <i class="fas fa-robot text-2xl bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent"></i>
             </div>
-            <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-              AI 智能学习搭子
-            </span>
+            <div>
+              <div class="text-2xl font-bold text-white tracking-wide">
+                智能学习伙伴
+              </div>
+              <div class="text-white/80 text-sm font-light">AI Learning Companion</div>
+            </div>
           </router-link>
 
           <!-- 导航菜单 -->
-          <div class="hidden md:flex items-center space-x-6">
+          <div class="hidden lg:flex items-center space-x-1">
+            <!-- 个人中心 -->
             <router-link
-                v-for="item in navItems"
-                :key="item.id"
-                :to="item.path"
-                class="text-blue-700 hover:text-cyan-600 transition-colors duration-200 font-medium px-3 py-2 rounded-lg hover:bg-white/50 backdrop-blur-sm"
-                :class="{ 'bg-white/80 shadow-sm': $route.path === item.path }"
+                to="/academic-profile"
+                class="nav-menu-item text-white hover:bg-white/20"
+                :class="{ 'nav-menu-item-active': $route.path === '/academic-profile' }"
             >
-              <i :class="['mr-2', item.icon]"></i>
-              {{ item.name }}
+              <i class="fas fa-user-graduate mr-3 text-lg"></i>
+              <span class="text-lg font-semibold">个人中心</span>
+            </router-link>
+
+            <!-- 校园学习 - 下拉菜单 -->
+            <div class="relative group">
+              <button class="nav-menu-item text-white hover:bg-white/20">
+                <i class="fas fa-university mr-3 text-lg"></i>
+                <span class="text-lg font-semibold">校园学习</span>
+                <i class="fas fa-chevron-down ml-2 text-sm transition-transform group-hover:rotate-180"></i>
+              </button>
+              <div class="absolute top-full left-0 mt-1 w-48 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                <div class="py-2">
+                  <router-link
+                      v-for="item in campusLearningItems"
+                      :key="item.path"
+                      :to="item.path"
+                      class="dropdown-item text-gray-700 hover:text-blue-600"
+                      :class="{ 'dropdown-item-active': $route.path === item.path }"
+                  >
+                    <i :class="['mr-3', item.icon]"></i>
+                    {{ item.name }}
+                  </router-link>
+                </div>
+              </div>
+            </div>
+
+            <!-- 就业准备 - 下拉菜单 -->
+            <div class="relative group">
+              <button class="nav-menu-item text-white hover:bg-white/20">
+                <i class="fas fa-briefcase mr-3 text-lg"></i>
+                <span class="text-lg font-semibold">就业准备</span>
+                <i class="fas fa-chevron-down ml-2 text-sm transition-transform group-hover:rotate-180"></i>
+              </button>
+              <div class="absolute top-full left-0 mt-1 w-48 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                <div class="py-2">
+                  <router-link
+                      v-for="item in careerPreparationItems"
+                      :key="item.path"
+                      :to="item.path"
+                      class="dropdown-item text-gray-700 hover:text-blue-600"
+                      :class="{ 'dropdown-item-active': $route.path === item.path }"
+                  >
+                    <i :class="['mr-3', item.icon]"></i>
+                    {{ item.name }}
+                  </router-link>
+                </div>
+              </div>
+            </div>
+
+            <!-- 独立菜单项 -->
+            <router-link
+                v-for="item in independentItems"
+                :key="item.path"
+                :to="item.path"
+                class="nav-menu-item text-white hover:bg-white/20"
+                :class="{ 'nav-menu-item-active': $route.path === item.path }"
+            >
+              <i :class="['mr-3', item.icon]"></i>
+              <span class="text-lg font-semibold">{{ item.name }}</span>
             </router-link>
           </div>
         </div>
 
         <!-- 右侧用户信息 -->
-        <div class="flex items-center space-x-4">
-          <div v-if="isAuthenticated" class="flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-md">
-              <img :src="currentUser.avatar_url || 'https://picsum.photos/100/100?random=1'"
-                   :alt="currentUser.name"
-                   class="w-full h-full object-cover">
+        <div class="flex items-center space-x-6">
+          <div v-if="isAuthenticated" class="flex items-center space-x-4">
+            <!-- 用户头像和欢迎信息 -->
+            <div class="flex items-center space-x-3 bg-white/20 backdrop-blur-sm rounded-2xl px-4 py-2 border border-white/30">
+              <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-lg">
+                <img :src="currentUser.avatar_url || 'https://picsum.photos/100/100?random=1'"
+                     :alt="currentUser.name"
+                     class="w-full h-full object-cover">
+              </div>
+              <div class="text-white">
+                <div class="font-semibold text-lg">{{ currentUser.name || '用户' }}</div>
+                <div class="text-white/80 text-sm">欢迎回来！</div>
+              </div>
             </div>
-            <span class="text-sm font-medium text-blue-800">{{ currentUser.name || '用户' }}</span>
+
+            <!-- 退出按钮 -->
             <Button
                 @click="handleLogout"
-                size="small"
-                class="ml-2 bg-red-500 hover:bg-red-600 border-red-500"
+                size="large"
+                class="logout-btn bg-white/20 hover:bg-white/30 border-white/30 text-white font-semibold h-12 px-6 rounded-2xl backdrop-blur-sm"
             >
-              退出
+              <i class="fas fa-sign-out-alt mr-2"></i>
+              退出登录
             </Button>
           </div>
-          <div v-else class="flex items-center space-x-2">
+
+          <div v-else class="flex items-center space-x-3">
+            <!-- 登录按钮 -->
             <Button
                 @click="$emit('open-auth-modal')"
-                type="primary"
-                size="small"
-                class="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 border-0 shadow-md"
+                size="large"
+                class="login-btn bg-white hover:bg-gray-100 border-0 text-blue-600 font-bold h-12 px-8 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300"
             >
-              <i class="fas fa-sign-in-alt mr-2"></i>
-              登录/注册
+              <i class="fas fa-rocket mr-3"></i>
+              立即登录
             </Button>
           </div>
         </div>
@@ -77,16 +147,23 @@ export default {
   setup() {
     const router = useRouter()
 
-    // 导航菜单配置
-    const navItems = ref([
-      { id: 1, name: '学业画像', path: '/academic-profile', icon: 'fas fa-chart-line' },
-      { id: 2, name: '课程学习', path: '/course-learning', icon: 'fas fa-book' },
-      { id: 3, name: '学习进度', path: '/learning-progress', icon: 'fas fa-tasks' },
-      { id: 4, name: '实践训练', path: '/practical-training', icon: 'fas fa-flask' },
-      { id: 5, name: '学习计划', path: '/study-plan', icon: 'fas fa-calendar-alt' },
-      { id: 6, name: '知识答疑', path: '/knowledge-answering', icon: 'fas fa-question-circle' },
-      { id: 7, name: '就业匹配', path: '/job-matching', icon: 'fas fa-briefcase' },
-      { id: 8, name: '心理陪伴', path: '/psychology-companion', icon: 'fas fa-heart' }
+    // 校园学习子菜单
+    const campusLearningItems = ref([
+      { name: '课程学习', path: '/course-learning', icon: 'fas fa-book-open' },
+      { name: '学习进度', path: '/learning-progress', icon: 'fas fa-chart-bar' },
+      { name: '学习计划', path: '/study-plan', icon: 'fas fa-calendar-check' }
+    ])
+
+    // 就业准备子菜单
+    const careerPreparationItems = ref([
+      { name: '就业匹配', path: '/job-matching', icon: 'fas fa-handshake' },
+      { name: '实践训练', path: '/practical-training', icon: 'fas fa-laptop-code' }
+    ])
+
+    // 独立菜单项
+    const independentItems = ref([
+      { name: '知识答疑', path: '/knowledge-answering', icon: 'fas fa-comments' },
+      { name: '心理陪伴', path: '/psychology-companion', icon: 'fas fa-heartbeat' }
     ])
 
     // 使用 ref 来跟踪用户信息变化
@@ -171,7 +248,9 @@ export default {
     })
 
     return {
-      navItems,
+      campusLearningItems,
+      careerPreparationItems,
+      independentItems,
       isAuthenticated,
       currentUser,
       handleLogout
@@ -181,16 +260,65 @@ export default {
 </script>
 
 <style scoped>
-/* 自定义导航栏样式 */
-nav {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+/* 导航菜单项基础样式 */
+.nav-menu-item {
+  @apply flex items-center px-6 py-3 rounded-2xl transition-all duration-300 font-medium backdrop-blur-sm;
 }
 
-/* 激活状态的高亮效果 */
-.router-link-active {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
-  color: #0891b2;
-  font-weight: 600;
+/* 激活状态的导航菜单项 */
+.nav-menu-item-active {
+  @apply bg-white/30 backdrop-blur-xl shadow-lg;
+}
+
+/* 下拉菜单项样式 */
+.dropdown-item {
+  @apply flex items-center px-6 py-3 transition-all duration-200 font-medium border-l-4 border-transparent;
+}
+
+.dropdown-item-active {
+  @apply text-blue-600 bg-blue-50 border-l-4 border-blue-500 font-semibold;
+}
+
+/* 下拉菜单悬停效果 */
+.dropdown-item:hover {
+  @apply bg-gray-50 border-l-4 border-blue-400 transform translate-x-1;
+}
+
+/* 登录按钮特殊效果 */
+.login-btn {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+}
+
+.login-btn:hover {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  box-shadow: 0 15px 40px rgba(37, 99, 235, 0.4);
+}
+
+/* 退出按钮样式 */
+.logout-btn {
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+}
+
+/* 导航栏毛玻璃效果 */
+nav {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .container {
+    @apply px-4;
+  }
+
+  .nav-menu-item {
+    @apply px-4 py-2 text-base;
+  }
 }
 </style>

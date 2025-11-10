@@ -396,10 +396,8 @@
 
 <script>
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import apiService from '../services/api'
-import { auth } from '@/utils/auth'  // 导入统一的登录管理工具
 
 export default {
   name: 'LoginRegister',
@@ -415,7 +413,7 @@ export default {
   },
   emits: ['close', 'mode-change', 'login-success'],
   setup(props, { emit }) {
-    const router = useRouter()
+    // 移除 const router = useRouter() 这行
 
     // 表单状态
     const rememberMe = ref(false)
@@ -435,7 +433,7 @@ export default {
       password: ''
     })
 
-    // 注册表单数据 - 扩展字段
+    // 注册表单数据
     const registerForm = reactive({
       studentId: '',
       username: '',
@@ -454,7 +452,7 @@ export default {
     const setMode = (mode) => {
       currentMode.value = mode
       emit('mode-change', mode)
-      loginError.value = '' // 切换模式时清除错误信息
+      loginError.value = ''
     }
 
     // 关闭弹窗
@@ -512,7 +510,9 @@ export default {
 
           message.success('登录成功！')
           emit('login-success')
-          router.push('/academic-profile')
+
+          // 直接刷新页面并跳转到首页
+          window.location.href = '/'
         } else {
           loginError.value = result.message || '用户名/学号或密码错误'
         }
