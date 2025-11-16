@@ -72,7 +72,7 @@ public class DeepSeekService {
         Map<String, String> result = new HashMap<>();
 
         // 简单的情绪关键词匹配
-        String[] emotions = {"焦虑", "挫败", "积极", "压力", "困惑", "中性"};
+        String[] emotions = {"焦虑", "挫败", "积极", "压力", "困惑", "中性", "悲伤", "疲惫"};
         String detectedEmotion = "中性";
 
         for (String emotion : emotions) {
