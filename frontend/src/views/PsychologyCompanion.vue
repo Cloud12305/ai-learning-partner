@@ -22,7 +22,9 @@
                 v-model:value="userText"
                 placeholder="比如“今天学框架学不会，好焦虑”“连续刷题没思路，有点挫败”"
                 rows="5"
-                @keyup.enter="handleSubmitEmotion"
+
+                @keydown.enter.prevent="handleSubmitEmotion"
+
                 :disabled="isLoading"
                 class="mb-6"
             ></a-textarea>
@@ -104,38 +106,76 @@ const emotionColorMap = {
 const init = async () => {
   await nextTick(); // 等待DOM挂载完成
   // 读取登录态（用于后续接口请求，未登录也可提交情绪）
-  const userInfo = localStorage.getItem('userInfo');
+  const userInfo = localStorage.getItem('user');
   if (userInfo) {
-    userId.value = JSON.parse(userInfo).id;
+    const user = JSON.parse(userInfo);
+    userId.value = user.id;
   } else {
     message.warning("未登录，情绪记录无法同步，登录后可查看历史记录");
   }
 };
 
 // 5. 提交情绪文本：保留核心逻辑（移除图表刷新相关代码）
+// const handleSubmitEmotion = async () => {
+//   const text = userText.value.trim();
+//   if (!text || isLoading.value) return;
+//
+//   try {
+//     isLoading.value = true;
+//     // 调用后端情感分析API（传递用户ID，未登录则为空）
+//     const res = await request.post('psychology', {
+//       text,
+//       userId: userId.value || ''
+//     });
+//
+//     // 延迟100ms赋值：避免DOM渲染冲突，确保组件实例正常创建
+//     setTimeout(async () => {
+//       emotionResult.value = res.data?.data || {}; // 容错：避免接口返回空数据
+//       userText.value = ''; // 清空输入框
+//       await nextTick(); // 等待回应卡片渲染完成
+//     }, 100);
+//   } catch (err) {
+//     // 错误提示：兼容接口返回异常或网络错误
+//     message.error(err.response?.data?.msg || "情绪分析请求失败，请重试");
+//   } finally {
+//     isLoading.value = false; // 无论成功失败，都关闭加载状态
+//   }
+// };
 const handleSubmitEmotion = async () => {
   const text = userText.value.trim();
   if (!text || isLoading.value) return;
 
   try {
     isLoading.value = true;
-    // 调用后端情感分析API（传递用户ID，未登录则为空）
+
+    console.log('[psychology] sending request...');
+
+    // Call backend: POST http://localhost:8080/api/psychology
     const res = await request.post('/api/psychology', {
       text,
-      user_id: userId.value || ''
+      userId: userId.value || ''
     });
 
-    // 延迟100ms赋值：避免DOM渲染冲突，确保组件实例正常创建
-    setTimeout(async () => {
-      emotionResult.value = res.data || {}; // 容错：避免接口返回空数据
-      userText.value = ''; // 清空输入框
-      await nextTick(); // 等待回应卡片渲染完成
-    }, 100);
+    console.log('[psychology] backend response:', res);
+
+    // res = { success: true/false, data: { emotion, encouragement }, msg? }
+
+    if (res.success) {
+      // small delay is optional
+      setTimeout(async () => {
+        emotionResult.value = res.data || {};   // ⬅️ use res.data, NOT res.data.data
+        userText.value = '';
+        await nextTick();
+      }, 100);
+    } else {
+      message.error(res.msg || '情绪分析服务暂时不可用，请稍后重试');
+    }
+
   } catch (err) {
-    // 错误提示：兼容接口返回异常或网络错误
-    message.error(err.response?.data?.msg || "情绪分析请求失败，请重试");
+    console.error('[psychology] request error:', err);
+    message.error(err.response?.data?.msg || '情绪分析请求失败，请重试');
   } finally {
-    isLoading.value = false; // 无论成功失败，都关闭加载状态
+    isLoading.value = false;
   }
 };
 

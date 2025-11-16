@@ -114,9 +114,10 @@ const userId = ref(''); // 用户ID（从登录态获取）
 
 // 初始化：获取用户ID（登录态/游客ID）
 const initUserId = () => {
-  const userInfo = localStorage.getItem('userInfo');
+  const userInfo = localStorage.getItem('user');
   if (userInfo) {
-    userId.value = JSON.parse(userInfo).id; // 登录用户：从localStorage获取ID
+    const user = JSON.parse(userInfo);
+    userId.value = user.id; // 登录用户：从localStorage获取ID
   } else {
     // 未登录：生成临时游客ID
     userId.value = `guest_${Date.now()}`;
