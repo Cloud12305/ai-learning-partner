@@ -5,100 +5,94 @@ import com.digitalhorsepower.learnbuddy.entity.KnowledgePoint;
 import com.digitalhorsepower.learnbuddy.entity.KnowledgeRelation;
 import com.digitalhorsepower.learnbuddy.repository.KnowledgePointRepository;
 import com.digitalhorsepower.learnbuddy.repository.KnowledgeRelationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class KnowledgeGraphService {
 
-    @Autowired
-    private KnowledgePointRepository knowledgePointRepository;
+    private static final Logger logger = LoggerFactory.getLogger(KnowledgeGraphService.class);
 
-    @Autowired
-    private KnowledgeRelationRepository knowledgeRelationRepository;
+    private final KnowledgePointRepository knowledgePointRepository;
+    private final KnowledgeRelationRepository knowledgeRelationRepository;
+    private final DeepSeekService deepSeekService;
+    private final KnowledgeGraphBuilder knowledgeGraphBuilder;
 
-    @Autowired
-    private DeepSeekService deepSeekService;
+    // 使用构造器注入替代字段注入
+    public KnowledgeGraphService(
+            KnowledgePointRepository knowledgePointRepository,
+            KnowledgeRelationRepository knowledgeRelationRepository,
+            DeepSeekService deepSeekService,
+            KnowledgeGraphBuilder knowledgeGraphBuilder) {
+        this.knowledgePointRepository = knowledgePointRepository;
+        this.knowledgeRelationRepository = knowledgeRelationRepository;
+        this.deepSeekService = deepSeekService;
+        this.knowledgeGraphBuilder = knowledgeGraphBuilder;
+    }
 
     /**
      * 处理知识问答并生成知识图谱
      */
     public QAResponse processQuestion(String question, String userId, String contextKp) {
         try {
-            System.out.println(">>> 开始处理问题: " + question);
+            logger.info("开始处理问题: {}", question);
 
             // 1. 调用DeepSeek生成完整回答
             String answer = deepSeekService.generateKnowledgeAnswer(question);
 
-            // 2. 分析问题提取知识点
-            Map<String, Object> analysisResult = analyzeQuestionForKnowledge(question);
+            // 2. 使用新的KnowledgeGraphBuilder构建知识图谱数据
+            QAResponse.KnowledgeGraphData knowledgeGraphData =
+                    knowledgeGraphBuilder.buildGraphFromAnswer(question, answer);
 
-            // 3. 构建知识图谱数据
-            List<QAResponse.KnowledgeNode> knowledgeGraph = buildKnowledgeGraph(analysisResult, question);
+            // 3. 为了向后兼容，同时构建旧格式的知识图谱
+            List<QAResponse.KnowledgeNode> legacyKnowledgeGraph =
+                    buildLegacyKnowledgeGraph(question);
 
             // 4. 保存问答历史
-            saveQAHistory(userId, question, answer, knowledgeGraph);
+            saveQAHistory(userId, question);
 
+            // 5. 构建响应
             QAResponse response = new QAResponse();
             response.setSuccess(true);
             response.setAnswer(answer);
-            response.setKnowledgeGraph(knowledgeGraph);
-            response.setLastContextKp((String) analysisResult.get("mainTopic"));
+            response.setKnowledgeGraph(legacyKnowledgeGraph); // 旧格式，向后兼容
+            response.setKnowledgeGraphData(knowledgeGraphData); // 新格式，用于前端可视化
+            response.setLastContextKp(extractMainTopic(question));
             response.setTimestamp(LocalDateTime.now().toString());
 
-            System.out.println(">>> 问题处理完成:");
-            System.out.println(">>> - 回答长度: " + answer.length());
-            System.out.println(">>> - 图谱节点数: " + knowledgeGraph.size());
-            System.out.println(">>> - 主要主题: " + analysisResult.get("mainTopic"));
+            logger.info("问题处理完成: 回答长度={}, 新图谱节点数={}, 旧图谱节点数={}, 主要主题={}",
+                    answer.length(),
+                    knowledgeGraphData.getNodes() != null ? knowledgeGraphData.getNodes().size() : 0,
+                    legacyKnowledgeGraph.size(),
+                    extractMainTopic(question));
 
             return response;
 
         } catch (Exception e) {
-            System.out.println(">>> 问题处理失败: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("问题处理失败: {}", e.getMessage(), e);
             return getFallbackResponse(question);
         }
     }
 
     /**
-     * 分析问题提取知识点
+     * 构建旧格式的知识图谱（向后兼容）
      */
-    private Map<String, Object> analyzeQuestionForKnowledge(String question) {
-        Map<String, Object> result = new HashMap<>();
-
-        // 提取主要主题
-        String mainTopic = extractMainTopic(question);
-        result.put("mainTopic", mainTopic);
-
-        // 生成相关主题
-        List<String> relatedTopics = generateRelatedTopics(mainTopic);
-        result.put("relatedTopics", relatedTopics);
-
-        // 问题类型
-        result.put("questionType", classifyQuestion(question));
-
-        return result;
-    }
-
-    /**
-     * 构建知识图谱
-     */
-    private List<QAResponse.KnowledgeNode> buildKnowledgeGraph(Map<String, Object> analysisResult, String question) {
+    private List<QAResponse.KnowledgeNode> buildLegacyKnowledgeGraph(String question) {
         List<QAResponse.KnowledgeNode> graph = new ArrayList<>();
-        String mainTopic = (String) analysisResult.get("mainTopic");
+        String mainTopic = extractMainTopic(question);
 
-        System.out.println(">>> 构建知识图谱，主要主题: " + mainTopic);
+        logger.debug("构建旧格式知识图谱，主要主题: {}", mainTopic);
 
         // 创建主节点
-        QAResponse.KnowledgeNode mainNode = createMainNode(mainTopic, question);
+        QAResponse.KnowledgeNode mainNode = createMainNode(mainTopic);
         graph.add(mainNode);
 
         // 添加相关节点
-        List<String> relatedTopics = (List<String>) analysisResult.get("relatedTopics");
+        List<String> relatedTopics = generateRelatedTopics(mainTopic);
         for (String topic : relatedTopics) {
             QAResponse.KnowledgeNode relatedNode = createRelatedNode(topic);
             graph.add(relatedNode);
@@ -107,7 +101,7 @@ public class KnowledgeGraphService {
             QAResponse.KnowledgeLink link = new QAResponse.KnowledgeLink();
             link.setSource(mainNode.getId());
             link.setTarget(relatedNode.getId());
-            link.setRelation(generateRelationType(mainTopic, topic));
+            link.setRelation(generateRelationType(topic));
             link.setDescription(mainTopic + "与" + topic + "的关系");
 
             mainNode.getLinks().add(link);
@@ -116,18 +110,16 @@ public class KnowledgeGraphService {
         // 如果数据库中有相关知识点，也添加进来
         addDatabaseKnowledge(mainTopic, graph, mainNode);
 
-        System.out.println(">>> 知识图谱构建完成:");
-        System.out.println(">>> - 总节点数: " + graph.size());
-        System.out.println(">>> - 主节点链接数: " + mainNode.getLinks().size());
+        logger.debug("旧格式知识图谱构建完成: 总节点数={}, 主节点链接数={}", graph.size(), mainNode.getLinks().size());
 
         return graph;
     }
 
-    private QAResponse.KnowledgeNode createMainNode(String topic, String question) {
+    private QAResponse.KnowledgeNode createMainNode(String topic) {
         QAResponse.KnowledgeNode node = new QAResponse.KnowledgeNode();
-        node.setId("main_" + topic.hashCode()); // 使用主题的hashCode确保唯一性
+        node.setId("main_" + Math.abs(topic.hashCode()));
         node.setName(topic);
-        node.setDefinition(generateDefinition(topic, question));
+        node.setDefinition(generateDefinition(topic));
         node.setCategory(classifyCategory(topic));
         node.setLinks(new ArrayList<>());
         return node;
@@ -135,7 +127,7 @@ public class KnowledgeGraphService {
 
     private QAResponse.KnowledgeNode createRelatedNode(String topic) {
         QAResponse.KnowledgeNode node = new QAResponse.KnowledgeNode();
-        node.setId("related_" + topic.hashCode());
+        node.setId("related_" + Math.abs(topic.hashCode()));
         node.setName(topic);
         node.setDefinition(generateRelatedDefinition(topic));
         node.setCategory(classifyCategory(topic));
@@ -179,7 +171,7 @@ public class KnowledgeGraphService {
                 }
             }
         } catch (Exception e) {
-            System.out.println(">>> 数据库查询失败: " + e.getMessage());
+            logger.warn("数据库查询失败: {}", e.getMessage());
             // 忽略数据库错误，使用模拟数据继续
         }
     }
@@ -208,7 +200,7 @@ public class KnowledgeGraphService {
                 .trim();
 
         // 如果清理后还有内容，使用清理后的内容
-        if (!cleaned.isEmpty() && cleaned.length() > 1) {
+        if (!cleaned.isEmpty()) {
             return cleaned;
         }
 
@@ -234,14 +226,6 @@ public class KnowledgeGraphService {
                 Arrays.asList("基础概念", "核心原理", "应用场景", "相关技术", "最佳实践"));
     }
 
-    private String classifyQuestion(String question) {
-        if (question.contains("什么") || question.contains("什么是")) return "定义查询";
-        if (question.contains("区别") || question.contains("不同")) return "对比分析";
-        if (question.contains("原理") || question.contains("如何工作")) return "原理分析";
-        if (question.contains("例子") || question.contains("示例")) return "应用示例";
-        return "一般查询";
-    }
-
     private String classifyCategory(String topic) {
         if (topic.contains("树") || topic.contains("链表") || topic.contains("数组") || topic.contains("队列") || topic.contains("栈"))
             return "数据结构";
@@ -256,7 +240,7 @@ public class KnowledgeGraphService {
         return "计算机基础";
     }
 
-    private String generateDefinition(String topic, String question) {
+    private String generateDefinition(String topic) {
         Map<String, String> definitions = new HashMap<>();
         definitions.put("二叉树", "每个节点最多有两个子节点的树结构，是计算机科学中重要的数据结构");
         definitions.put("链表与数组", "两种基本数据结构，分别基于指针链接和连续内存存储");
@@ -277,7 +261,7 @@ public class KnowledgeGraphService {
         return "与主知识点相关的概念：" + topic + "，在" + classifyCategory(topic) + "中具有重要作用";
     }
 
-    private String generateRelationType(String source, String target) {
+    private String generateRelationType(String target) {
         if (target.contains("基础") || target.contains("概念")) return "基础知识";
         if (target.contains("应用") || target.contains("场景")) return "应用场景";
         if (target.contains("算法") || target.contains("实现")) return "实现方式";
@@ -286,9 +270,10 @@ public class KnowledgeGraphService {
         return "相关概念";
     }
 
-    private void saveQAHistory(String userId, String question, String answer, List<QAResponse.KnowledgeNode> graph) {
+    private void saveQAHistory(String userId, String question) {
         // 实现保存逻辑到数据库
-        System.out.println(">>> 保存问答历史 - 用户: " + userId + ", 问题: " + question);
+        logger.info("保存问答历史 - 用户: {}, 问题: {}", userId, question);
+        // 这里可以添加实际的数据库保存逻辑
     }
 
     private QAResponse getFallbackResponse(String question) {
@@ -296,7 +281,41 @@ public class KnowledgeGraphService {
         response.setSuccess(true);
         response.setAnswer("**" + question + "**\n\n关于这个问题，我目前无法提供详细解答。建议您：\n\n• 检查问题表述是否清晰\n• 尝试换一种方式提问\n• 联系系统管理员获取帮助");
         response.setKnowledgeGraph(new ArrayList<>());
+        response.setKnowledgeGraphData(createFallbackGraphData(question));
         response.setTimestamp(LocalDateTime.now().toString());
         return response;
+    }
+
+    /**
+     * 创建降级的图谱数据
+     */
+    private QAResponse.KnowledgeGraphData createFallbackGraphData(String question) {
+        QAResponse.KnowledgeGraphData graphData = new QAResponse.KnowledgeGraphData();
+
+        // 创建基础节点
+        QAResponse.GraphNode mainNode = new QAResponse.GraphNode();
+        mainNode.setId("fallback_main");
+        mainNode.setName(extractMainTopic(question));
+        mainNode.setCategory("计算机基础");
+        mainNode.setDefinition("知识图谱暂时无法生成");
+        mainNode.setSymbolSize(40);
+
+        Map<String, Object> mainStyle = new HashMap<>();
+        mainStyle.put("color", "#ff6b6b");
+        mainNode.setItemStyle(mainStyle);
+
+        List<QAResponse.GraphNode> nodes = new ArrayList<>();
+        nodes.add(mainNode);
+
+        graphData.setNodes(nodes);
+        graphData.setLinks(new ArrayList<>());
+
+        Map<String, Object> layout = new HashMap<>();
+        layout.put("type", "force");
+        layout.put("repulsion", 100);
+        layout.put("gravity", 0.1);
+        graphData.setLayout(layout);
+
+        return graphData;
     }
 }

@@ -2,12 +2,14 @@ com\digitalhorsepower\learnbuddy\service\ProgressService.class
 com\digitalhorsepower\learnbuddy\dto\QAResponse.class
 com\digitalhorsepower\learnbuddy\repository\KnowledgeRelationRepository.class
 com\digitalhorsepower\learnbuddy\controller\KnowledgeQAController.class
+com\digitalhorsepower\learnbuddy\dto\QAResponse$GraphNode.class
 com\digitalhorsepower\learnbuddy\service\UserService.class
 com\digitalhorsepower\learnbuddy\dto\QAResponse$KnowledgeNode.class
 com\digitalhorsepower\learnbuddy\dto\UserDto.class
 com\digitalhorsepower\learnbuddy\repository\KnowledgePointRepository.class
 com\digitalhorsepower\learnbuddy\service\DeepSeekService.class
 com\digitalhorsepower\learnbuddy\config\SimpleCorsFilter.class
+com\digitalhorsepower\learnbuddy\service\KnowledgeGraphBuilder.class
 com\digitalhorsepower\learnbuddy\dto\QAResponse$KnowledgeLink.class
 com\digitalhorsepower\learnbuddy\entity\LearningProgress.class
 com\digitalhorsepower\learnbuddy\controller\ProgressController.class
@@ -25,7 +27,9 @@ com\digitalhorsepower\learnbuddy\service\KnowledgeGraphService.class
 com\digitalhorsepower\learnbuddy\dto\PsychologyResponse.class
 com\digitalhorsepower\learnbuddy\config\WebConfig.class
 com\digitalhorsepower\learnbuddy\config\SwaggerConfig.class
+com\digitalhorsepower\learnbuddy\dto\QAResponse$KnowledgeGraphData.class
 com\digitalhorsepower\learnbuddy\entity\EmotionRecord.class
+com\digitalhorsepower\learnbuddy\dto\QAResponse$GraphLink.class
 com\digitalhorsepower\learnbuddy\repository\UserRepository.class
 com\digitalhorsepower\learnbuddy\service\StudyPlanService.class
 com\digitalhorsepower\learnbuddy\config\WebConfig$1.class
