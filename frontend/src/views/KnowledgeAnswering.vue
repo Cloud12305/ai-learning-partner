@@ -339,7 +339,7 @@ const initUserId = () => {
   }
 };
 
-// 提交问题
+// 提交问题 (修改：使用 knowledgeGraphData，新增 console.log 调试)
 const handleSubmit = async () => {
   const question = currentQuestion.value.trim();
   if (!question) return;
@@ -355,13 +355,12 @@ const handleSubmit = async () => {
       userId: userId.value
     });
 
-    console.log('✅ 收到API响应:', res);
+    console.log('✅ 收到API响应:', res);  // 调试：检查完整响应
 
     if (res.success) {
       console.log('📊 响应数据详情:');
-      console.log('- answer:', res.data?.answer?.substring(0, 200) + '...');
-      console.log('- knowledgeGraph:', res.data?.knowledgeGraph);
-      console.log('- timestamp:', res.data?.timestamp);
+      console.log('- answer:', res.data?.answer?.substring(0, 200) + '...');  // AI 数据
+      console.log('- knowledgeGraphData nodes:', res.data?.knowledgeGraphData?.nodes?.length || 0);  // 新图谱
 
       // 检查数据是否存在
       if (!res.data?.answer) {
@@ -370,21 +369,21 @@ const handleSubmit = async () => {
         return;
       }
 
-      // 添加到历史记录
+      // 添加到历史记录 (新增：保存 knowledgeGraphData 到历史，便于追问)
       const newQA = {
         question,
         answer: res.data.answer,
-        knowledgeGraph: res.data.knowledgeGraph || [],
+        knowledgeGraphData: res.data.knowledgeGraphData,  // 新增：保存新图谱
         timestamp: res.data.timestamp || new Date().toISOString()
       };
 
       qaHistory.value.unshift(newQA);
-      console.log('📝 已添加到历史记录:', newQA);
+      console.log('📝 已添加到历史记录');
 
-      // 更新知识图谱数据
-      if (res.data.knowledgeGraph && Array.isArray(res.data.knowledgeGraph)) {
-        currentGraphData.value = transformGraphData(res.data.knowledgeGraph);
-        console.log('🕸️ 转换后的图谱数据:', currentGraphData.value);
+      // 更新知识图谱数据：使用新格式，基于 AI answer
+      if (res.data.knowledgeGraphData && res.data.knowledgeGraphData.nodes && res.data.knowledgeGraphData.nodes.length > 0) {
+        currentGraphData.value = transformNewGraphData(res.data.knowledgeGraphData);  // 修改：用新转换函数
+        console.log('🕸️ 转换后的图谱数据 (基于AI answer):', currentGraphData.value);
       } else {
         console.warn('⚠️ 知识图谱数据为空');
         currentGraphData.value = { nodes: [], links: [] };
@@ -396,20 +395,19 @@ const handleSubmit = async () => {
       // 渲染知识图谱
       await nextTick();
       if (currentGraphData.value.nodes.length > 0) {
-        console.log('🎨 开始渲染知识图谱');
+        console.log('🎨 开始渲染知识图谱 (基于AI数据)');
         renderKnowledgeGraph();
       } else {
         console.warn('⚠️ 没有图谱数据可渲染');
       }
 
-      message.success('问题分析完成！');
+      message.success('问题分析完成！知识图谱已基于AI回答生成。');
     } else {
       console.error('❌ API返回失败:', res.msg);
       message.error(res.msg || '问答服务暂时不可用');
     }
   } catch (err) {
     console.error('💥 请求错误:', err);
-    console.error('错误详情:', err.response?.data);
     message.error(err.response?.data?.msg || '问答请求失败，请重试');
   } finally {
     isLoading.value = false;
@@ -417,61 +415,72 @@ const handleSubmit = async () => {
   }
 };
 
-// 转换图谱数据格式
-const transformGraphData = (knowledgeGraph) => {
-  console.log('🔄 转换图谱数据，原始数据:', knowledgeGraph);
+// 新转换函数：将 KnowledgeGraphData 转为 D3 格式 {nodes, links} (新增)
+const transformNewGraphData = (graphData) => {
+  console.log('🔄 转换新图谱数据，原始:', graphData);
 
-  if (!knowledgeGraph || knowledgeGraph.length === 0) {
-    console.log('❌ 图谱数据为空');
+  if (!graphData || !graphData.nodes || graphData.nodes.length === 0) {
+    console.log('❌ 新图谱数据为空');
     return { nodes: [], links: [] };
   }
 
   const nodes = [];
   const links = [];
-  const nodeMap = new Map();
+  const nodeMap = new Map();  // id -> node
 
-  // 首先收集所有节点
-  knowledgeGraph.forEach((node, index) => {
-    console.log(`📌 处理节点 ${index}:`, node);
-
-    if (node && !nodeMap.has(node.id)) {
+  // 1. 构建 nodes：提取字段，推导 group/color/radius
+  graphData.nodes.forEach((nodeData, index) => {
+    if (nodeData && !nodeMap.has(nodeData.id)) {
       const transformedNode = {
-        id: node.id || `node_${index}`,
-        name: node.name || '未命名节点',
-        definition: node.definition || '暂无定义',
-        category: node.category || '未知分类',
-        group: getNodeGroup(node.category),
-        links: node.links || []
+        id: nodeData.id || `node_${index}`,
+        name: nodeData.name || '未命名节点',
+        definition: nodeData.definition || '暂无定义',
+        category: nodeData.category || '未知分类',
+        group: getNodeGroup(nodeData.category),  // 复用旧 group 逻辑
+        color: (nodeData.itemStyle && nodeData.itemStyle.color) || getDefaultColor(nodeData.category),  // 从 itemStyle 取色
+        radius: (nodeData.symbolSize || 20) / 3,  // symbolSize 转为 D3 r (调整比例)
+        links: []  // 本地 links，不用于全局
       };
       nodes.push(transformedNode);
-      nodeMap.set(node.id, transformedNode);
-      console.log(`✅ 添加节点: ${transformedNode.name}`);
+      nodeMap.set(nodeData.id, transformedNode);
+      console.log(`✅ 添加节点: ${transformedNode.name}, color: ${transformedNode.color}, radius: ${transformedNode.radius}`);
     }
   });
 
-  // 然后收集所有链接
-  knowledgeGraph.forEach(node => {
-    if (node && node.links && Array.isArray(node.links)) {
-      node.links.forEach((link) => {
-        if (link && link.source && link.target) {
+  // 2. 构建 links：直接从 graphData.links
+  if (graphData.links && Array.isArray(graphData.links)) {
+    graphData.links.forEach((linkData) => {
+      if (linkData && linkData.source && linkData.target) {
+        const sourceNode = nodeMap.get(linkData.source);
+        const targetNode = nodeMap.get(linkData.target);
+        if (sourceNode && targetNode) {  // 确保节点存在
           links.push({
-            source: link.source,
-            target: link.target,
-            relation: link.relation || '相关',
-            description: link.description || ''
+            source: linkData.source,  // id 字符串
+            target: linkData.target,
+            relation: linkData.relation || '相关',
+            description: linkData.description || ''
           });
-          console.log(`🔗 添加链接: ${link.source} -> ${link.target}`);
+          console.log(`🔗 添加链接: ${linkData.source} -> ${linkData.target}`);
         }
-      });
-    }
-  });
+      }
+    });
+  }
 
-  console.log('📈 转换完成:');
-  console.log('- 节点数:', nodes.length);
-  console.log('- 链接数:', links.length);
-  console.log('- 节点列表:', nodes.map(n => n.name));
-
+  console.log('📈 新图谱转换完成: 节点数=', nodes.length, ', 链接数=', links.length);
   return { nodes, links };
+};
+
+// 辅助：默认颜色 (新增，fallback)
+const getDefaultColor = (category) => {
+  const colors = {
+    '数据结构': '#3B82F6',
+    '算法': '#10B981',
+    '编程语言': '#8B5CF6',
+    '计算机网络': '#F59E0B',
+    '数据库': '#EF4444',
+    '计算机基础': '#6B7280'
+  };
+  return colors[category] || '#6B7280';
 };
 
 // 获取节点分组
@@ -499,11 +508,11 @@ const getCategoryColor = (category) => {
   return colors[category] || 'gray';
 };
 
-// 渲染知识图谱
+// 渲染知识图谱 (修改：使用 color/radius，适配新数据)
 const renderKnowledgeGraph = () => {
   if (!graphSvg.value || currentGraphData.value.nodes.length === 0) return;
 
-  console.log('🎨 开始渲染知识图谱');
+  console.log('🎨 开始渲染知识图谱 (新格式)');
 
   // 清除之前的图谱
   d3.select(graphSvg.value).selectAll('*').remove();
@@ -547,16 +556,13 @@ const renderKnowledgeGraph = () => {
       .attr('stroke-width', 2)
       .attr('marker-end', 'url(#arrow)');
 
-  // 创建节点
+  // 创建节点 (修改：r 从 radius，fill 从 color)
   const node = svg.append('g')
       .selectAll('circle')
       .data(currentGraphData.value.nodes)
       .enter().append('circle')
-      .attr('r', d => d.group === 1 ? 10 : 8)
-      .attr('fill', d => {
-        const colors = { 1: '#3B82F6', 2: '#10B981', 3: '#8B5CF6', 4: '#F59E0B', 0: '#6B7280' };
-        return colors[d.group] || '#6B7280';
-      })
+      .attr('r', d => d.radius)  // 修改：用 radius
+      .attr('fill', d => d.color)  // 修改：用 color (从 AI itemStyle)
       .attr('stroke', '#fff')
       .attr('stroke-width', 2)
       .call(d3.drag()
@@ -564,7 +570,8 @@ const renderKnowledgeGraph = () => {
           .on('drag', dragged)
           .on('end', dragended))
       .on('click', (event, d) => {
-        selectedNode.value = d;
+        selectedNode.value = d;  // 选中节点，用于详情
+        console.log('🔍 选中节点:', d);
       });
 
   // 添加节点标签
@@ -578,7 +585,7 @@ const renderKnowledgeGraph = () => {
       .attr('dy', 4)
       .attr('fill', '#374151');
 
-  // 更新位置
+  // 更新位置 (修改：collision 用 radius)
   simulation.on('tick', () => {
     link
         .attr('x1', d => d.source.x)
@@ -612,15 +619,17 @@ const renderKnowledgeGraph = () => {
     d.fy = null;
   }
 
-  console.log('✅ 知识图谱渲染完成');
+  console.log('✅ 知识图谱渲染完成 (基于AI数据)');
 };
 
-// 追问功能
+// 追问功能 (微调：用 answer 提取主题)
 const handleFollowUp = (item) => {
-  currentQuestion.value = `关于「${getMainTopic(item.answer)}」的更多问题？`;
+  const mainTopic = extractMainTopicFromAnswer(item.answer);
+  currentQuestion.value = `关于「${mainTopic}」的更多细节？`;
 };
 
-const getMainTopic = (answer) => {
+// 新增：从 answer 提取主主题 (用于追问)
+const extractMainTopicFromAnswer = (answer) => {
   const match = answer.match(/\*\*(.*?)\*\*/);
   return match ? match[1] : '这个知识点';
 };

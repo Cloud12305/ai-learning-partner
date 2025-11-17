@@ -53,7 +53,7 @@ import { message,  } from 'ant-design-vue';
 // Create axios instance
 const request = axios.create({
     baseURL: 'http://localhost:8080',   // ⬅️ only host + port
-    timeout: 30000,
+    timeout: 90000,
     headers: {
         'Content-Type': 'application/json;charset=utf-8'
     }
