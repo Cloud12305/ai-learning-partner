@@ -94,4 +94,54 @@ public class DeepSeekService {
                 "encouragement", "我理解你现在可能需要倾诉。虽然暂时无法提供详细分析，但请记得：学习中的困难都是暂时的，保持耐心，给自己一些时间。如果需要，可以尝试深呼吸放松一下。"
         );
     }
+
+    // 在DeepSeekService中添加方法
+    public Map<String, Object> analyzeKnowledgeQuestion(String question, String contextKp) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", "Bearer " + apiKey);
+
+            String systemPrompt = "你是一个专业知识分析助手，请分析用户问题并提取以下信息：\n" +
+                    "1. 主要知识点/主题\n" +
+                    "2. 相关子知识点\n" +
+                    "3. 知识点之间的关系类型\n" +
+                    "4. 问题的类型（定义查询、对比分析、应用示例等）\n\n" +
+                    "请用JSON格式返回：{\"mainTopic\": \"主要主题\", \"relatedTopics\": [\"相关主题1\", \"相关主题2\"], \"questionType\": \"问题类型\"}";
+
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("model", "deepseek-chat");
+            requestBody.put("temperature", 0.3);
+            requestBody.put("max_tokens", 500);
+
+            List<Map<String, String>> messages = new ArrayList<>();
+            messages.add(Map.of("role", "system", "content", systemPrompt));
+
+            String userContent = "用户问题：" + question;
+            if (contextKp != null && !contextKp.isEmpty()) {
+                userContent += "\n上下文知识点：" + contextKp;
+            }
+            messages.add(Map.of("role", "user", "content", userContent));
+
+            requestBody.put("messages", messages);
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+            ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.POST, entity, String.class);
+
+            JsonNode root = objectMapper.readTree(response.getBody());
+            String aiResponse = root.path("choices").get(0).path("message").path("content").asText();
+
+            // 解析JSON响应
+            return objectMapper.readValue(aiResponse, Map.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Map.of(
+                    "mainTopic", "未知主题",
+                    "relatedTopics", List.of(),
+                    "questionType", "未知类型"
+            );
+        }
+    }
+
 }

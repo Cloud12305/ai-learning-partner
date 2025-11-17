@@ -1,100 +1,299 @@
 <template>
-  <div class="knowledge-answering-page">
-    <!-- 页面头部（与项目风格统一） -->
+  <div class="knowledge-qa-page">
+    <!-- 页面头部 -->
     <div class="page-header">
       <div class="container mx-auto px-4 py-16 md:py-24">
         <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-center mb-4">AI知识答疑</h1>
         <p class="text-gray-600 text-center max-w-2xl mx-auto">
-          遇到学习疑问？向AI提问吧！支持知识点查询、例题解析，还能追问关联内容～
+          遇到学习疑问？向AI提问吧！支持知识点查询、例题解析，还能生成知识图谱～
         </p>
       </div>
     </div>
 
-    <!-- 核心问答区 -->
-    <main class="container mx-auto px-4 py-12">
-      <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-        <!-- 问答历史 -->
-        <div class="qa-history mb-8" v-if="qaHistory.length > 0">
-          <h2 class="text-xl font-semibold mb-4">问答记录</h2>
-          <div
-              class="qa-item border-b border-gray-100 pb-6 mb-6 last:border-0 last:mb-0 last:pb-0"
-              v-for="(item, idx) in qaHistory"
-              :key="idx"
-          >
-            <!-- 用户问题 -->
-            <div class="flex items-start mb-4">
-              <div class="user-avatar w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
-                <i class="fa fa-user"></i>
+    <!-- 核心内容区：左右分栏布局 -->
+    <main class="container mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
+        <!-- 左侧：问答区域 -->
+        <div class="space-y-6">
+          <!-- 提问卡片 -->
+          <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
+                <span class="text-white text-sm font-bold">❓</span>
               </div>
-              <div class="user-question bg-gray-50 p-4 rounded-lg flex-1">
-                {{ item.question }}
-              </div>
+              <h2 class="text-2xl font-bold text-gray-800">提问AI</h2>
             </div>
-            <!-- AI回答 -->
-            <div class="flex items-start ml-11">
-              <div class="ai-avatar w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-3">
-                <i class="fa fa-robot"></i>
-              </div>
-              <div class="ai-answer bg-green-50 p-4 rounded-lg flex-1">
-                <!-- 结构化答案（定义+例题） -->
-                <div v-if="item.answer[0]?.kpName">
-                  <p class="mb-2"><strong class="text-green-700">知识点：</strong>{{ item.answer[0].kpName }}</p>
-                  <p class="mb-2 text-gray-700">{{ item.answer[0].definition }}</p>
-                  <!-- 例题（如有） -->
-                  <div v-if="item.answer[0].exampleTitle" class="mt-4 pt-4 border-t border-gray-200">
-                    <p class="mb-1"><strong class="text-green-700">例题：</strong>{{ item.answer[0].exampleTitle }}</p>
-                    <p class="mb-2 text-sm text-gray-600">{{ item.answer[0].exampleContent }}</p>
-                    <p class="text-sm text-gray-700"><strong>解析：</strong>{{ item.answer[0].exampleSolution }}</p>
-                  </div>
-                  <!-- 追问按钮 -->
-                  <button
-                      class="mt-4 text-primary text-sm hover:underline"
-                      @click="handleFollowUp(item.answer[0].kpName)"
-                  >
-                    追问关于「{{ item.answer[0].kpName }}」的问题
-                  </button>
-                </div>
-                <!-- 追问结果（知识点对比） -->
-                <div v-else-if="item.answer[0]?.kp1Name">
-                  <p class="mb-2"><strong class="text-green-700">关系类型：</strong>{{ item.answer[0].relationType }}</p>
-                  <p class="mb-2 text-gray-700"><strong>{{ item.answer[0].kp1Name }}：</strong>{{ item.answer[0].kp1Def }}</p>
-                  <p class="text-gray-700"><strong>{{ item.answer[0].kp2Name }}：</strong>{{ item.answer[0].kp2Def }}</p>
-                </div>
-                <!-- 无结果提示 -->
-                <div v-else class="text-red-500">
-                  {{ item.answer.error || "未找到相关知识点，请尝试重新表述问题（如“什么是二叉树？”）" }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- 问题输入区 -->
-        <div class="qa-input-container">
-          <h2 class="text-xl font-semibold mb-4">提问AI</h2>
-          <div class="flex flex-col md:flex-row gap-4">
             <a-textarea
                 v-model:value="currentQuestion"
-                placeholder="请输入你的学习疑问（如“什么是链表？”“二叉树和链表的区别？”）"
-                rows="3"
-                class="flex-1"
-                @keyup.enter="handleSubmit"
+                placeholder="比如：什么是二叉树？&#10;或者：比较一下链表和数组的区别？&#10;或者：解释一下快速排序算法？"
+                rows="4"
+                @keydown.enter.prevent="handleSubmit"
                 :disabled="isLoading"
-            />
+                class="custom-textarea mb-6"
+            ></a-textarea>
+
             <a-button
                 type="primary"
+                block
                 size="large"
                 @click="handleSubmit"
                 :disabled="!currentQuestion.trim() || isLoading"
                 :loading="isLoading"
-                class="md:w-40"
+                class="send-button h-12 text-lg font-semibold"
             >
-              提交提问
+              <template #loading>
+                <span class="flex items-center">
+                  <a-spin size="small" class="mr-2" />
+                  分析中...
+                </span>
+              </template>
+              <span v-if="!isLoading">
+                <i class="fas fa-paper-plane mr-2"></i>
+                提交提问
+              </span>
             </a-button>
+
+            <p class="text-xs text-gray-500 mt-4 text-center flex items-center justify-center">
+              <i class="fas fa-lightbulb mr-1"></i>
+              支持编程、算法、数据结构、计算机基础等知识点查询
+            </p>
           </div>
-          <p class="text-xs text-gray-500 mt-2">
-            提示：支持查询数据结构、编程语言、专业课程等知识点，可追问关联内容
-          </p>
+
+          <!-- 问答历史 -->
+          <div class="space-y-4" v-if="qaHistory.length > 0">
+            <div
+                class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200"
+                v-for="(item, index) in qaHistory"
+                :key="index"
+            >
+              <!-- 用户问题 -->
+              <div class="flex items-start mb-4">
+                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                  <i class="fas fa-user text-white text-xs"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="user-question-content text-gray-700 text-base leading-relaxed p-4 bg-blue-50 rounded-xl border border-blue-100">
+                    {{ item.question }}
+                  </div>
+                  <div class="flex justify-end mt-2">
+                    <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                      {{ formatTime(item.timestamp) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI回答 -->
+              <div class="flex items-start mt-4">
+                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                  <i class="fas fa-robot text-white text-xs"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="ai-answer-content text-gray-800 text-base leading-relaxed p-4 bg-green-50 rounded-xl border border-green-100">
+                    <div v-html="formatAnswer(item.answer)"></div>
+
+                    <!-- 追问按钮 -->
+                    <div class="mt-4 pt-4 border-t border-green-200">
+                      <a-button
+                          type="link"
+                          size="small"
+                          @click="handleFollowUp(item)"
+                          class="text-green-600 hover:text-green-700"
+                      >
+                        <i class="fas fa-comment-dots mr-1"></i>
+                        追问相关问题
+                      </a-button>
+
+                      <a-button
+                          type="link"
+                          size="small"
+                          @click="copyToClipboard(item.answer)"
+                          class="text-green-600 hover:text-green-700 ml-4"
+                      >
+                        <i class="fas fa-copy mr-1"></i>
+                        复制答案
+                      </a-button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 空状态 -->
+          <div
+              v-if="qaHistory.length === 0"
+              class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-8 text-center border border-gray-200"
+          >
+            <div class="text-6xl mb-4">🤔</div>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">开始你的知识探索</h3>
+            <p class="text-gray-500 mb-4">在这里提问，AI会为你详细解答并生成知识图谱</p>
+            <div class="text-sm text-gray-600 text-left bg-white p-4 rounded-lg">
+              <p class="font-semibold mb-2">试试这些问题：</p>
+              <ul class="space-y-1">
+                <li>• 什么是二叉树？</li>
+                <li>• 比较一下链表和数组的区别</li>
+                <li>• 解释一下快速排序算法</li>
+                <li>• 什么是面向对象编程？</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：知识图谱区域 -->
+        <div class="space-y-6">
+          <!-- 知识图谱卡片 -->
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center">
+                <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mr-3">
+                  <span class="text-white text-sm font-bold">🌐</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">知识图谱</h2>
+              </div>
+              <div class="flex space-x-2">
+                <a-button
+                    v-if="currentGraphData.nodes.length > 0"
+                    type="link"
+                    size="small"
+                    @click="exportGraph"
+                    class="text-purple-600"
+                >
+                  <i class="fas fa-download mr-1"></i>
+                  导出
+                </a-button>
+                <a-button
+                    v-if="currentGraphData.nodes.length > 0"
+                    type="link"
+                    size="small"
+                    @click="toggleGraphLayout"
+                    class="text-purple-600"
+                >
+                  <i class="fas fa-sync mr-1"></i>
+                  切换布局
+                </a-button>
+              </div>
+            </div>
+
+            <!-- 知识图谱容器 -->
+            <div
+                ref="graphContainer"
+                class="knowledge-graph-container bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 min-h-[500px] relative"
+            >
+              <!-- 图谱可视化区域 -->
+              <div
+                  v-if="currentGraphData.nodes.length > 0"
+                  ref="graphSvg"
+                  class="w-full h-full"
+              ></div>
+
+              <!-- 空状态 -->
+              <div
+                  v-else
+                  class="absolute inset-0 flex flex-col items-center justify-center text-gray-400"
+              >
+                <i class="fas fa-project-diagram text-6xl mb-4"></i>
+                <p class="text-lg">提问后将会生成知识图谱</p>
+                <p class="text-sm mt-2">可视化展示知识点之间的关系</p>
+              </div>
+
+              <!-- 加载状态 -->
+              <div
+                  v-if="isGeneratingGraph"
+                  class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 rounded-xl"
+              >
+                <div class="text-center">
+                  <a-spin size="large" />
+                  <p class="mt-2 text-gray-600">正在生成知识图谱...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 图例 -->
+            <div v-if="currentGraphData.nodes.length > 0" class="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h4 class="text-sm font-semibold text-gray-700 mb-2">图例说明：</h4>
+              <div class="flex flex-wrap gap-4 text-xs">
+                <div class="flex items-center">
+                  <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                  <span>核心知识点</span>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                  <span>相关知识点</span>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
+                  <span>基础概念</span>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-3 h-3 bg-orange-500 rounded-full mr-2"></div>
+                  <span>应用实例</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 知识点详情 -->
+          <div
+              v-if="selectedNode"
+              class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200"
+          >
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+              知识点详情
+            </h3>
+            <div class="space-y-3">
+              <div>
+                <label class="text-sm font-medium text-gray-600">知识点名称：</label>
+                <p class="text-base text-gray-800 font-semibold">{{ selectedNode.name }}</p>
+              </div>
+              <div>
+                <label class="text-sm font-medium text-gray-600">定义：</label>
+                <p class="text-base text-gray-700">{{ selectedNode.definition }}</p>
+              </div>
+              <div v-if="selectedNode.category">
+                <label class="text-sm font-medium text-gray-600">分类：</label>
+                <a-tag :color="getCategoryColor(selectedNode.category)" class="ml-2">
+                  {{ selectedNode.category }}
+                </a-tag>
+              </div>
+              <div v-if="selectedNode.links && selectedNode.links.length > 0">
+                <label class="text-sm font-medium text-gray-600">相关关系：</label>
+                <div class="mt-2 space-y-1">
+                  <div
+                      v-for="(link, index) in selectedNode.links"
+                      :key="index"
+                      class="text-sm text-gray-600 bg-gray-50 p-2 rounded"
+                  >
+                    <span class="font-medium">{{ getNodeName(link.target) }}</span>
+                    <a-tag color="blue" size="small" class="ml-2">
+                      {{ link.relation }}
+                    </a-tag>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 快捷提问 -->
+          <div class="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl shadow-lg p-6 border border-orange-200">
+            <h3 class="text-lg font-semibold text-orange-800 mb-3 flex items-center">
+              <i class="fas fa-bolt mr-2"></i>
+              快捷提问
+            </h3>
+            <div class="grid grid-cols-2 gap-2">
+              <a-button
+                  v-for="(quickQuestion, index) in quickQuestions"
+                  :key="index"
+                  size="small"
+                  @click="currentQuestion = quickQuestion"
+                  class="text-xs h-8"
+              >
+                {{ quickQuestion }}
+              </a-button>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -102,87 +301,351 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { message } from 'ant-design-vue';
 import request from '@/utils/request';
-// 状态管理
-const currentQuestion = ref(''); // 当前输入问题
-const qaHistory = ref([]); // 问答历史
-const isLoading = ref(false); // 加载状态
-const followUpContext = ref(''); // 追问上下文（上一轮知识点）
-const userId = ref(''); // 用户ID（从登录态获取）
+import * as d3 from 'd3';
 
-// 初始化：获取用户ID（登录态/游客ID）
+// 状态管理
+const currentQuestion = ref('');
+const qaHistory = ref([]);
+const isLoading = ref(false);
+const isGeneratingGraph = ref(false);
+const currentGraphData = ref({ nodes: [], links: [] });
+const selectedNode = ref(null);
+const graphContainer = ref(null);
+const graphSvg = ref(null);
+
+// 快捷问题示例
+const quickQuestions = ref([
+  '什么是二叉树？',
+  '链表和数组的区别',
+  '快速排序原理',
+  '面向对象特性',
+  'TCP和UDP区别',
+  '数据库索引原理'
+]);
+
+// 初始化用户ID
+const userId = ref('');
 const initUserId = () => {
   const userInfo = localStorage.getItem('user');
   if (userInfo) {
     const user = JSON.parse(userInfo);
-    userId.value = user.id; // 登录用户：从localStorage获取ID
+    userId.value = user.id;
   } else {
-    // 未登录：生成临时游客ID
     userId.value = `guest_${Date.now()}`;
-    message.warning("未登录，将以游客身份使用答疑功能，登录后可保存问答记录");
+    message.warning("未登录，将以游客身份使用答疑功能");
   }
 };
 
-// 提交问题到后端
+// 提交问题
 const handleSubmit = async () => {
   const question = currentQuestion.value.trim();
   if (!question) return;
 
   try {
     isLoading.value = true;
-    // 调用后端问答API（与之前弹窗逻辑一致）
-    const res = await request.get('/api/qa', {
-      params: {
-        question,
-        user_id: userId.value,
-        context_kp: followUpContext.value || undefined // 携带追问上下文
-      }
-    });
+    isGeneratingGraph.value = true;
 
-    // 新增问答记录到历史
-    qaHistory.value.push({
+    const res = await request.post('/api/knowledge/qa', {
       question,
-      answer: res.data.answer
+      userId: userId.value
     });
 
-    // 更新追问上下文（供下一轮使用）
-    followUpContext.value = res.data.last_context_kp || '';
+    if (res.success) {
+      // 添加到历史记录
+      qaHistory.value.unshift({
+        question,
+        answer: res.data.answer,
+        knowledgeGraph: res.data.knowledgeGraph,
+        timestamp: res.data.timestamp
+      });
 
-    // 清空输入框
-    currentQuestion.value = '';
+      // 更新知识图谱数据
+      currentGraphData.value = transformGraphData(res.data.knowledgeGraph);
 
-    // 滚动到最新问答记录（优化体验）
-    setTimeout(() => {
-      const lastItem = document.querySelector('.qa-item:last-child');
-      if (lastItem) {
-        lastItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }
-    }, 100);
+      // 清空输入框
+      currentQuestion.value = '';
+
+      // 渲染知识图谱
+      await nextTick();
+      renderKnowledgeGraph();
+
+      message.success('问题分析完成！');
+    } else {
+      message.error(res.msg || '问答服务暂时不可用');
+    }
   } catch (err) {
-    message.error(err.response?.data?.msg || "问答请求失败，请稍后重试");
+    console.error('[knowledge-qa] 请求错误:', err);
+    message.error(err.response?.data?.msg || '问答请求失败，请重试');
   } finally {
     isLoading.value = false;
+    isGeneratingGraph.value = false;
   }
 };
 
-// 处理追问：自动填充上一轮知识点
-const handleFollowUp = (kpName) => {
-  followUpContext.value = kpName;
-  currentQuestion.value = `关于「${kpName}」的更多问题？`;
-  // 聚焦输入框
-  document.querySelector('.qa-input-container textarea').focus();
+// 转换图谱数据格式
+const transformGraphData = (knowledgeGraph) => {
+  if (!knowledgeGraph || knowledgeGraph.length === 0) {
+    return { nodes: [], links: [] };
+  }
+
+  const nodes = [];
+  const links = [];
+
+  knowledgeGraph.forEach(node => {
+    // 添加节点
+    nodes.push({
+      id: node.id,
+      name: node.name,
+      definition: node.definition,
+      category: node.category,
+      group: getNodeGroup(node.category),
+      links: node.links || []
+    });
+
+    // 添加链接
+    if (node.links) {
+      node.links.forEach(link => {
+        links.push({
+          source: link.source,
+          target: link.target,
+          relation: link.relation,
+          description: link.description
+        });
+      });
+    }
+  });
+
+  return { nodes, links };
 };
 
-// 页面加载时初始化用户ID
-initUserId();
+// 获取节点分组
+const getNodeGroup = (category) => {
+  const groups = {
+    '数据结构': 1,
+    '算法': 2,
+    '编程语言': 3,
+    '计算机网络': 4,
+    '数据库': 5
+  };
+  return groups[category] || 0;
+};
+
+// 获取分类颜色
+const getCategoryColor = (category) => {
+  const colors = {
+    '数据结构': 'blue',
+    '算法': 'green',
+    '编程语言': 'purple',
+    '计算机网络': 'orange',
+    '数据库': 'red'
+  };
+  return colors[category] || 'gray';
+};
+
+// 渲染知识图谱
+const renderKnowledgeGraph = () => {
+  if (!graphSvg.value || currentGraphData.value.nodes.length === 0) return;
+
+  // 清除之前的图谱
+  d3.select(graphSvg.value).selectAll('*').remove();
+
+  const width = graphContainer.value.clientWidth;
+  const height = graphContainer.value.clientHeight;
+
+  const svg = d3.select(graphSvg.value)
+      .attr('width', width)
+      .attr('height', height);
+
+  // 创建力导向图
+  const simulation = d3.forceSimulation(currentGraphData.value.nodes)
+      .force('link', d3.forceLink(currentGraphData.value.links).id(d => d.id).distance(100))
+      .force('charge', d3.forceManyBody().strength(-300))
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('collision', d3.forceCollide().radius(50));
+
+  // 创建箭头
+  svg.append('defs').selectAll('marker')
+      .data(['arrow'])
+      .enter().append('marker')
+      .attr('id', d => d)
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 15)
+      .attr('refY', -0.5)
+      .attr('markerWidth', 6)
+      .attr('markerHeight', 6)
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'M0,-5L10,0L0,5')
+      .attr('fill', '#999');
+
+  // 创建链接
+  const link = svg.append('g')
+      .selectAll('line')
+      .data(currentGraphData.value.links)
+      .enter().append('line')
+      .attr('stroke', '#999')
+      .attr('stroke-opacity', 0.6)
+      .attr('stroke-width', 2)
+      .attr('marker-end', 'url(#arrow)');
+
+  // 创建节点
+  const node = svg.append('g')
+      .selectAll('circle')
+      .data(currentGraphData.value.nodes)
+      .enter().append('circle')
+      .attr('r', d => d.group === 1 ? 10 : 8)
+      .attr('fill', d => {
+        const colors = { 1: '#3B82F6', 2: '#10B981', 3: '#8B5CF6', 4: '#F59E0B', 0: '#6B7280' };
+        return colors[d.group] || '#6B7280';
+      })
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 2)
+      .call(d3.drag()
+          .on('start', dragstarted)
+          .on('drag', dragged)
+          .on('end', dragended))
+      .on('click', (event, d) => {
+        selectedNode.value = d;
+      });
+
+  // 添加节点标签
+  const label = svg.append('g')
+      .selectAll('text')
+      .data(currentGraphData.value.nodes)
+      .enter().append('text')
+      .text(d => d.name)
+      .attr('font-size', 12)
+      .attr('dx', 15)
+      .attr('dy', 4)
+      .attr('fill', '#374151');
+
+  // 更新位置
+  simulation.on('tick', () => {
+    link
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y);
+
+    node
+        .attr('cx', d => d.x)
+        .attr('cy', d => d.y);
+
+    label
+        .attr('x', d => d.x)
+        .attr('y', d => d.y);
+  });
+
+  function dragstarted(event, d) {
+    if (!event.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+  }
+
+  function dragged(event, d) {
+    d.fx = event.x;
+    d.fy = event.y;
+  }
+
+  function dragended(event, d) {
+    if (!event.active) simulation.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
+  }
+};
+
+// 追问功能
+const handleFollowUp = (item) => {
+  currentQuestion.value = `关于「${getMainTopic(item.answer)}」的更多问题？`;
+};
+
+const getMainTopic = (answer) => {
+  const match = answer.match(/\*\*(.*?)\*\*/);
+  return match ? match[1] : '这个知识点';
+};
+
+// 切换图谱布局
+const toggleGraphLayout = () => {
+  // 重新渲染图谱（可以在这里实现不同的布局算法）
+  renderKnowledgeGraph();
+  message.info('已切换图谱布局');
+};
+
+// 导出图谱
+const exportGraph = () => {
+  const svgElement = graphSvg.value;
+  const serializer = new XMLSerializer();
+  const source = serializer.serializeToString(svgElement);
+  const blob = new Blob([source], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'knowledge-graph.svg';
+  link.click();
+
+  URL.revokeObjectURL(url);
+  message.success('知识图谱已导出');
+};
+
+// 格式化答案
+const formatAnswer = (answer) => {
+  if (!answer) return '';
+  return answer.replace(/\*\*(.*?)\*\*/g, '<strong class="text-green-700">$1</strong>')
+      .replace(/\n/g, '<br>');
+};
+
+// 格式化时间
+const formatTime = (timestamp) => {
+  if (!timestamp) return '刚刚';
+  return new Date(timestamp).toLocaleTimeString('zh-CN', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+// 获取节点名称
+const getNodeName = (nodeId) => {
+  const node = currentGraphData.value.nodes.find(n => n.id === nodeId);
+  return node ? node.name : nodeId;
+};
+
+// 复制到剪贴板
+const copyToClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    message.success('已复制到剪贴板');
+  } catch (err) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    message.success('已复制到剪贴板');
+  }
+};
+
+// 响应式调整
+const handleResize = () => {
+  if (currentGraphData.value.nodes.length > 0) {
+    renderKnowledgeGraph();
+  }
+};
+
+onMounted(() => {
+  initUserId();
+  window.addEventListener('resize', handleResize);
+});
 </script>
 
 <style scoped>
-.knowledge-answering-page {
-  padding-top: 80px; /* 与导航栏高度匹配，避免遮挡 */
-  background-color: #fafafa;
+.knowledge-qa-page {
+  padding-top: 80px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   min-height: calc(100vh - 80px);
 }
 
@@ -190,25 +653,99 @@ initUserId();
   background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
 }
 
-.qa-history {
-  max-height: 600px;
-  overflow-y: auto;
-  padding-right: 8px;
+.page-header h1 {
+  color: #000000;
 }
 
-.qa-item {
-  animation: fadeIn 0.3s ease-in-out;
+/* 自定义文本区域样式 */
+.custom-textarea {
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  line-height: 1.6;
+  resize: none;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.custom-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.qa-input-container {
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+/* 发送按钮样式 */
+.send-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.send-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
+}
+
+.send-button:disabled {
+  background: #e6f7ff;
+  border-color: #7C3AED;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 知识图谱容器样式 */
+.knowledge-graph-container {
+  position: relative;
+}
+
+/* 动画效果 */
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.slide-up-enter-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 响应式调整 */
+@media (max-width: 1024px) {
+  .grid-cols-1.lg\:grid-cols-2 {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .knowledge-qa-page {
+    padding-top: 60px;
+    min-height: calc(100vh - 60px);
+  }
+
+  .page-header {
+    padding: 3rem 1rem;
+  }
+
+  main {
+    padding: 1rem;
+  }
+}
+
+/* 确保图标正确显示 */
+:deep(.fas),
+:deep(.far),
+:deep(.fab) {
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+}
+
+:deep(.far) {
+  font-weight: 400;
 }
 </style>
+
+<!-- 在 public/index.html 中添加依赖 -->
+<!--
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+-->
