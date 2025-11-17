@@ -1,13 +1,19 @@
 package com.digitalhorsepower.learnbuddy.entity;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+
+import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -79,6 +85,33 @@ public class User {
     @Column(name = "update_time")
     private LocalDateTime updateTime;
 
+    @Transient
+    private String role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private UserRole userRole;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<AcademicRecord> academicRecords;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<LabAttendance> labAttendances;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<LibraryRecord> libraryRecords;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<StudyPlan> studyPlans;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<LearningProgress> learningProgresses;
+
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
@@ -102,5 +135,27 @@ public class User {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
         this.updateTime = LocalDateTime.now();
+    }
+
+    public String getRole() {
+        if (this.role != null) {
+            return this.role;
+        }
+        if (this.userRole != null) {
+            return this.userRole.getRole();
+        }
+        return "STUDENT";
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isAdmin() {
+        return "ADMIN".equals(getRole());
+    }
+
+    public boolean isStudent() {
+        return "STUDENT".equals(getRole());
     }
 }
