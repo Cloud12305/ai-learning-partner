@@ -27,7 +27,7 @@
             <a-textarea
                 v-model:value="currentQuestion"
                 placeholder="比如：什么是二叉树？&#10;或者：比较一下链表和数组的区别？&#10;或者：解释一下快速排序算法？"
-                rows="4"
+                :rows="4"
                 @keydown.enter.prevent="handleSubmit"
                 :disabled="isLoading"
                 class="custom-textarea mb-6"
@@ -348,36 +348,68 @@ const handleSubmit = async () => {
     isLoading.value = true;
     isGeneratingGraph.value = true;
 
+    console.log('🚀 开始发送请求，问题:', question);
+
     const res = await request.post('/api/knowledge/qa', {
       question,
       userId: userId.value
     });
 
+    console.log('✅ 收到API响应:', res);
+
     if (res.success) {
+      console.log('📊 响应数据详情:');
+      console.log('- answer:', res.data?.answer?.substring(0, 200) + '...');
+      console.log('- knowledgeGraph:', res.data?.knowledgeGraph);
+      console.log('- timestamp:', res.data?.timestamp);
+
+      // 检查数据是否存在
+      if (!res.data?.answer) {
+        console.error('❌ 回答数据为空');
+        message.error('获取回答失败');
+        return;
+      }
+
       // 添加到历史记录
-      qaHistory.value.unshift({
+      const newQA = {
         question,
         answer: res.data.answer,
-        knowledgeGraph: res.data.knowledgeGraph,
-        timestamp: res.data.timestamp
-      });
+        knowledgeGraph: res.data.knowledgeGraph || [],
+        timestamp: res.data.timestamp || new Date().toISOString()
+      };
+
+      qaHistory.value.unshift(newQA);
+      console.log('📝 已添加到历史记录:', newQA);
 
       // 更新知识图谱数据
-      currentGraphData.value = transformGraphData(res.data.knowledgeGraph);
+      if (res.data.knowledgeGraph && Array.isArray(res.data.knowledgeGraph)) {
+        currentGraphData.value = transformGraphData(res.data.knowledgeGraph);
+        console.log('🕸️ 转换后的图谱数据:', currentGraphData.value);
+      } else {
+        console.warn('⚠️ 知识图谱数据为空');
+        currentGraphData.value = { nodes: [], links: [] };
+      }
 
       // 清空输入框
       currentQuestion.value = '';
 
       // 渲染知识图谱
       await nextTick();
-      renderKnowledgeGraph();
+      if (currentGraphData.value.nodes.length > 0) {
+        console.log('🎨 开始渲染知识图谱');
+        renderKnowledgeGraph();
+      } else {
+        console.warn('⚠️ 没有图谱数据可渲染');
+      }
 
       message.success('问题分析完成！');
     } else {
+      console.error('❌ API返回失败:', res.msg);
       message.error(res.msg || '问答服务暂时不可用');
     }
   } catch (err) {
-    console.error('[knowledge-qa] 请求错误:', err);
+    console.error('💥 请求错误:', err);
+    console.error('错误详情:', err.response?.data);
     message.error(err.response?.data?.msg || '问答请求失败，请重试');
   } finally {
     isLoading.value = false;
@@ -387,36 +419,57 @@ const handleSubmit = async () => {
 
 // 转换图谱数据格式
 const transformGraphData = (knowledgeGraph) => {
+  console.log('🔄 转换图谱数据，原始数据:', knowledgeGraph);
+
   if (!knowledgeGraph || knowledgeGraph.length === 0) {
+    console.log('❌ 图谱数据为空');
     return { nodes: [], links: [] };
   }
 
   const nodes = [];
   const links = [];
+  const nodeMap = new Map();
 
+  // 首先收集所有节点
+  knowledgeGraph.forEach((node, index) => {
+    console.log(`📌 处理节点 ${index}:`, node);
+
+    if (node && !nodeMap.has(node.id)) {
+      const transformedNode = {
+        id: node.id || `node_${index}`,
+        name: node.name || '未命名节点',
+        definition: node.definition || '暂无定义',
+        category: node.category || '未知分类',
+        group: getNodeGroup(node.category),
+        links: node.links || []
+      };
+      nodes.push(transformedNode);
+      nodeMap.set(node.id, transformedNode);
+      console.log(`✅ 添加节点: ${transformedNode.name}`);
+    }
+  });
+
+  // 然后收集所有链接
   knowledgeGraph.forEach(node => {
-    // 添加节点
-    nodes.push({
-      id: node.id,
-      name: node.name,
-      definition: node.definition,
-      category: node.category,
-      group: getNodeGroup(node.category),
-      links: node.links || []
-    });
-
-    // 添加链接
-    if (node.links) {
-      node.links.forEach(link => {
-        links.push({
-          source: link.source,
-          target: link.target,
-          relation: link.relation,
-          description: link.description
-        });
+    if (node && node.links && Array.isArray(node.links)) {
+      node.links.forEach((link) => {
+        if (link && link.source && link.target) {
+          links.push({
+            source: link.source,
+            target: link.target,
+            relation: link.relation || '相关',
+            description: link.description || ''
+          });
+          console.log(`🔗 添加链接: ${link.source} -> ${link.target}`);
+        }
       });
     }
   });
+
+  console.log('📈 转换完成:');
+  console.log('- 节点数:', nodes.length);
+  console.log('- 链接数:', links.length);
+  console.log('- 节点列表:', nodes.map(n => n.name));
 
   return { nodes, links };
 };
@@ -428,7 +481,8 @@ const getNodeGroup = (category) => {
     '算法': 2,
     '编程语言': 3,
     '计算机网络': 4,
-    '数据库': 5
+    '数据库': 5,
+    '计算机基础': 0
   };
   return groups[category] || 0;
 };
@@ -448,6 +502,8 @@ const getCategoryColor = (category) => {
 // 渲染知识图谱
 const renderKnowledgeGraph = () => {
   if (!graphSvg.value || currentGraphData.value.nodes.length === 0) return;
+
+  console.log('🎨 开始渲染知识图谱');
 
   // 清除之前的图谱
   d3.select(graphSvg.value).selectAll('*').remove();
@@ -555,6 +611,8 @@ const renderKnowledgeGraph = () => {
     d.fx = null;
     d.fy = null;
   }
+
+  console.log('✅ 知识图谱渲染完成');
 };
 
 // 追问功能
@@ -569,7 +627,6 @@ const getMainTopic = (answer) => {
 
 // 切换图谱布局
 const toggleGraphLayout = () => {
-  // 重新渲染图谱（可以在这里实现不同的布局算法）
   renderKnowledgeGraph();
   message.info('已切换图谱布局');
 };

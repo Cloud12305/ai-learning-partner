@@ -27,6 +27,12 @@ public class KnowledgeQAController {
                     request.getContextKp()
             );
 
+            // 添加调试信息
+            System.out.println(">>> 返回响应数据:");
+            System.out.println(">>> - success: " + response.isSuccess());
+            System.out.println(">>> - answer length: " + (response.getAnswer() != null ? response.getAnswer().length() : 0));
+            System.out.println(">>> - graph nodes: " + (response.getKnowledgeGraph() != null ? response.getKnowledgeGraph().size() : 0));
+
             return ResponseEntity.ok().body(Map.of(
                     "success", true,
                     "data", response
