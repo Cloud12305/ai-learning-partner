@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS `courses` (
   PRIMARY KEY (`course_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='课程表';
 
--- 正在导出表  ai_learning_partner.courses 的数据：~9 rows (大约)
-REPLACE INTO `courses` (`course_id`, `course_name`, `credits`, `department`, `course_category`, `total_hours`, `course_description`, `created_at`, `updated_at`) VALUES
+-- 正在导出表  ai_learning_partner.courses 的数据：~11 rows (大约)
+INSERT INTO `courses` (`course_id`, `course_name`, `credits`, `department`, `course_category`, `total_hours`, `course_description`, `created_at`, `updated_at`) VALUES
 	('CS101', '计算机导论', 3.0, '计算机学院', '必修', 64, '计算机科学基础知识入门，包括计算机组成、操作系统、网络等基础概念', '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
 	('CS102', 'C语言程序设计', 4.0, '计算机学院', '必修', 80, 'C语言编程基础与算法，培养程序设计思维和编程能力', '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
 	('CS201', '数据结构', 4.0, '计算机学院', '必修', 80, '线性表、树、图等数据结构的基本原理和算法实现', '2025-11-07 09:31:33', '2025-11-07 09:31:33'),
@@ -79,6 +79,47 @@ CREATE TABLE IF NOT EXISTS `emotion_record` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 正在导出表  ai_learning_partner.emotion_record 的数据：~0 rows (大约)
+
+-- 导出  表 ai_learning_partner.knowledge_points 结构
+CREATE TABLE IF NOT EXISTS `knowledge_points` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `kp_name` varchar(255) NOT NULL,
+  `definition` text,
+  `category` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `kp_name` (`kp_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 正在导出表  ai_learning_partner.knowledge_points 的数据：~5 rows (大约)
+INSERT INTO `knowledge_points` (`id`, `kp_name`, `definition`, `category`, `created_at`, `updated_at`) VALUES
+	(1, '二叉树', '每个节点最多有两个子节点的树形数据结构', '数据结构', '2025-11-17 03:54:34', '2025-11-17 03:54:34'),
+	(2, '链表', '通过指针连接节点的线性数据结构', '数据结构', '2025-11-17 03:54:34', '2025-11-17 03:54:34'),
+	(3, '数组', '连续内存空间的线性数据结构', '数据结构', '2025-11-17 03:54:34', '2025-11-17 03:54:34'),
+	(4, '快速排序', '基于分治策略的高效排序算法', '算法', '2025-11-17 03:54:34', '2025-11-17 03:54:34'),
+	(5, '面向对象编程', '以对象为核心的编程范式', '编程语言', '2025-11-17 03:54:34', '2025-11-17 03:54:34');
+
+-- 导出  表 ai_learning_partner.knowledge_relations 结构
+CREATE TABLE IF NOT EXISTS `knowledge_relations` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `kp1_id` bigint NOT NULL,
+  `kp2_id` bigint NOT NULL,
+  `relation_type` varchar(100) NOT NULL,
+  `description` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_relation` (`kp1_id`,`kp2_id`,`relation_type`),
+  KEY `kp2_id` (`kp2_id`),
+  CONSTRAINT `knowledge_relations_ibfk_1` FOREIGN KEY (`kp1_id`) REFERENCES `knowledge_points` (`id`),
+  CONSTRAINT `knowledge_relations_ibfk_2` FOREIGN KEY (`kp2_id`) REFERENCES `knowledge_points` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 正在导出表  ai_learning_partner.knowledge_relations 的数据：~3 rows (大约)
+INSERT INTO `knowledge_relations` (`id`, `kp1_id`, `kp2_id`, `relation_type`, `description`, `created_at`) VALUES
+	(1, 1, 2, '对比关系', '二叉树与链表在结构上的区别', '2025-11-17 03:54:34'),
+	(2, 1, 3, '对比关系', '二叉树与数组在存储方式上的差异', '2025-11-17 03:54:34'),
+	(3, 4, 1, '应用关系', '快速排序可以用于二叉树节点的排序', '2025-11-17 03:54:34');
 
 -- 导出  表 ai_learning_partner.lab_attendance 结构
 CREATE TABLE IF NOT EXISTS `lab_attendance` (
@@ -149,6 +190,19 @@ CREATE TABLE IF NOT EXISTS `library_records` (
 
 -- 正在导出表  ai_learning_partner.library_records 的数据：~0 rows (大约)
 
+-- 导出  表 ai_learning_partner.qa_history 结构
+CREATE TABLE IF NOT EXISTS `qa_history` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(100) DEFAULT NULL,
+  `question` text NOT NULL,
+  `answer` text,
+  `knowledge_graph_data` json DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 正在导出表  ai_learning_partner.qa_history 的数据：~0 rows (大约)
+
 -- 导出  表 ai_learning_partner.study_plans 结构
 CREATE TABLE IF NOT EXISTS `study_plans` (
   `plan_id` bigint NOT NULL AUTO_INCREMENT,
@@ -214,7 +268,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表';
 
 -- 正在导出表  ai_learning_partner.users 的数据：~8 rows (大约)
-REPLACE INTO `users` (`id`, `student_id`, `username`, `name`, `password`, `gender`, `major`, `college`, `grade`, `class_name`, `email`, `phone`, `avatar_url`, `enrollment_date`, `graduation_date`, `learning_goal`, `learning_preferences`, `account_status`, `last_login_time`, `create_time`, `update_time`, `created_at`, `login_count`, `updated_at`) VALUES
+INSERT INTO `users` (`id`, `student_id`, `username`, `name`, `password`, `gender`, `major`, `college`, `grade`, `class_name`, `email`, `phone`, `avatar_url`, `enrollment_date`, `graduation_date`, `learning_goal`, `learning_preferences`, `account_status`, `last_login_time`, `create_time`, `update_time`, `created_at`, `login_count`, `updated_at`) VALUES
 	(1, '202301001', 'zhangsan', '张三', '123456', 'M', '计算机科学与技术', '计算机学院', '2023', '计科2301', 'zhangsan@edu.cn', '13800138001', 'https://picsum.photos/100/100?random=1', '2023-08-09', '2027-06-07', '成为全栈工程师，掌握AI开发技术', '{"learning_style": "visual", "difficulty_level": "medium", "preferred_subjects": ["编程", "算法"], "preferred_study_time": "evening"}', 'ACTIVE', '2025-11-10 12:22:49', NULL, '2025-11-10 12:22:48.599572', NULL, 3, '2025-11-10 12:22:48.599572'),
 	(2, '202301002', 'lisi', '李四', '123456', 'M', '计算机科学与技术', '计算机学院', '2023', '计科2301', 'lisi@edu.cn', '13800138002', 'https://picsum.photos/100/100?random=2', '2023-08-31', '2027-06-29', '深入算法研究，参加ACM竞赛并获得奖项', '{"learning_style": "logical", "difficulty_level": "high", "preferred_subjects": ["算法", "数学"], "preferred_study_time": "morning"}', 'ACTIVE', '2025-11-10 10:27:07', NULL, NULL, NULL, NULL, NULL),
 	(3, '202301003', 'wangwu', '王五', '123456', 'F', '计算机科学与技术', '计算机学院', '2023', '计科2301', 'wangwu@edu.cn', '13800138003', 'https://picsum.photos/100/100?random=3', '2023-09-01', '2027-06-30', '提升编程能力，学习数据科学和机器学习', '{"learning_style": "practical", "difficulty_level": "medium", "preferred_subjects": ["数据科学", "统计学"], "preferred_study_time": "afternoon"}', 'ACTIVE', '2024-02-19 14:20:00', NULL, NULL, NULL, NULL, NULL),
@@ -222,7 +276,7 @@ REPLACE INTO `users` (`id`, `student_id`, `username`, `name`, `password`, `gende
 	(5, '202302002', 'qianqi', '钱七', '123456', 'F', '软件工程', '软件学院', '2023', '软工2301', 'qianqi@edu.cn', '13800138005', 'https://picsum.photos/100/100?random=5', '2023-09-01', '2027-06-30', '学习前端开发技术，成为专业的UI/UX设计师', '{"learning_style": "creative", "difficulty_level": "low", "preferred_subjects": ["设计", "前端开发"], "preferred_study_time": "flexible"}', 'ACTIVE', '2024-02-18 16:45:00', NULL, NULL, NULL, NULL, NULL),
 	(6, '202201001', 'zhengshiyi', '郑十一', '123456', 'M', '计算机科学与技术', '计算机学院', '2022', '计科2201', 'zhengshiyi@edu.cn', '13800138009', 'https://picsum.photos/100/100?random=6', '2022-09-01', '2026-06-30', '深入学习人工智能和机器学习，为研究生阶段做准备', '{"learning_style": "theoretical", "difficulty_level": "high", "preferred_subjects": ["人工智能", "机器学习"], "preferred_study_time": "morning"}', 'ACTIVE', '2024-02-20 07:50:00', NULL, NULL, NULL, NULL, NULL),
 	(7, '202101001', 'lishisan', '李十三', '123456', 'M', '软件工程', '软件学院', '2021', '软工2101', 'lishisan@edu.cn', '13800138011', 'https://picsum.photos/100/100?random=7', '2021-09-01', '2025-06-30', '准备考研，深入研究分布式系统和云计算技术', '{"learning_style": "comprehensive", "difficulty_level": "high", "preferred_subjects": ["分布式系统", "云计算"], "preferred_study_time": "whole_day"}', 'ACTIVE', '2024-02-20 11:20:00', NULL, NULL, NULL, NULL, NULL),
-	(29, '202301110', 'Jasmine', '孙梦云', '123456', 'F', '软件工程', '计算机学院', '2023', '软工2301', '15268660761@163.com', NULL, 'https://picsum.photos/100/100?random=57', NULL, NULL, NULL, NULL, 'ACTIVE', '2025-11-10 08:39:59', NULL, NULL, NULL, NULL, NULL);
+	(29, '202301110', 'Jasmine', '孙梦云', '123456', 'F', '软件工程', '计算机学院', '2023', '软工2301', '15268660761@163.com', NULL, 'https://picsum.photos/100/100?random=57', NULL, NULL, NULL, NULL, 'ACTIVE', '2025-11-17 05:16:44', NULL, '2025-11-17 05:16:43.773607', NULL, 8, '2025-11-17 05:16:43.773607');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
