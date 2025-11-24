@@ -32,6 +32,7 @@ D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\ProgressService.java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\PsychologyController.java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\JobMatchResponseDTO.java
+D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserAnswerDetail.java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\JobPosition.java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserSkillRepository.java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\ProgressController.java
@@ -50,6 +51,7 @@ D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\KnowledgePoint.java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\CourseDTO.java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\DeepSeekService.java
+D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserQuizRecord.java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\QAHistory.java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\StudyPlanController.java
 D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserProgressRepository.java
