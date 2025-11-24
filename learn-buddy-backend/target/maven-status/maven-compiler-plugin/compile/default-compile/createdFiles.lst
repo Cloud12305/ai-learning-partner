@@ -4,11 +4,13 @@ com\digitalhorsepower\learnbuddy\service\CareerPreferenceService.class
 com\digitalhorsepower\learnbuddy\controller\KnowledgeQAController.class
 com\digitalhorsepower\learnbuddy\dto\QAResponse$KnowledgeNode.class
 com\digitalhorsepower\learnbuddy\entity\UserSkill.class
+com\digitalhorsepower\learnbuddy\service\CourseService$1.class
 com\digitalhorsepower\learnbuddy\service\DeepSeekService.class
 com\digitalhorsepower\learnbuddy\config\SimpleCorsFilter.class
 com\digitalhorsepower\learnbuddy\dto\UserProfileDTO.class
 com\digitalhorsepower\learnbuddy\service\KnowledgeGraphBuilder.class
 com\digitalhorsepower\learnbuddy\dto\QAResponse$KnowledgeLink.class
+com\digitalhorsepower\learnbuddy\util\ApiResult.class
 com\digitalhorsepower\learnbuddy\dto\StudyPlanDto.class
 com\digitalhorsepower\learnbuddy\service\PsychologyService.class
 com\digitalhorsepower\learnbuddy\dto\PsychologyRequest.class
@@ -20,7 +22,11 @@ com\digitalhorsepower\learnbuddy\dto\QAResponse$KnowledgeGraphData.class
 com\digitalhorsepower\learnbuddy\dto\QAResponse$GraphLink.class
 com\digitalhorsepower\learnbuddy\repository\UserRepository.class
 com\digitalhorsepower\learnbuddy\service\StudyPlanService.class
+com\digitalhorsepower\learnbuddy\entity\Course.class
+com\digitalhorsepower\learnbuddy\controller\CourseController.class
 com\digitalhorsepower\learnbuddy\controller\JobMatchingController.class
+com\digitalhorsepower\learnbuddy\dto\CourseSearchRequest.class
+com\digitalhorsepower\learnbuddy\service\CourseService.class
 com\digitalhorsepower\learnbuddy\entity\UserCareerPreference.class
 com\digitalhorsepower\learnbuddy\controller\UserController.class
 com\digitalhorsepower\learnbuddy\repository\UserCareerPreferenceRepository.class
@@ -53,6 +59,7 @@ com\digitalhorsepower\learnbuddy\config\WebConfig$1.class
 com\digitalhorsepower\learnbuddy\controller\StudyPlanController.class
 com\digitalhorsepower\learnbuddy\entity\User.class
 com\digitalhorsepower\learnbuddy\dto\ApiResponse.class
+com\digitalhorsepower\learnbuddy\dto\CourseDTO.class
 com\digitalhorsepower\learnbuddy\entity\StudyPlan.class
 com\digitalhorsepower\learnbuddy\entity\KnowledgeRelation.class
 com\digitalhorsepower\learnbuddy\dto\LoginRequest.class

@@ -80,6 +80,47 @@ CREATE TABLE IF NOT EXISTS `emotion_record` (
 
 -- 正在导出表  ai_learning_partner.emotion_record 的数据：~0 rows (大约)
 
+-- 导出  表 ai_learning_partner.job_positions 结构
+CREATE TABLE IF NOT EXISTS `job_positions` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `job_title` varchar(100) NOT NULL,
+  `company_name` varchar(100) NOT NULL,
+  `location` varchar(50) DEFAULT NULL,
+  `required_skills` json DEFAULT NULL,
+  `job_description` text,
+  `salary_range` varchar(50) DEFAULT NULL,
+  `experience_level` varchar(20) DEFAULT NULL,
+  `education_requirements` varchar(100) DEFAULT NULL,
+  `match_score` double DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 正在导出表  ai_learning_partner.job_positions 的数据：~20 rows (大约)
+REPLACE INTO `job_positions` (`id`, `job_title`, `company_name`, `location`, `required_skills`, `job_description`, `salary_range`, `experience_level`, `education_requirements`, `match_score`, `created_at`, `updated_at`) VALUES
+	(1, '前端开发工程师', '字节跳动', '北京', '["JavaScript", "HTML/CSS", "Vue", "React", "Webpack"]', '负责公司Web前端开发工作，参与产品需求分析和技术方案设计，与后端开发人员协作，完成功能模块的开发与维护。', '15-30K', '中级', NULL, 0.92, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(2, '全栈开发工程师', '阿里巴巴', '杭州', '["JavaScript", "Node.js", "Vue", "MongoDB", "Express"]', '负责公司产品的前后端开发工作，参与技术架构设计和优化，解决开发过程中的技术难题，持续提升产品性能和用户体验。', '20-35K', '高级', NULL, 0.85, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(3, 'H5开发工程师', '腾讯', '深圳', '["JavaScript", "HTML/CSS", "响应式设计", "微信小程序"]', '负责公司移动端H5页面和小程序的开发工作，优化移动端体验，解决各种浏览器和设备兼容性问题，提升页面加载速度。', '18-32K', '中级', NULL, 0.88, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(4, '后端开发工程师', '阿里健康', '北京', '["Java", "Spring Boot", "MySQL", "Redis", "Docker"]', '负责医疗健康平台后端服务开发，设计高可用架构，保障医疗数据安全和系统稳定性，参与医疗信息化系统建设。', '20-35K', '中级', '计算机相关专业本科', 0.88, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(5, 'Java开发工程师', '平安好医生', '北京', '["Java", "Spring Cloud", "MySQL", "Redis", "微服务"]', '参与医疗信息化系统开发，负责核心业务模块的设计与实现，优化系统性能，保障医疗数据安全。', '18-32K', '中级', '计算机相关专业', 0.82, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(6, 'Node.js后端工程师', '微医', '杭州', '["JavaScript", "Node.js", "Express", "MongoDB", "Redis"]', '负责在线医疗平台Node.js后端开发，参与微服务架构设计，提升系统性能，优化医生和患者的使用体验。', '16-28K', '中级', NULL, 0.85, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(7, '医疗后端开发工程师', '丁香园', '北京', '["Java", "Spring Boot", "PostgreSQL", "Docker", "Kubernetes"]', '负责医疗知识平台后端架构设计，开发高并发医疗信息服务系统，保障系统的高可用性。', '22-38K', '高级', '计算机相关专业硕士', 0.9, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(8, '后端开发工程师', '腾讯', '深圳', '["Go", "Python", "MySQL", "Redis", "Docker"]', '负责内容推荐系统后端开发，优化算法服务性能，参与大规模分布式系统架构设计。', '20-35K', '中级', '计算机相关专业', 0.75, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(9, 'Java后端工程师', '京东', '北京', '["Java", "Spring Cloud", "MySQL", "Redis", "分布式系统"]', '负责电商平台核心交易系统开发，参与高并发系统架构设计，保障系统稳定性和性能。', '18-30K', '中级', NULL, 0.78, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(10, 'Python后端开发', '百度', '北京', '["Python", "Django", "MySQL", "Redis", "Linux"]', '负责AI平台后端服务开发，参与机器学习系统架构设计，优化算法服务性能。', '18-32K', '中级', '计算机相关专业', 0.72, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(11, '全栈开发工程师', '腾讯医疗', '深圳', '["JavaScript", "Node.js", "Vue", "Java", "MySQL"]', '负责医疗AI平台全栈开发，参与智慧医疗系统建设，前后端协同开发。', '18-30K', '中级', NULL, 0.8, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(12, '全栈工程师', '美团', '北京', '["JavaScript", "React", "Node.js", "Java", "MySQL"]', '负责本地生活服务平台全栈开发，参与系统架构优化，提升用户体验。', '16-28K', '中级', '计算机相关专业', 0.76, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(13, '数据开发工程师', '阿里健康', '杭州', '["Python", "SQL", "Hadoop", "Spark", "数据仓库"]', '负责医疗健康数据平台开发，构建数据仓库，支持业务数据分析和决策。', '20-35K', '中级', '计算机/统计相关专业', 0.68, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(14, '移动端开发工程师', '平安好医生', '上海', '["Java", "Kotlin", "Android", "RxJava", "MVVM"]', '负责医疗健康APP移动端开发，优化用户体验，参与产品功能设计和实现。', '16-28K', '中级', NULL, 0.65, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(15, '云计算开发工程师', '腾讯云', '深圳', '["Go", "Docker", "Kubernetes", "Linux", "网络协议"]', '负责云计算平台后端开发，参与云原生技术架构设计，优化资源调度算法。', '22-40K', '高级', '计算机相关专业', 0.7, '2025-11-16 23:01:09', '2025-11-16 23:01:09'),
+	(16, '后端开发工程师', '腾讯游戏', '北京', '["Java", "Spring Boot", "MySQL", "Redis", "Netty"]', '负责游戏平台后端服务开发，设计高并发架构，优化游戏服务性能，保障游戏数据安全。', '22-40K', '中级', '计算机相关专业', 0.92, '2025-11-17 08:15:39', '2025-11-17 08:15:39'),
+	(17, 'Java游戏服务器开发', '网易游戏', '广州', '["Java", "Netty", "Redis", "MySQL", "多线程"]', '负责游戏服务器架构设计与开发，优化网络通信性能，处理高并发游戏请求。', '20-35K', '中级', NULL, 0.88, '2025-11-17 08:15:39', '2025-11-17 08:15:39'),
+	(18, 'Node.js后端工程师', '米哈游', '上海', '["JavaScript", "Node.js", "TypeScript", "Redis", "MongoDB"]', '负责游戏社区平台后端开发，参与游戏数据服务架构设计，优化用户体验。', '18-32K', '中级', '计算机相关专业', 0.85, '2025-11-17 08:15:39', '2025-11-17 08:15:39'),
+	(19, '游戏后端开发工程师', '完美世界', '北京', '["C++", "Java", "Linux", "网络编程", "Redis"]', '负责游戏核心服务端开发，设计游戏逻辑架构，优化服务器性能。', '18-30K', '中级', NULL, 0.82, '2025-11-17 08:15:39', '2025-11-17 08:15:39'),
+	(20, '全栈开发工程师', '巨人网络', '上海', '["Java", "Spring Boot", "Vue", "MySQL", "Redis"]', '负责游戏运营平台全栈开发，前后端协同开发，提升运营效率。', '16-28K', '中级', '计算机相关专业', 0.78, '2025-11-17 08:15:39', '2025-11-17 08:15:39');
+
+
 -- 导出  表 ai_learning_partner.knowledge_points 结构
 CREATE TABLE IF NOT EXISTS `knowledge_points` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -277,6 +318,48 @@ INSERT INTO `users` (`id`, `student_id`, `username`, `name`, `password`, `gender
 	(6, '202201001', 'zhengshiyi', '郑十一', '123456', 'M', '计算机科学与技术', '计算机学院', '2022', '计科2201', 'zhengshiyi@edu.cn', '13800138009', 'https://picsum.photos/100/100?random=6', '2022-09-01', '2026-06-30', '深入学习人工智能和机器学习，为研究生阶段做准备', '{"learning_style": "theoretical", "difficulty_level": "high", "preferred_subjects": ["人工智能", "机器学习"], "preferred_study_time": "morning"}', 'ACTIVE', '2024-02-20 07:50:00', NULL, NULL, NULL, NULL, NULL),
 	(7, '202101001', 'lishisan', '李十三', '123456', 'M', '软件工程', '软件学院', '2021', '软工2101', 'lishisan@edu.cn', '13800138011', 'https://picsum.photos/100/100?random=7', '2021-09-01', '2025-06-30', '准备考研，深入研究分布式系统和云计算技术', '{"learning_style": "comprehensive", "difficulty_level": "high", "preferred_subjects": ["分布式系统", "云计算"], "preferred_study_time": "whole_day"}', 'ACTIVE', '2024-02-20 11:20:00', NULL, NULL, NULL, NULL, NULL),
 	(29, '202301110', 'Jasmine', '孙梦云', '123456', 'F', '软件工程', '计算机学院', '2023', '软工2301', '15268660761@163.com', NULL, 'https://picsum.photos/100/100?random=57', NULL, NULL, NULL, NULL, 'ACTIVE', '2025-11-17 05:16:44', NULL, '2025-11-17 05:16:43.773607', NULL, 8, '2025-11-17 05:16:43.773607');
+
+-- 导出  表 ai_learning_partner.user_career_preferences 结构
+CREATE TABLE IF NOT EXISTS `user_career_preferences` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `expected_position` varchar(100) DEFAULT NULL,
+  `expected_industry` varchar(50) DEFAULT NULL,
+  `expected_location` varchar(50) DEFAULT NULL,
+  `expected_salary` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 正在导出表  ai_learning_partner.user_career_preferences 的数据：~1 rows (大约)
+REPLACE INTO `user_career_preferences` (`id`, `user_id`, `expected_position`, `expected_industry`, `expected_location`, `expected_salary`, `created_at`, `updated_at`) VALUES
+	(1, 1, '后端开发工程师', '游戏', '北京', NULL, '2025-11-17 07:01:12', '2025-11-17 00:08:43');
+
+-- 导出  表 ai_learning_partner.user_skills 结构
+CREATE TABLE IF NOT EXISTS `user_skills` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `skill_name` varchar(255) NOT NULL,
+  `proficiency_level` varchar(50) DEFAULT NULL,
+  `experience_months` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 正在导出表  ai_learning_partner.user_skills 的数据：~9 rows (大约)
+REPLACE INTO `user_skills` (`id`, `user_id`, `skill_name`, `proficiency_level`, `experience_months`, `created_at`) VALUES
+	(1, 1, 'JavaScript', 'ADVANCED', 24, '2025-11-16 23:23:55'),
+	(2, 1, 'HTML/CSS', 'ADVANCED', 24, '2025-11-16 23:23:55'),
+	(3, 1, 'Vue', 'INTERMEDIATE', 12, '2025-11-16 23:23:55'),
+	(4, 1, 'React', 'BEGINNER', 6, '2025-11-16 23:23:55'),
+	(5, 1, 'Node.js', 'INTERMEDIATE', 18, '2025-11-16 23:23:55'),
+	(6, 1, '数据结构', 'INTERMEDIATE', 12, '2025-11-16 23:23:55'),
+	(7, 1, 'Java', 'BEGINNER', 3, '2025-11-16 23:23:55'),
+	(8, 1, 'MySQL', 'INTERMEDIATE', 8, '2025-11-16 23:23:55'),
+	(9, 1, 'Redis', 'BEGINNER', 2, '2025-11-16 23:23:55');
+
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

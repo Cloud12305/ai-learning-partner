@@ -438,7 +438,7 @@ const transformNewGraphData = (graphData) => {
         category: nodeData.category || '未知分类',
         group: getNodeGroup(nodeData.category),  // 复用旧 group 逻辑
         color: (nodeData.itemStyle && nodeData.itemStyle.color) || getDefaultColor(nodeData.category),  // 从 itemStyle 取色
-        radius: (nodeData.symbolSize || 20) / 3,  // symbolSize 转为 D3 r (调整比例)
+        radius: (nodeData.symbolSize || 35) / 3,  // symbolSize 转为 D3 r (调整比例)
         links: []  // 本地 links，不用于全局
       };
       nodes.push(transformedNode);
@@ -512,24 +512,22 @@ const getCategoryColor = (category) => {
 const renderKnowledgeGraph = () => {
   if (!graphSvg.value || currentGraphData.value.nodes.length === 0) return;
 
-  console.log('🎨 开始渲染知识图谱 (新格式)');
-
-  // 清除之前的图谱
   d3.select(graphSvg.value).selectAll('*').remove();
 
   const width = graphContainer.value.clientWidth;
-  const height = graphContainer.value.clientHeight;
+  const height = graphContainer.value.clientHeight || 500; // 兜底高度
 
+  // ⭐ 创建 svg
   const svg = d3.select(graphSvg.value)
+      .append('svg')
       .attr('width', width)
       .attr('height', height);
 
-  // 创建力导向图
   const simulation = d3.forceSimulation(currentGraphData.value.nodes)
-      .force('link', d3.forceLink(currentGraphData.value.links).id(d => d.id).distance(100))
-      .force('charge', d3.forceManyBody().strength(-300))
+      .force('link', d3.forceLink(currentGraphData.value.links).id(d => d.id).distance(120))
+      .force('charge', d3.forceManyBody().strength(-350))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(50));
+      .force('collision', d3.forceCollide().radius(d => d.radius + 15));
 
   // 创建箭头
   svg.append('defs').selectAll('marker')
