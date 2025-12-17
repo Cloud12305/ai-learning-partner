@@ -17,17 +17,27 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Autowired
     private JwtUtil jwtUtil;
 
+    // 定义不需要认证的路径
+    private static final String[] EXCLUDE_PATHS = {
+            "/api/users/login",
+            "/api/users/register",
+            "/api/users/health",
+            "/api/academic-profile/health",
+            "/api/health",
+            "/error"
+    };
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String requestURI = request.getRequestURI();
         log.info("拦截器处理路径: {}", requestURI);
 
-        // 放行登录、注册和健康检查等公开接口
-        if (requestURI.startsWith("/api/users/login") ||
-                requestURI.startsWith("/api/users/register") ||
-                requestURI.startsWith("/api/users/health")) {
-            log.info("放行公开接口: {}", requestURI);
-            return true;
+        // 检查是否在排除路径中
+        for (String excludePath : EXCLUDE_PATHS) {
+            if (requestURI.startsWith(excludePath)) {
+                log.info("放行公开接口: {}", requestURI);
+                return true;
+            }
         }
 
         // 检查 Authorization 头
@@ -35,18 +45,18 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             log.warn("未提供有效的 Authorization 头");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"success\": false, \"message\": \"未提供认证令牌\"}");
             return false;
         }
 
         String token = authHeader.substring(7);
-        log.info("提取的 token 长度: {}", token.length());
-        log.info("Token 前20字符: {}", token.substring(0, Math.min(20, token.length())));
 
         // 验证 token
         if (!jwtUtil.validateToken(token)) {
             log.warn("Token 验证失败");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"success\": false, \"message\": \"认证令牌无效或已过期\"}");
             return false;
         }
@@ -60,13 +70,14 @@ public class AuthInterceptor implements HandlerInterceptor {
             if (userId == null) {
                 log.warn("无法从 Token 中提取用户ID");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().write("{\"success\": false, \"message\": \"认证信息不完整\"}");
                 return false;
             }
 
             request.setAttribute("userId", userId);
             request.setAttribute("username", username);
-            request.setAttribute("role", role);
+            request.setAttribute("userRole", role);
 
             log.info("认证成功 - 用户ID: {}, 用户名: {}, 角色: {}", userId, username, role);
             return true;
@@ -74,6 +85,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         } catch (Exception e) {
             log.error("处理认证信息时发生错误: {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"success\": false, \"message\": \"服务器内部错误\"}");
             return false;
         }

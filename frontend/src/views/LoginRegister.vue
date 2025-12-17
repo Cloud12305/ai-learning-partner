@@ -397,7 +397,7 @@
 <script>
 import { ref, reactive } from 'vue'
 import { message } from 'ant-design-vue'
-import apiService from '../services/api'
+import { userApi } from '../services/api'  // 关键修改：导入userApi而不是apiService
 
 export default {
   name: 'LoginRegister',
@@ -413,7 +413,6 @@ export default {
   },
   emits: ['close', 'mode-change', 'login-success'],
   setup(props, { emit }) {
-    // 移除 const router = useRouter() 这行
 
     // 表单状态
     const rememberMe = ref(false)
@@ -460,7 +459,6 @@ export default {
       emit('close')
     }
 
-    // 处理登录
     const handleLogin = async () => {
       if (!loginForm.username || !loginForm.password) {
         loginError.value = '请输入账号和密码'
@@ -471,54 +469,75 @@ export default {
       loginError.value = ''
 
       try {
-        // 首先检查后端服务是否可用
-        const isBackendHealthy = await apiService.healthCheck()
-        if (!isBackendHealthy) {
-          loginError.value = '后端服务不可用，请确保Spring Boot应用已启动'
-          loading.value = false
-          return
-        }
+        console.log('🚀 发送登录请求到:', 'http://localhost:8080/api/users/login')
 
-        const result = await apiService.login({
+        // 关键修改：使用 userApi.login() 而不是 apiService.login()
+        const result = await userApi.login({
           username: loginForm.username,
           password: loginForm.password
         })
 
-        if (result.success) {
+        console.log('✅ 登录响应:', result)
+
+        if (result.code === 200 || result.success) {
+          // 从响应中提取用户数据
+          let userData = result.data || result
+          const token = userData.token
+
           localStorage.setItem('isAuthenticated', 'true')
 
-          const userData = result.data
+          if (token) {
+            localStorage.setItem('token', token)
+            console.log('💾 Token 已保存:', token.substring(0, 20) + '...')
+          }
+
           const userInfo = {
-            id: userData.id,
-            username: userData.username,
-            name: userData.name,
-            student_id: userData.studentId,
-            email: userData.email,
-            major: userData.major,
-            grade: userData.grade,
-            college: userData.college,
-            class_name: userData.className,
-            avatar_url: userData.avatarUrl || 'https://picsum.photos/100/100?random=1',
-            learning_goal: userData.learningGoal
+            id: userData.id || userData.user?.id,
+            username: userData.username || userData.user?.username,
+            name: userData.name || userData.user?.name,
+            studentId: userData.studentId || userData.user?.studentId,
+            email: userData.email || userData.user?.email,
+            major: userData.major || userData.user?.major,
+            grade: userData.grade || userData.user?.grade,
+            college: userData.college || userData.user?.college,
+            className: userData.className || userData.user?.className,
+            avatarUrl: userData.avatarUrl || userData.user?.avatarUrl || 'https://picsum.photos/100/100?random=1',
+            role: userData.role || userData.user?.role || 'STUDENT'
           }
 
           localStorage.setItem('user', JSON.stringify(userInfo))
-          localStorage.setItem('token', 'mock-jwt-token')
 
-          console.log('登录成功，存储的用户信息:', userInfo)
+          console.log('✅ 登录成功，用户信息:', userInfo)
+
           handleClose()
-
           message.success('登录成功！')
           emit('login-success')
-
-          // 直接刷新页面并跳转到首页
-          window.location.href = '/'
+          // 刷新页面
+          window.location.reload()
         } else {
-          loginError.value = result.message || '用户名/学号或密码错误'
+          loginError.value = result.message || '登录失败，请检查用户名和密码'
         }
       } catch (error) {
-        console.error('登录错误:', error)
-        loginError.value = error.message || '网络错误，请检查后端服务是否启动'
+        console.error('❌ 登录捕获错误详情:', {
+          name: error.name,
+          message: error.message,
+          code: error.code,
+          response: error.response,
+          config: error.config
+        })
+
+        // 更详细的错误判断
+        if (error.message === 'Network Error') {
+          loginError.value = '无法连接到后端服务器，请确保：\n1. 后端服务已启动\n2. 端口号正确（默认8080）'
+        } else if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+          loginError.value = '连接超时，请确保后端服务已启动'
+        } else if (error.response?.status === 404) {
+          loginError.value = `后端API未找到：${error.config?.baseURL}${error.config?.url}\n请检查：\n1. 后端路由是否正确\n2. 服务是否正常运行`
+        } else if (error.response?.status === 500) {
+          loginError.value = '服务器内部错误，请稍后重试'
+        } else {
+          loginError.value = error.message || '登录失败，请稍后重试'
+        }
       } finally {
         loading.value = false
       }
@@ -564,15 +583,8 @@ export default {
       loginError.value = ''
 
       try {
-        // 检查后端服务
-        const isBackendHealthy = await apiService.healthCheck()
-        if (!isBackendHealthy) {
-          loginError.value = '后端服务不可用，请确保Spring Boot应用已启动'
-          loading.value = false
-          return
-        }
-
-        const result = await apiService.register({
+        // 关键修改：使用 userApi.register() 而不是 apiService.register()
+        const result = await userApi.register({
           studentId: registerForm.studentId,
           username: registerForm.username,
           password: registerForm.password,
@@ -585,7 +597,7 @@ export default {
           gender: registerForm.gender
         })
 
-        if (result.success) {
+        if (result.success || result.code === 200) {
           console.log('注册成功:', result.data)
 
           // 清空表单

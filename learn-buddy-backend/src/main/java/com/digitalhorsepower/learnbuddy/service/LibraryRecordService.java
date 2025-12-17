@@ -5,7 +5,6 @@ import com.digitalhorsepower.learnbuddy.repository.LibraryRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -15,18 +14,14 @@ public class LibraryRecordService {
     private LibraryRecordRepository libraryRecordRepository;
 
     public List<LibraryRecord> getStudentLibraryRecords(String studentId) {
-        return libraryRecordRepository.findByUserStudentId(studentId);
+        return libraryRecordRepository.findByStudentId(studentId);
     }
 
     public List<LibraryRecord> getCurrentBorrowedBooks(String studentId) {
         return libraryRecordRepository.findCurrentBorrowedBooks(studentId);
     }
 
-    public List<LibraryRecord> getOverdueBooks(String studentId) {
-        return libraryRecordRepository.findOverdueBooks(studentId, LocalDate.now());
-    }
-
-    public Long getStudentTotalBooks(String studentId) {
+    public Long getStudentBorrowedCount(String studentId) {
         return libraryRecordRepository.countByStudentId(studentId);
     }
 
@@ -34,16 +29,8 @@ public class LibraryRecordService {
         return libraryRecordRepository.countCurrentBorrowedByStudentId(studentId);
     }
 
-    public List<Object[]> getStudentBookCategoryStats(String studentId) {
-        return libraryRecordRepository.findBookCategoryStatsByStudentId(studentId);
-    }
-
-    public List<Object[]> getStudentBorrowingTrend(String studentId) {
-        return libraryRecordRepository.findBorrowingTrendByStudentId(studentId);
-    }
-
     public List<LibraryRecord> getRecentBorrowedBooks(String studentId) {
-        return libraryRecordRepository.findTop10ByUserStudentIdOrderByBorrowDateDesc(studentId);
+        return libraryRecordRepository.findTop10ByStudentIdOrderByBorrowDateDesc(studentId);
     }
 
     public LibraryRecord saveLibraryRecord(LibraryRecord record) {
@@ -54,7 +41,7 @@ public class LibraryRecordService {
         libraryRecordRepository.deleteById(id);
     }
 
-    public boolean isBookCurrentlyBorrowed(String studentId, String bookId) {
-        return libraryRecordRepository.isBookCurrentlyBorrowed(studentId, bookId);
+    public List<LibraryRecord> getAllLibraryRecords() {
+        return libraryRecordRepository.findAll();
     }
 }

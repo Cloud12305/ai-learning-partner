@@ -92,26 +92,6 @@ public class User implements Serializable {
     @JsonIgnore
     private UserRole userRole;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<AcademicRecord> academicRecords;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<LabAttendance> labAttendances;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<LibraryRecord> libraryRecords;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<StudyPlan> studyPlans;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<LearningProgress> learningProgresses;
-
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
@@ -128,6 +108,9 @@ public class User implements Serializable {
         }
         if (this.avatarUrl == null) {
             this.avatarUrl = "https://picsum.photos/100/100?random=" + (int)(Math.random() * 100);
+        }
+        if (this.grade == null || this.grade.isEmpty()) {
+            this.grade = "大一";
         }
     }
 

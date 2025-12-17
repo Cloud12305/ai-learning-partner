@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -16,7 +15,7 @@ public class AcademicRecordService {
     private AcademicRecordRepository academicRecordRepository;
 
     public List<AcademicRecord> getStudentRecords(String studentId) {
-        return academicRecordRepository.findByUserStudentId(studentId);
+        return academicRecordRepository.findByStudentId(studentId);
     }
 
     public List<AcademicRecord> getRecordsByCourse(String courseId) {
@@ -48,7 +47,15 @@ public class AcademicRecordService {
     }
 
     public boolean recordExists(String studentId, String courseId, String academicYear, Integer semester) {
-        return academicRecordRepository.existsByUserStudentIdAndCourseIdAndAcademicYearAndSemester(
+        return academicRecordRepository.existsByStudentIdAndCourseIdAndAcademicYearAndSemester(
                 studentId, courseId, academicYear, semester);
+    }
+
+    public Optional<AcademicRecord> getRecordById(Long id) {
+        return academicRecordRepository.findById(id);
+    }
+
+    public List<AcademicRecord> getAllRecords() {
+        return academicRecordRepository.findAll();
     }
 }

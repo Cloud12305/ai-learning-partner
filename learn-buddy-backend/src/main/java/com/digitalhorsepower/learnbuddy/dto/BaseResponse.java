@@ -7,13 +7,17 @@ public class BaseResponse<T> {
     private boolean success;
     private String message;
     private T data;
+    private long timestamp;
 
-    public BaseResponse() {}
+    public BaseResponse() {
+        this.timestamp = System.currentTimeMillis();
+    }
 
     public BaseResponse(boolean success, String message, T data) {
         this.success = success;
         this.message = message;
         this.data = data;
+        this.timestamp = System.currentTimeMillis();
     }
 
     // 成功响应
@@ -25,7 +29,7 @@ public class BaseResponse<T> {
         return new BaseResponse<>(true, "操作成功", data);
     }
 
-    public static BaseResponse<Object> success(String message) {
+    public static <T> BaseResponse<T> success(String message) {
         return new BaseResponse<>(true, message, null);
     }
 

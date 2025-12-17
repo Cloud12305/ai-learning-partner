@@ -80,6 +80,37 @@ CREATE TABLE IF NOT EXISTS `emotion_record` (
 
 -- 正在导出表  ai_learning_partner.emotion_record 的数据：~0 rows (大约)
 
+-- 导出  表 ai_learning_partner.knowledge_points 结构
+CREATE TABLE IF NOT EXISTS `knowledge_points` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `category` varchar(255) DEFAULT NULL,
+  `created_at` datetime(6) DEFAULT NULL,
+  `definition` text,
+  `kp_name` varchar(255) NOT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_k0uqrmn0f3jpdvnanyd2d1tpt` (`kp_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 正在导出表  ai_learning_partner.knowledge_points 的数据：~0 rows (大约)
+
+-- 导出  表 ai_learning_partner.knowledge_relations 结构
+CREATE TABLE IF NOT EXISTS `knowledge_relations` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `created_at` datetime(6) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `relation_type` varchar(255) NOT NULL,
+  `kp1_id` bigint NOT NULL,
+  `kp2_id` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK7610gd6g66vnhqx3bc4q9bvh` (`kp1_id`),
+  KEY `FKh49ysedtcnndmfegcpwdmfhay` (`kp2_id`),
+  CONSTRAINT `FK7610gd6g66vnhqx3bc4q9bvh` FOREIGN KEY (`kp1_id`) REFERENCES `knowledge_points` (`id`),
+  CONSTRAINT `FKh49ysedtcnndmfegcpwdmfhay` FOREIGN KEY (`kp2_id`) REFERENCES `knowledge_points` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 正在导出表  ai_learning_partner.knowledge_relations 的数据：~0 rows (大约)
+
 -- 导出  表 ai_learning_partner.lab_attendance 结构
 CREATE TABLE IF NOT EXISTS `lab_attendance` (
   `attendance_id` bigint NOT NULL AUTO_INCREMENT,
@@ -149,6 +180,19 @@ CREATE TABLE IF NOT EXISTS `library_records` (
 
 -- 正在导出表  ai_learning_partner.library_records 的数据：~0 rows (大约)
 
+-- 导出  表 ai_learning_partner.qa_history 结构
+CREATE TABLE IF NOT EXISTS `qa_history` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `answer` text,
+  `created_at` datetime(6) DEFAULT NULL,
+  `knowledge_graph_data` json DEFAULT NULL,
+  `question` text NOT NULL,
+  `user_id` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 正在导出表  ai_learning_partner.qa_history 的数据：~0 rows (大约)
+
 -- 导出  表 ai_learning_partner.study_plans 结构
 CREATE TABLE IF NOT EXISTS `study_plans` (
   `plan_id` bigint NOT NULL AUTO_INCREMENT,
@@ -212,9 +256,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `idx_major` (`major`),
   KEY `idx_grade` (`grade`),
   KEY `idx_college` (`college`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表';
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表';
 
--- 正在导出表  ai_learning_partner.users 的数据：~9 rows (大约)
+-- 正在导出表  ai_learning_partner.users 的数据：~8 rows (大约)
 INSERT INTO `users` (`id`, `student_id`, `username`, `name`, `password`, `gender`, `major`, `college`, `grade`, `class_name`, `email`, `phone`, `avatar_url`, `enrollment_date`, `graduation_date`, `learning_goal`, `learning_preferences`, `account_status`, `last_login_time`, `create_time`, `update_time`, `created_at`, `login_count`, `updated_at`) VALUES
 	(1, '202301001', 'zhangsan', '张三', '123456', 'M', '计算机科学与技术', '计算机学院', '2023', '计科2301', 'zhangsan@edu.cn', '13800138001', 'https://picsum.photos/100/100?random=1', '2023-08-08', '2027-06-06', '成为全栈工程师，掌握AI开发技术', '{"learning_style": "visual", "difficulty_level": "medium", "preferred_subjects": ["编程", "算法"], "preferred_study_time": "evening"}', 'ACTIVE', '2025-11-16 18:19:34', NULL, '2025-11-16 18:19:33.763327', NULL, 4, '2025-11-16 18:19:33.763327'),
 	(2, '202301002', 'lisi', '李四', '123456', 'M', '计算机科学与技术', '计算机学院', '2023', '计科2301', 'lisi@edu.cn', '13800138002', 'https://picsum.photos/100/100?random=2', '2023-08-31', '2027-06-29', '深入算法研究，参加ACM竞赛并获得奖项', '{"learning_style": "logical", "difficulty_level": "high", "preferred_subjects": ["算法", "数学"], "preferred_study_time": "morning"}', 'ACTIVE', '2025-11-10 10:27:07', NULL, NULL, NULL, NULL, NULL),
@@ -224,7 +268,8 @@ INSERT INTO `users` (`id`, `student_id`, `username`, `name`, `password`, `gender
 	(6, '202201001', 'zhengshiyi', '郑十一', '123456', 'M', '计算机科学与技术', '计算机学院', '2022', '计科2201', 'zhengshiyi@edu.cn', '13800138009', 'https://picsum.photos/100/100?random=6', '2022-09-01', '2026-06-30', '深入学习人工智能和机器学习，为研究生阶段做准备', '{"learning_style": "theoretical", "difficulty_level": "high", "preferred_subjects": ["人工智能", "机器学习"], "preferred_study_time": "morning"}', 'ACTIVE', '2024-02-20 07:50:00', NULL, NULL, NULL, NULL, NULL),
 	(7, '202101001', 'lishisan', '李十三', '123456', 'M', '软件工程', '软件学院', '2021', '软工2101', 'lishisan@edu.cn', '13800138011', 'https://picsum.photos/100/100?random=7', '2021-09-01', '2025-06-30', '准备考研，深入研究分布式系统和云计算技术', '{"learning_style": "comprehensive", "difficulty_level": "high", "preferred_subjects": ["分布式系统", "云计算"], "preferred_study_time": "whole_day"}', 'ACTIVE', '2024-02-20 11:20:00', NULL, NULL, NULL, NULL, NULL),
 	(29, '202301110', 'Jasmine', '孙梦云', '123456', 'F', '软件工程', '计算机学院', '2023', '软工2301', '15268660761@163.com', NULL, 'https://picsum.photos/100/100?random=57', NULL, NULL, NULL, NULL, 'ACTIVE', '2025-11-10 08:39:59', NULL, NULL, NULL, NULL, NULL),
-	(30, 'ADMIN001', 'admin', '系统管理员', '123456', 'M', '计算机科学', '计算机学院', '2023', '管理员', 'admin@edu.cn', '13800138000', 'https://picsum.photos/100/100?random=99', '2023-09-01', '2027-06-30', NULL, NULL, 'ACTIVE', NULL, NULL, NULL, NULL, NULL, NULL);
+	(30, 'ADMIN001', 'admin', '系统管理员', '123456', 'M', '计算机科学', '计算机学院', '2023', '管理员', 'admin@edu.cn', '13800138000', 'https://picsum.photos/100/100?random=99', '2023-09-01', '2027-06-30', NULL, NULL, 'ACTIVE', NULL, NULL, NULL, NULL, NULL, NULL),
+	(31, '202301026', 'peng', '彭雨淇', '123456', 'F', '软件工程', '计算机学院', '2023', '软工231', '1235698256@qq.com', NULL, 'https://picsum.photos/100/100?random=19', NULL, NULL, NULL, NULL, 'ACTIVE', '2025-11-17 07:06:48', '2025-11-17 06:41:04.180004', '2025-11-17 07:06:47.749426', '2025-11-17 06:41:04.180004', 3, '2025-11-17 07:06:47.749426');
 
 -- 导出  表 ai_learning_partner.user_role 结构
 CREATE TABLE IF NOT EXISTS `user_role` (
@@ -235,7 +280,7 @@ CREATE TABLE IF NOT EXISTS `user_role` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_user_role` (`user_id`),
   CONSTRAINT `fk_user_role_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户角色表';
 
 -- 正在导出表  ai_learning_partner.user_role 的数据：~9 rows (大约)
 INSERT INTO `user_role` (`id`, `user_id`, `role`, `created_at`) VALUES
@@ -247,7 +292,8 @@ INSERT INTO `user_role` (`id`, `user_id`, `role`, `created_at`) VALUES
 	(6, 6, 'STUDENT', '2025-11-16 15:54:38'),
 	(7, 7, 'STUDENT', '2025-11-16 15:54:38'),
 	(8, 29, 'STUDENT', '2025-11-16 15:54:38'),
-	(9, 30, 'ADMIN', '2025-11-16 15:54:38');
+	(9, 30, 'ADMIN', '2025-11-16 15:54:38'),
+	(10, 31, 'STUDENT', '2025-11-16 22:41:04');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

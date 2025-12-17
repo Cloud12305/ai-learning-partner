@@ -1,4 +1,5 @@
 com\digitalhorsepower\learnbuddy\service\ProgressService.class
+com\digitalhorsepower\learnbuddy\vo\AcademicStatsVO.class
 com\digitalhorsepower\learnbuddy\entity\LibraryRecord.class
 com\digitalhorsepower\learnbuddy\controller\KnowledgeQAController.class
 com\digitalhorsepower\learnbuddy\repository\LabAttendanceRepository.class
@@ -9,14 +10,13 @@ com\digitalhorsepower\learnbuddy\service\KnowledgeGraphBuilder.class
 com\digitalhorsepower\learnbuddy\dto\QAResponse$KnowledgeLink.class
 com\digitalhorsepower\learnbuddy\config\GlobalExceptionHandler.class
 com\digitalhorsepower\learnbuddy\service\LibraryRecordService.class
-com\digitalhorsepower\learnbuddy\controller\AuthController$LoginRequest.class
 com\digitalhorsepower\learnbuddy\common\Result.class
 com\digitalhorsepower\learnbuddy\dto\StudyPlanDto.class
 com\digitalhorsepower\learnbuddy\service\PsychologyService.class
 com\digitalhorsepower\learnbuddy\dto\PsychologyRequest.class
 com\digitalhorsepower\learnbuddy\entity\KnowledgePoint.class
+com\digitalhorsepower\learnbuddy\controller\AcademicProfileController$SemesterData.class
 com\digitalhorsepower\learnbuddy\service\AcademicRecordService.class
-com\digitalhorsepower\learnbuddy\controller\AuthController.class
 com\digitalhorsepower\learnbuddy\dto\PsychologyResponse.class
 com\digitalhorsepower\learnbuddy\config\WebConfig.class
 com\digitalhorsepower\learnbuddy\dto\QAResponse$KnowledgeGraphData.class
@@ -25,7 +25,12 @@ com\digitalhorsepower\learnbuddy\dto\QAResponse$GraphLink.class
 com\digitalhorsepower\learnbuddy\repository\UserRepository.class
 com\digitalhorsepower\learnbuddy\service\StudyPlanService.class
 com\digitalhorsepower\learnbuddy\entity\Course.class
+com\digitalhorsepower\learnbuddy\controller\UserController$LoginRequest.class
+com\digitalhorsepower\learnbuddy\vo\AcademicOverviewVO.class
+com\digitalhorsepower\learnbuddy\controller\AcademicProfileController.class
 com\digitalhorsepower\learnbuddy\controller\UserController.class
+com\digitalhorsepower\learnbuddy\service\AcademicProfileService.class
+com\digitalhorsepower\learnbuddy\vo\AcademicProfileVO.class
 com\digitalhorsepower\learnbuddy\service\LabAttendanceService.class
 com\digitalhorsepower\learnbuddy\dto\QAResponse.class
 com\digitalhorsepower\learnbuddy\repository\KnowledgeRelationRepository.class
@@ -33,12 +38,14 @@ com\digitalhorsepower\learnbuddy\dto\BaseResponse.class
 com\digitalhorsepower\learnbuddy\dto\QAResponse$GraphNode.class
 com\digitalhorsepower\learnbuddy\service\UserService.class
 com\digitalhorsepower\learnbuddy\dto\UserDto.class
+com\digitalhorsepower\learnbuddy\vo\AcademicOverviewVO$SemesterGPA.class
 com\digitalhorsepower\learnbuddy\repository\KnowledgePointRepository.class
 com\digitalhorsepower\learnbuddy\entity\LearningProgress.class
 com\digitalhorsepower\learnbuddy\repository\StudyPlanRepository.class
 com\digitalhorsepower\learnbuddy\repository\EmotionRecordRepository.class
 com\digitalhorsepower\learnbuddy\entity\LabAttendance.class
 com\digitalhorsepower\learnbuddy\dto\QARequest.class
+com\digitalhorsepower\learnbuddy\service\MockDataService.class
 com\digitalhorsepower\learnbuddy\repository\UserRoleRepository.class
 com\digitalhorsepower\learnbuddy\repository\LearningProgressRepository.class
 com\digitalhorsepower\learnbuddy\entity\AcademicRecord.class
@@ -56,6 +63,5 @@ com\digitalhorsepower\learnbuddy\repository\LibraryRecordRepository.class
 com\digitalhorsepower\learnbuddy\entity\StudyPlan.class
 com\digitalhorsepower\learnbuddy\entity\UserRole.class
 com\digitalhorsepower\learnbuddy\entity\KnowledgeRelation.class
-com\digitalhorsepower\learnbuddy\config\DataInitializer.class
 com\digitalhorsepower\learnbuddy\dto\LoginRequest.class
 com\digitalhorsepower\learnbuddy\LearnBuddyBackendApplication.class

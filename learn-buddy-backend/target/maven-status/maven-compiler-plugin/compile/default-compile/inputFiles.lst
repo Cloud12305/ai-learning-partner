@@ -1,12 +1,15 @@
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\AcademicProfileService.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\StudyPlanController.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\GlobalExceptionHandler.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\vo\AcademicOverviewVO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\vo\AcademicProfileVO.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\LearningProgressRepository.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\LearnBuddyBackendApplication.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\PsychologyController.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\User.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\AcademicRecordRepository.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\KnowledgeGraphService.java
-F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\DataInitializer.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\AcademicProfileController.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\KnowledgeGraphBuilder.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\KnowledgePoint.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserRepository.java
@@ -27,11 +30,11 @@ F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\common\Result.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\LabAttendanceService.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\StudyPlanRepository.java
-F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\AuthController.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\EmotionRecordRepository.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\PsychologyRequest.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\LabAttendance.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\StudyPlanService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\MockDataService.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\util\JwtUtil.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\QARequest.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\StudyPlan.java
@@ -46,6 +49,7 @@ F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\UserController.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\PsychologyService.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\UserService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\vo\AcademicStatsVO.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserRoleRepository.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\KnowledgeRelation.java
 F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\LibraryRecord.java

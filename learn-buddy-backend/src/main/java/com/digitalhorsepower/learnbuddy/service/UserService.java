@@ -21,7 +21,7 @@ public class UserService {
     @Autowired
     private UserRoleRepository userRoleRepository;
 
-    // 添加 authenticate 方法 - 从数据库验证用户
+    // 从数据库验证用户
     public User authenticate(String username, String password) {
         try {
             Optional<User> userOptional;
@@ -47,7 +47,6 @@ public class UserService {
                     user.setLoginCount(user.getLoginCount() != null ? user.getLoginCount() + 1 : 1);
                     user.setLastLoginTime(LocalDateTime.now());
                     User savedUser = userRepository.save(user);
-
                     // 设置角色信息
                     String role = getUserRole(savedUser.getId());
                     savedUser.setRole(role);
@@ -60,8 +59,9 @@ public class UserService {
             throw new RuntimeException("认证过程中发生错误: " + e.getMessage());
         }
     }
+
     /**
-     * 验证用户登录（原有方法）
+     * 验证用户登录
      */
     @Transactional
     public Optional<User> validateLogin(String username, String password) {
@@ -98,6 +98,7 @@ public class UserService {
         }
         return Optional.empty();
     }
+
     public List<User> getAllUsers() {
         List<User> users = userRepository.findAll();
         // 为每个用户设置角色信息
@@ -292,6 +293,9 @@ public class UserService {
             if (userDetails.getPhone() != null) {
                 user.setPhone(userDetails.getPhone());
             }
+            if (userDetails.getAccountStatus() != null) {
+                user.setAccountStatus(userDetails.getAccountStatus());
+            }
 
             User updatedUser = userRepository.save(user);
 
@@ -344,6 +348,28 @@ public class UserService {
         students.forEach(user -> user.setRole("STUDENT"));
         return students;
     }
+    /**
+     * 更新用户学习目标
+     */
+    @Transactional
+    public boolean updateLearningGoal(Long userId, String learningGoal) {
+        try {
+            return userRepository.findById(userId)
+                    .map(user -> {
+                        // 更新学习目标
+                        user.setLearningGoal(learningGoal);
+                        user.setUpdateTime(LocalDateTime.now()); // 添加更新时间
+                        userRepository.save(user);
+                        return true;
+                    })
+                    .orElseGet(() -> {
+                        return false;
+                    });
+        } catch (Exception e) {
+             return false;
+        }
+    }
+
 
     /**
      * 检查用户是否有权限执行管理操作
@@ -351,4 +377,5 @@ public class UserService {
     public boolean hasAdminPermission(Long userId) {
         return isAdmin(userId);
     }
+
 }

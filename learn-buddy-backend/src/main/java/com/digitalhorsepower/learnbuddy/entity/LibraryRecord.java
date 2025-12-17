@@ -1,22 +1,20 @@
 package com.digitalhorsepower.learnbuddy.entity;
 
-import javax.persistence.*;
 import lombok.Data;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
 @Table(name = "library_records")
+@Data
 public class LibraryRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "record_id")
     private Long recordId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", referencedColumnName = "student_id", nullable = false)
-    private User user;
+    @Column(name = "student_id", nullable = false)
+    private String studentId;
 
     @Column(name = "book_id", nullable = false)
     private String bookId;
@@ -33,6 +31,7 @@ public class LibraryRecord {
     @Column(name = "book_category")
     private String bookCategory;
 
+    @Column(name = "publisher")
     private String publisher;
 
     @Column(name = "publish_year")
@@ -49,9 +48,4 @@ public class LibraryRecord {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
 }

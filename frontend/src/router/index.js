@@ -8,8 +8,9 @@ import CourseLearning from '../views/CourseLearning.vue'
 import LearningProgress from '../views/LearningProgress.vue'
 import JobMatching from '../views/JobMatching.vue'
 import PracticalTraining from '../views/PracticalTraining.vue'
-import KnowledgeAnswering from '../views/KnowledgeAnswering.vue'
-import PsychologyCompanion from '../views/PsychologyCompanion.vue'
+import KnowledgeAnswering from '../views/KnowledgeAnswering.vue' // 知识答疑页面
+import PsychologyCompanion from '../views/PsychologyCompanion.vue' // 心理陪伴页面
+
 
 const routes = [
     {
