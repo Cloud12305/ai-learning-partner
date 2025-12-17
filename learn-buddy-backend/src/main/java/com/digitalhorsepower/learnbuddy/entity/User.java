@@ -1,13 +1,19 @@
 package com.digitalhorsepower.learnbuddy.entity;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+
+import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -79,6 +85,13 @@ public class User {
     @Column(name = "update_time")
     private LocalDateTime updateTime;
 
+    @Transient
+    private String role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private UserRole userRole;
+
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
@@ -96,11 +109,36 @@ public class User {
         if (this.avatarUrl == null) {
             this.avatarUrl = "https://picsum.photos/100/100?random=" + (int)(Math.random() * 100);
         }
+        if (this.grade == null || this.grade.isEmpty()) {
+            this.grade = "大一";
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
         this.updateTime = LocalDateTime.now();
+    }
+
+    public String getRole() {
+        if (this.role != null) {
+            return this.role;
+        }
+        if (this.userRole != null) {
+            return this.userRole.getRole();
+        }
+        return "STUDENT";
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isAdmin() {
+        return "ADMIN".equals(getRole());
+    }
+
+    public boolean isStudent() {
+        return "STUDENT".equals(getRole());
     }
 }

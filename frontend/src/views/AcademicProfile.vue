@@ -1,795 +1,1292 @@
 <template>
-  <div class="pt-16 min-h-screen bg-neutral-50">
-    <!-- 顶部信息栏 -->
-    <div class="bg-white shadow-sm sticky top-16 z-40">
+  <div class="relative min-h-screen font-inter antialiased bg-gradient-to-br from-blue-50 to-indigo-50">
+    <TopNavbar />
+
+    <main class="pt-20">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row justify-between items-center py-4">
-          <div class="flex items-center mb-4 md:mb-0">
-            <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
-              <img :src="userInfo.avatar_url || 'https://picsum.photos/100/100?random=10'" alt="用户头像" class="w-full h-full object-cover">
-            </div>
-            <div>
-              <h2 class="text-xl font-bold">{{ userInfo.name || '加载中...' }}</h2>
-              <p class="text-neutral-500 text-sm">{{ userInfo.major }} | {{ userInfo.grade }} | 学号: {{ userInfo.student_id }}</p>
-            </div>
-          </div>
-          <div class="flex items-center space-x-4">
-            <Button type="text" class="text-neutral-600 hover:text-primary transition-colors">
-              <i class="fa fa-bell-o text-xl"></i>
-            </Button>
-            <Button type="text" class="text-neutral-600 hover:text-primary transition-colors">
-              <i class="fa fa-cog text-xl"></i>
-            </Button>
-            <Button
-                @click="handleLogout"
-                class="px-4 py-2 text-neutral-600 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
-            >
-              退出登录
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+        <div class="mb-12">
+          <!-- 页面头部 -->
+          <PageHeader />
 
-    <!-- 主要内容 -->
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- 个人信息栏 -->
-      <Card class="mb-8 shadow-card">
-        <h3 class="text-xl font-semibold mb-6">个人信息</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div class="space-y-2">
-            <p class="text-neutral-600"><strong>姓名:</strong> {{ userInfo.name }}</p>
-            <p class="text-neutral-600"><strong>学号:</strong> {{ userInfo.student_id }}</p>
-            <p class="text-neutral-600"><strong>学院:</strong> {{ userInfo.college }}</p>
-          </div>
-          <div class="space-y-2">
-            <p class="text-neutral-600"><strong>专业:</strong> {{ userInfo.major }}</p>
-            <p class="text-neutral-600"><strong>年级:</strong> {{ userInfo.grade }}</p>
-            <p class="text-neutral-600"><strong>班级:</strong> {{ userInfo.class_name }}</p>
-          </div>
-          <div class="space-y-2">
-            <p class="text-neutral-600"><strong>邮箱:</strong> {{ userInfo.email || '未设置' }}</p>
-            <p class="text-neutral-600"><strong>电话:</strong> {{ userInfo.phone || '未设置' }}</p>
-            <p class="text-neutral-600"><strong>入学时间:</strong> {{ formatDate(userInfo.enrollment_date) }}</p>
-          </div>
-        </div>
-      </Card>
+          <!-- 加载状态 -->
+          <LoadingState v-if="loading" />
 
-      <!-- 学业数据概览 -->
-      <Card class="mb-8 shadow-card">
-        <h3 class="text-xl font-semibold mb-6">学业数据概览</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="text-center cursor-pointer" @click="showAllCourses = true">
-            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-secondary/10 mb-3 hover:bg-secondary/20 transition-colors">
-              <span class="text-3xl font-bold text-secondary">{{ academicStats.averageGPA }}</span>
-            </div>
-            <p class="text-neutral-600">平均GPA</p>
-            <p class="text-sm text-neutral-400 mt-1">点击查看全部成绩</p>
-          </div>
-          <div class="text-center cursor-pointer" @click="showAllLabs = true">
-            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-accent/10 mb-3 hover:bg-accent/20 transition-colors">
-              <span class="text-3xl font-bold text-accent">{{ academicStats.labProjects }}</span>
-            </div>
-            <p class="text-neutral-600">实验项目</p>
-            <p class="text-sm text-neutral-400 mt-1">点击查看实验室详情</p>
-          </div>
-          <div class="text-center cursor-pointer" @click="showAllBooks = true">
-            <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-success/10 mb-3 hover:bg-success/20 transition-colors">
-              <span class="text-3xl font-bold text-success">{{ academicStats.borrowedBooks }}</span>
-            </div>
-            <p class="text-neutral-600">借阅书籍</p>
-            <p class="text-sm text-neutral-400 mt-1">点击查看借阅详情</p>
-          </div>
-        </div>
-      </Card>
+          <!-- 错误状态 -->
+          <ErrorState v-else-if="error" :error="error" @reload="loadData" />
 
-      <!-- 教务系统成绩单 -->
-      <Card class="mb-8 shadow-card">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h3 class="text-xl font-semibold">教务系统成绩单</h3>
-          <div class="flex flex-wrap gap-2">
-            <Button
-                type="primary"
-                class="px-3 py-1 text-sm"
-                @click="showAllCourses = true"
-            >
-              查看全部成绩
-            </Button>
-          </div>
-        </div>
-
-        <!-- GPA趋势图 -->
-        <div class="mb-8 h-64">
-          <canvas id="gpaChart"></canvas>
-        </div>
-
-        <!-- 课程成绩表格 -->
-        <CourseTable :courses="courses" />
-
-        <div class="mt-4 text-center">
-          <Button
-              type="text"
-              class="text-primary hover:text-primary/80 text-sm"
-              @click="showAllCourses = true"
-          >
-            查看全部课程 <i class="fa fa-angle-right ml-1"></i>
-          </Button>
-        </div>
-      </Card>
-
-      <!-- 实验室情况 -->
-      <Card class="mb-8 shadow-card">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h3 class="text-xl font-semibold">实验室情况</h3>
-          <Button
-              type="primary"
-              class="px-3 py-1 text-sm"
-              @click="showAllLabs = true"
-          >
-            查看实验室详情
-          </Button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <!-- 实验室参与统计 -->
-          <div>
-            <h4 class="text-lg font-medium mb-4">实验室参与统计</h4>
-            <div class="h-64">
-              <canvas id="labParticipationChart"></canvas>
-            </div>
-          </div>
-
-          <!-- 实验室时间分布 -->
-          <div>
-            <h4 class="text-lg font-medium mb-4">实验室时间分布</h4>
-            <div class="h-64">
-              <canvas id="labTimeChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- 参与的实验项目 -->
-        <h4 class="text-lg font-medium mb-4">参与的实验项目</h4>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <LabProjectCard
-              v-for="project in labProjects"
-              :key="project.id"
-              :title="project.title"
-              :description="project.description"
-              :status="project.status"
-              :date="project.date"
-              :members="project.members"
-          />
-        </div>
-      </Card>
-
-      <!-- 图书馆情况 -->
-      <Card class="shadow-card">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h3 class="text-xl font-semibold">图书馆情况</h3>
-          <Button
-              type="primary"
-              class="px-3 py-1 text-sm"
-              @click="showAllBooks = true"
-          >
-            查看借阅详情
-          </Button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <!-- 借阅类别分布 -->
-          <div>
-            <h4 class="text-lg font-medium mb-4">借阅类别分布</h4>
-            <div class="h-64">
-              <canvas id="bookCategoryChart"></canvas>
-            </div>
-          </div>
-
-          <!-- 借阅趋势 -->
-          <div>
-            <h4 class="text-lg font-medium mb-4">借阅趋势</h4>
-            <div class="h-64">
-              <canvas id="borrowingTrendChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- 最近借阅书籍 -->
-        <h4 class="text-lg font-medium mb-4">最近借阅书籍</h4>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <BookCard
-              v-for="book in recentBooks"
-              :key="book.id"
-              :title="book.title"
-              :author="book.author"
-              :category="book.category"
-              :date="book.date"
-              :image="book.image"
-          />
-        </div>
-      </Card>
-    </div>
-
-    <!-- 全部课程弹窗 -->
-    <a-modal
-        v-model:visible="showAllCourses"
-        title="全部课程成绩"
-        width="90%"
-        :footer="null"
-    >
-      <div class="max-h-96 overflow-y-auto">
-        <CourseTable :courses="allCourses" />
-      </div>
-    </a-modal>
-
-    <!-- 实验室详情弹窗 -->
-    <a-modal
-        v-model:visible="showAllLabs"
-        title="实验室详情"
-        width="90%"
-        :footer="null"
-    >
-      <div class="space-y-6">
-        <div>
-          <h4 class="text-lg font-semibold mb-4">所有实验项目</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <LabProjectCard
-                v-for="project in allLabProjects"
-                :key="project.id"
-                :title="project.title"
-                :description="project.description"
-                :status="project.status"
-                :date="project.date"
-                :members="project.members"
+          <!-- 内容区域 -->
+          <template v-else>
+            <!-- 学生视图 -->
+            <StudentView
+                v-if="!isAdmin"
+                :profile="profile"
+                :learning-goal="learningGoal"
+                @show-all-courses="showAllCourses"
+                @show-all-labs="showAllLabs"
+                @show-all-books="showAllBooks"
+                @edit-learning-goal="showEditLearningGoal"
+                @update-info="updateUserInfo"
             />
-          </div>
-        </div>
 
-        <div>
-          <h4 class="text-lg font-semibold mb-4">实验室统计</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="h-64">
-              <canvas id="detailLabChart"></canvas>
-            </div>
-            <div class="h-64">
-              <canvas id="detailTimeChart"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
-    </a-modal>
-
-    <!-- 借阅详情弹窗 -->
-    <a-modal
-        v-model:visible="showAllBooks"
-        title="借阅详情"
-        width="90%"
-        :footer="null"
-    >
-      <div class="space-y-6">
-        <div>
-          <h4 class="text-lg font-semibold mb-4">所有借阅书籍</h4>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <BookCard
-                v-for="book in allBooks"
-                :key="book.id"
-                :title="book.title"
-                :author="book.author"
-                :category="book.category"
-                :date="book.date"
-                :image="book.image"
+            <!-- 管理员视图 -->
+            <AdminView
+                v-else
+                :admin-active-tab="adminActiveTab"
+                :admin-courses="adminCourses"
+                :admin-labs="adminLabs"
+                :admin-books="adminBooks"
+                :admin-students="adminStudents"
+                :admin-info="adminInfo"
+                :admin-stats="adminStats"
+                @switch-tab="switchAdminTab"
+                @add-course="showAddCourseDialog"
+                @edit-course="editCourse"
+                @delete-course="deleteCourse"
+                @add-lab="showAddLabDialog"
+                @edit-lab="editLab"
+                @delete-lab="deleteLab"
+                @add-book="showAddBookDialog"
+                @edit-book="editBook"
+                @delete-book="deleteBook"
+                @add-student="showAddStudentDialog"
+                @edit-student="editStudent"
+                @toggle-status="toggleStudentStatus"
+                @delete-student="deleteStudent"
+                @update-admin-info="updateAdminInfo"
             />
-          </div>
-        </div>
-
-        <div>
-          <h4 class="text-lg font-semibold mb-4">借阅分析</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="h-64">
-              <canvas id="detailCategoryChart"></canvas>
-            </div>
-            <div class="h-64">
-              <canvas id="detailTrendChart"></canvas>
-            </div>
-          </div>
+          </template>
         </div>
       </div>
-    </a-modal>
+    </main>
+
+    <PageFooter />
+
+    <!-- 对话框组件 -->
+    <AddCourseDialog
+        v-if="addCourseDialogVisible"
+        :visible="addCourseDialogVisible"
+        @close="closeAddCourseDialog"
+        @save="handleSaveCourse"
+    />
+
+    <EditCourseDialog
+        v-if="editCourseDialogVisible"
+        :visible="editCourseDialogVisible"
+        :course="currentEditCourse"
+        @close="closeEditCourseDialog"
+        @save="handleUpdateCourse"
+    />
+
+    <AddLabDialog
+        v-if="addLabDialogVisible"
+        :visible="addLabDialogVisible"
+        @close="closeAddLabDialog"
+        @save="handleAddLab"
+    />
+
+    <EditLabDialog
+        v-if="editLabDialogVisible"
+        :visible="editLabDialogVisible"
+        :lab="currentLab"
+        @close="closeEditLabDialog"
+        @save="handleEditLab"
+    />
+
+    <AddBookDialog
+        v-if="addBookDialogVisible"
+        :visible="addBookDialogVisible"
+        @close="closeAddBookDialog"
+        @save="handleAddBook"
+    />
+
+    <EditBookDialog
+        v-if="editBookDialogVisible"
+        :visible="editBookDialogVisible"
+        :book-data="currentBook"
+        @close="closeEditBookDialog"
+        @save="handleEditBook"
+    />
+
+    <AddStudentsDialog
+        v-if="addStudentDialogVisible"
+        :visible="addStudentDialogVisible"
+        @close="closeAddStudentDialog"
+        @save="handleAddStudent"
+    />
+
+    <EditStudentsDialog
+        v-if="editStudentDialogVisible"
+        :visible="editStudentDialogVisible"
+        :student-data="currentStudent"
+        @close="closeEditStudentDialog"
+        @save="handleEditStudent"
+    />
+
+    <EditLearningGoalDialog
+        v-if="editGoalDialogVisible"
+        :visible="editGoalDialogVisible"
+        :learning-goal="learningGoal"
+        @update:learning-goal="learningGoal = $event"
+        @close="editGoalDialogVisible = false"
+        @save="saveLearningGoal"
+    />
+
+    <ConfirmDialog
+        v-if="confirmDialogVisible"
+        :visible="confirmDialogVisible"
+        :title="confirmDialogTitle || ''"
+        :message="confirmDialogMessage || ''"
+        @close="handleCloseConfirmDialog"
+        @confirm="handleConfirmAction"
+    />
+
+    <!-- 查看全部对话框 -->
+    <ViewAllDialog
+        v-if="viewAllDialogVisible"
+        :visible="viewAllDialogVisible"
+        :title="viewAllDialogTitle"
+        :type="viewAllDialogType"
+        :data="viewAllDialogData"
+        @close="closeViewAllDialog"
+    />
   </div>
 </template>
 
 <script>
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { Card, Button, message, Modal } from 'ant-design-vue'
-import { Chart, registerables } from 'chart.js'
-import CourseTable from '../components/CourseTable.vue'
-import LabProjectCard from '../components/LabProjectCard.vue'
-import BookCard from '../components/BookCard.vue'
+import {ref, onMounted} from 'vue'
+import TopNavbar from '../component/TopNavbar.vue'
+import PageFooter from '../component/PageFooter.vue'
+import PageHeader from '../component/PageHeader.vue'
+import LoadingState from '../component/LoadingState.vue'
+import ErrorState from '../component/ErrorState.vue'
+import StudentView from '../component/StudentView.vue'
+import AdminView from '../component/AdminView.vue'
+import AddCourseDialog from '../component/AddCourseDialog.vue'
+import EditCourseDialog from '../component/EditCourseDialog.vue'
+import AddLabDialog from '../component/AddLabDialog.vue'
+import EditLabDialog from '../component/EditLabDialog.vue'
+import AddBookDialog from '../component/AddBookDialog.vue'
+import EditBookDialog from '../component/EditBookDialog.vue'
+import AddStudentsDialog from '../component/AddStudentsDialog.vue'
+import EditStudentsDialog from '../component/EditStudentsDialog.vue'
+import EditLearningGoalDialog from '../component/EditLearningGoalDialog.vue'
+import ConfirmDialog from '../component/ConfirmDialog.vue'
+import ViewAllDialog from '../component/ViewAllDialog.vue'
 
-// 注册Chart.js组件
-Chart.register(...registerables)
+
+import {academicProfileApi, userApi} from '@/services/api'
+
 
 export default {
+  name: 'AcademicProfileView',
+
   components: {
-    Card,
-    Button,
-    CourseTable,
-    LabProjectCard,
-    BookCard,
-    'a-modal': Modal
+    TopNavbar,
+    PageFooter,
+    PageHeader,
+    LoadingState,
+    ErrorState,
+    StudentView,
+    AdminView,
+    AddCourseDialog,
+    EditCourseDialog,
+    EditLearningGoalDialog,
+    ConfirmDialog,
+    ViewAllDialog,
+    AddLabDialog,
+    EditLabDialog,
+    AddBookDialog,
+    EditBookDialog,
+    AddStudentsDialog,
+    EditStudentsDialog
   },
+
   setup() {
-    const router = useRouter()
-
-    // 弹窗控制
-    const showAllCourses = ref(false)
-    const showAllLabs = ref(false)
-    const showAllBooks = ref(false)
-
-    // 用户信息
-    const userInfo = ref({
-      name: '',
-      student_id: '',
-      major: '',
-      grade: '',
-      avatar_url: '',
-      college: '',
-      class_name: '',
-      email: '',
-      phone: '',
-      enrollment_date: ''
+    // 状态管理
+    const loading = ref(true)
+    const error = ref(null)
+    const profile = ref({
+      userInfo: {
+        learningGoal: ''
+      },
+      courses: [],
+      labs: [],
+      books: [],
+      stats: {}
     })
+    const isAdmin = ref(false)
 
-    // 学业统计数据
-    const academicStats = ref({
-      averageGPA: 0,
-      labProjects: 0,
-      borrowedBooks: 0
-    })
+    // 学习相关数据
+    const learningGoal = ref('')
 
-    // 课程数据
-    const courses = ref([])
-    const allCourses = ref([])
+    // 管理员状态
+    const adminActiveTab = ref('courses')
+    const adminCourses = ref([])
+    const adminLabs = ref([])
+    const adminBooks = ref([])
+    const adminStudents = ref([])
+    const adminInfo = ref({})
+    const adminStats = ref({})
 
-    // 实验项目数据
-    const labProjects = ref([])
-    const allLabProjects = ref([])
+    // 对话框状态
+    const viewAllDialogVisible = ref(false)
+    const viewAllDialogTitle = ref('')
+    const viewAllDialogType = ref('')
+    const viewAllDialogData = ref([])
 
-    // 书籍数据
-    const recentBooks = ref([])
-    const allBooks = ref([])
+    const editGoalDialogVisible = ref(false)
+    const confirmDialogVisible = ref(false)
+    const confirmDialogTitle = ref('')
+    const confirmDialogMessage = ref('')
 
-    // 格式化日期
-    const formatDate = (dateString) => {
-      if (!dateString) return '未设置'
-      const date = new Date(dateString)
-      return date.toLocaleDateString('zh-CN')
+    // 课程相关对话框
+    const addCourseDialogVisible = ref(false)
+    const editCourseDialogVisible = ref(false)
+    const currentEditCourse = ref(null)
+    const dialogCallback = ref(null)
+
+    // 实验室管理状态
+    const addLabDialogVisible = ref(false)
+    const editLabDialogVisible = ref(false)
+    const currentLab = ref(null)
+
+    // 图书管理状态
+    const addBookDialogVisible = ref(false)
+    const editBookDialogVisible = ref(false)
+    const currentBook = ref(null)
+
+    // 学生管理状态
+    const addStudentDialogVisible = ref(false)
+    const editStudentDialogVisible = ref(false)
+    const currentStudent = ref(null)
+
+    // 通用方法
+    const showConfirmDialog = (title, message, callback = null) => {
+      confirmDialogTitle.value = title || ''
+      confirmDialogMessage.value = message || ''
+      dialogCallback.value = callback
+      confirmDialogVisible.value = true
     }
 
-    // 获取用户信息
-    const fetchUserInfo = async () => {
-      try {
-        const storedUser = localStorage.getItem('user')
-        if (storedUser) {
-          const userData = JSON.parse(storedUser)
-          userInfo.value = {
-            name: userData.name || '',
-            student_id: userData.student_id || userData.studentId || userData.username || '',
-            major: userData.major || '',
-            grade: userData.grade || '',
-            avatar_url: userData.avatar_url || userData.avatarUrl || '',
-            college: userData.college || '',
-            class_name: userData.class_name || userData.className || '',
-            email: userData.email || '',
-            phone: userData.phone || '',
-            enrollment_date: userData.enrollment_date || userData.enrollmentDate || ''
-          }
+    const handleCloseConfirmDialog = () => {
+      confirmDialogVisible.value = false
+      confirmDialogTitle.value = ''
+      confirmDialogMessage.value = ''
+      dialogCallback.value = null
+    }
 
-          console.log('学业画像用户信息:', userInfo.value)
-          calculateAcademicStats()
+    const handleConfirmAction = () => {
+      if (dialogCallback.value && typeof dialogCallback.value === 'function') {
+        try {
+          dialogCallback.value()
+        } catch (err) {
+          console.error('回调函数执行失败:', err)
+        }
+      }
+      handleCloseConfirmDialog()
+    }
+
+    // 检查用户角色
+    const checkUserRole = () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}')
+        isAdmin.value = user.role === 'ADMIN'
+        return isAdmin.value
+      } catch {
+        isAdmin.value = false
+        return false
+      }
+    }
+
+    // 加载数据
+    const loadData = async () => {
+      try {
+        loading.value = true
+        error.value = null
+
+        const userIsAdmin = checkUserRole()
+
+        if (userIsAdmin) {
+          await loadAdminData()
         } else {
-          message.warning('请先登录')
-          router.push('/')
+          await loadAcademicProfile()
         }
-      } catch (error) {
-        console.error('获取用户信息失败:', error)
-        message.error('获取用户信息失败')
+      } catch (err) {
+        error.value = err.message || '加载数据失败，请稍后重试'
+        console.error('加载数据失败:', err)
+      } finally {
+        loading.value = false
       }
     }
 
-    // 计算学业统计数据
-    const calculateAcademicStats = () => {
-      academicStats.value = {
-        averageGPA: 3.7,
-        labProjects: 12,
-        borrowedBooks: 36
-      }
-    }
-
-    // 获取课程成绩数据
-    const fetchCourseData = async () => {
+    // 加载学生学业画像
+    const loadAcademicProfile = async () => {
       try {
-        // 模拟数据
-        courses.value = [
-          { id: 1, name: '数据结构与算法', credit: 4, score: 92, grade: 'A', semester: '大二上' },
-          { id: 2, name: '计算机组成原理', credit: 4, score: 85, grade: 'A-', semester: '大二上' },
-          { id: 3, name: '操作系统', credit: 4, score: 88, grade: 'A-', semester: '大二下' },
-          { id: 4, name: '计算机网络', credit: 3, score: 80, grade: 'B+', semester: '大二下' },
-          { id: 5, name: '人工智能导论', credit: 3, score: 95, grade: 'A', semester: '大三上' }
-        ]
-
-        // 全部课程数据
-        allCourses.value = [
-          ...courses.value,
-          { id: 6, name: '高等数学', credit: 6, score: 89, grade: 'A-', semester: '大一上' },
-          { id: 7, name: '线性代数', credit: 4, score: 91, grade: 'A', semester: '大一上' },
-          { id: 8, name: '概率论', credit: 4, score: 87, grade: 'A-', semester: '大一下' },
-          { id: 9, name: 'C语言程序设计', credit: 3, score: 94, grade: 'A', semester: '大一下' },
-          { id: 10, name: 'Java程序设计', credit: 3, score: 88, grade: 'A-', semester: '大二上' }
-        ]
-      } catch (error) {
-        console.error('获取课程数据失败:', error)
+        const response = await academicProfileApi.getCurrentProfile()
+        if (response.code === 200 || response.success) {
+          const data = response.data || response
+          profile.value = {
+            userInfo: {
+              learningGoal: '',
+              ...data.userInfo
+            },
+            courses: data.courses?.map(course => ({
+              ...course,
+              gradePoint: course.grade_point || course.gradePoint,
+              creditEarned: course.credit_earned || course.creditEarned
+            })) || [],
+            labs: data.labs || [],
+            books: data.books || [],
+            stats: data.stats || {},
+            ...data
+          }
+          loadLearningGoal()
+        }
+      } catch (err) {
+        console.error('加载学业画像失败:', err)
       }
     }
 
-    // 获取实验项目数据
-    const fetchLabData = async () => {
-      labProjects.value = [
-        {
-          id: 1,
-          title: '智能推荐系统',
-          description: '基于协同过滤算法的个性化推荐系统设计与实现',
-          status: 'completed',
-          date: '2023.09-2023.12',
-          members: 3
-        },
-        {
-          id: 2,
-          title: '图像识别应用',
-          description: '基于CNN的图像分类与识别系统开发',
-          status: 'completed',
-          date: '2024.03-2024.06',
-          members: 4
-        },
-        {
-          id: 3,
-          title: '大数据分析平台',
-          description: '基于Spark的分布式数据处理与分析平台',
-          status: 'inProgress',
-          date: '2024.09-至今',
-          members: 5
-        }
-      ]
+    // 加载管理员数据
+    const loadAdminData = async () => {
+      try {
+        await loadAdminInfo()
 
-      allLabProjects.value = [
-        ...labProjects.value,
-        {
-          id: 4,
-          title: 'Web应用开发',
-          description: '基于Vue和Spring Boot的全栈Web应用开发',
-          status: 'completed',
-          date: '2023.03-2023.06',
-          members: 3
-        },
-        {
-          id: 5,
-          title: '移动应用开发',
-          description: '基于React Native的跨平台移动应用开发',
-          status: 'completed',
-          date: '2023.09-2023.12',
-          members: 2
-        },
-        {
-          id: 6,
-          title: '数据库设计',
-          description: '关系型数据库设计与优化实践',
-          status: 'completed',
-          date: '2024.03-2024.04',
-          members: 4
-        }
-      ]
-    }
-
-    // 获取书籍数据
-    const fetchBookData = async () => {
-      recentBooks.value = [
-        {
-          id: 1,
-          title: '深度学习',
-          author: 'Ian Goodfellow 等',
-          category: '计算机科学',
-          date: '2024.09.15',
-          image: 'https://picsum.photos/200/300?random=20'
-        },
-        {
-          id: 2,
-          title: 'Python编程：从入门到实践',
-          author: 'Eric Matthes',
-          category: '编程语言',
-          date: '2024.08.22',
-          image: 'https://picsum.photos/200/300?random=21'
-        },
-        {
-          id: 3,
-          title: '数据结构与算法分析',
-          author: 'Mark Allen Weiss',
-          category: '计算机科学',
-          date: '2024.07.30',
-          image: 'https://picsum.photos/200/300?random=22'
-        },
-        {
-          id: 4,
-          title: '人工智能：一种现代方法',
-          author: 'Stuart Russell',
-          category: '人工智能',
-          date: '2024.07.15',
-          image: 'https://picsum.photos/200/300?random=23'
-        }
-      ]
-
-      allBooks.value = [
-        ...recentBooks.value,
-        {
-          id: 5,
-          title: '计算机组成与设计',
-          author: 'David A. Patterson',
-          category: '计算机科学',
-          date: '2024.06.20',
-          image: 'https://picsum.photos/200/300?random=24'
-        },
-        {
-          id: 6,
-          title: '操作系统概念',
-          author: 'Abraham Silberschatz',
-          category: '计算机科学',
-          date: '2024.05.15',
-          image: 'https://picsum.photos/200/300?random=25'
-        },
-        {
-          id: 7,
-          title: '计算机网络',
-          author: 'Andrew S. Tanenbaum',
-          category: '计算机科学',
-          date: '2024.04.10',
-          image: 'https://picsum.photos/200/300?random=26'
-        },
-        {
-          id: 8,
-          title: '算法导论',
-          author: 'Thomas H. Cormen',
-          category: '计算机科学',
-          date: '2024.03.05',
-          image: 'https://picsum.photos/200/300?random=27'
-        }
-      ]
-    }
-
-    // 初始化图表
-    const initCharts = () => {
-      // GPA趋势图
-      const gpaCtx = document.getElementById('gpaChart').getContext('2d')
-      new Chart(gpaCtx, {
-        type: 'line',
-        data: {
-          labels: ['大一上', '大一下', '大二上', '大二下', '大三上'],
-          datasets: [{
-            label: 'GPA',
-            data: [3.2, 3.5, 3.6, 3.7, 3.8],
-            borderColor: '#165DFF',
-            backgroundColor: 'rgba(22, 93, 255, 0.1)',
-            tension: 0.3,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { y: { min: 0, max: 4, ticks: { stepSize: 1 } } }
-        }
-      })
-
-      // 实验室参与统计
-      const labCtx = document.getElementById('labParticipationChart').getContext('2d')
-      new Chart(labCtx, {
-        type: 'doughnut',
-        data: {
-          labels: ['算法实验室', 'AI实验室', '大数据实验室', '网络实验室'],
-          datasets: [{
-            data: [4, 3, 3, 2],
-            backgroundColor: ['#165DFF', '#36CFC9', '#722ED1', '#FAAD14']
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      })
-
-      // 实验室时间分布
-      const timeCtx = document.getElementById('labTimeChart').getContext('2d')
-      new Chart(timeCtx, {
-        type: 'bar',
-        data: {
-          labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-          datasets: [{
-            label: '实验室时长(小时)',
-            data: [3, 4, 2, 5, 3, 6, 2],
-            backgroundColor: '#36CFC9'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } }
-        }
-      })
-
-      // 借阅类别分布
-      const categoryCtx = document.getElementById('bookCategoryChart').getContext('2d')
-      new Chart(categoryCtx, {
-        type: 'pie',
-        data: {
-          labels: ['计算机科学', '人工智能', '编程语言', '数学', '其他'],
-          datasets: [{
-            data: [12, 8, 6, 5, 5],
-            backgroundColor: ['#165DFF', '#36CFC9', '#722ED1', '#FAAD14', '#A3A3A3']
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      })
-
-      // 借阅趋势
-      const trendCtx = document.getElementById('borrowingTrendChart').getContext('2d')
-      new Chart(trendCtx, {
-        type: 'bar',
-        data: {
-          labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月'],
-          datasets: [{
-            label: '借阅数量',
-            data: [2, 1, 4, 3, 5, 3, 6, 4, 2],
-            backgroundColor: '#165DFF'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-        }
-      })
-    }
-
-    // 初始化详情图表
-    const initDetailCharts = () => {
-      // 实验室详情图表
-      setTimeout(() => {
-        if (showAllLabs.value) {
-          const detailLabCtx = document.getElementById('detailLabChart')?.getContext('2d')
-          if (detailLabCtx) {
-            new Chart(detailLabCtx, {
-              type: 'doughnut',
-              data: {
-                labels: ['算法实验室', 'AI实验室', '大数据实验室', '网络实验室', '软件工程实验室'],
-                datasets: [{
-                  data: [6, 5, 4, 3, 2],
-                  backgroundColor: ['#165DFF', '#36CFC9', '#722ED1', '#FAAD14', '#FF4D4F']
-                }]
-              },
-              options: { responsive: true, maintainAspectRatio: false }
-            })
+        switch (adminActiveTab.value) {
+          case 'courses': {
+            const coursesRes = await academicProfileApi.getAdminCourses()
+            if (coursesRes.code === 200 || coursesRes.success) {
+              adminCourses.value = coursesRes.data || coursesRes
+            }
+            break
           }
+          case 'labs': {
+            const labsRes = await academicProfileApi.getAdminLabs()
+            if (labsRes.code === 200 || labsRes.success) {
+              adminLabs.value = labsRes.data || labsRes
+            }
+            break
+          }
+          case 'books': {
+            const booksRes = await academicProfileApi.getAdminBooks()
+            if (booksRes.code === 200 || booksRes.success) {
+              adminBooks.value = booksRes.data || booksRes
+            }
+            break
+          }
+          case 'students': {
+            const studentsRes = await userApi.getStudentUsers()
+            if (studentsRes.code === 200 || studentsRes.success) {
+              adminStudents.value = studentsRes.data || studentsRes
+            }
+            break
+          }
+        }
+      } catch (err) {
+        console.error('加载管理员数据失败:', err)
+      }
+    }
 
-          const detailTimeCtx = document.getElementById('detailTimeChart')?.getContext('2d')
-          if (detailTimeCtx) {
-            new Chart(detailTimeCtx, {
-              type: 'line',
-              data: {
-                labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月'],
-                datasets: [{
-                  label: '实验室时长(小时)',
-                  data: [25, 30, 35, 40, 45, 50, 48, 52, 55],
-                  borderColor: '#36CFC9',
-                  backgroundColor: 'rgba(54, 207, 201, 0.1)',
-                  tension: 0.3,
-                  fill: true
-                }]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
+    // 加载管理员信息
+    const loadAdminInfo = async () => {
+      try {
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
+        if (!currentUser.id) {
+          console.error('管理员ID不存在')
+          return
+        }
+
+        // 获取管理员基本信息
+        try {
+          const userResponse = await userApi.getUserById(currentUser.id)
+          if (userResponse.code === 200 || userResponse.success) {
+            const userData = userResponse.data || userResponse
+            adminInfo.value = {
+              id: userData.id,
+              employeeId: userData.student_id || userData.studentId,
+              name: userData.name,
+              username: userData.username,
+              email: userData.email || '',
+              phone: userData.phone || '',
+              avatarUrl: userData.avatar_url || userData.avatarUrl,
+              lastLoginTime: userData.last_login_time || userData.lastLoginTime,
+              loginCount: userData.login_count || userData.loginCount || 0,
+              role: userData.role || 'ADMIN',
+              major: userData.major || '',
+              college: userData.college || ''
+            }
+          }
+        } catch (userErr) {
+          console.error('获取管理员基本信息失败:', userErr)
+        }
+
+        // 获取统计数据
+        await loadAdminStats()
+      } catch (err) {
+        console.error('加载管理员信息失败:', err)
+      }
+    }
+
+    // 加载管理员统计数据
+    const loadAdminStats = async () => {
+      try {
+        // 尝试从专用接口获取统计数据
+        const statsResponse = await userApi.getAdminStats()
+        if (statsResponse.code === 200 || statsResponse.success) {
+          const statsData = statsResponse.data || statsResponse
+          adminStats.value = {
+            studentCount: statsData.totalStudents || statsData.studentCount || 0,
+            maleCount: statsData.maleCount || 0,
+            femaleCount: statsData.femaleCount || 0,
+            activeCount: statsData.activeCount || 0
+          }
+          return
+        }
+      } catch (statsErr) {
+        console.warn('统计接口调用失败，尝试从学生列表计算:', statsErr)
+      }
+
+      // 如果接口不可用，从学生列表计算
+      try {
+        const studentsRes = await userApi.getStudentUsers()
+        if (studentsRes.code === 200 || studentsRes.success) {
+          const students = studentsRes.data || studentsRes || []
+          adminStats.value = {
+            studentCount: students.length || 0,
+            maleCount: students.filter(s => s.gender === 'M' || s.gender === '男').length || 0,
+            femaleCount: students.filter(s => s.gender === 'F' || s.gender === '女').length || 0,
+            activeCount: students.filter(s =>
+                s.account_status === 'ACTIVE' ||
+                !s.account_status ||
+                s.account_status === 'active' ||
+                s.status === 'ACTIVE' ||
+                s.status === 'active'
+            ).length || 0
+          }
+          return
+        }
+      } catch (err) {
+        console.error('无法获取学生数据:', err)
+      }
+
+      // 设置默认值
+      adminStats.value = {
+        studentCount: 0,
+        maleCount: 0,
+        femaleCount: 0,
+        activeCount: 0
+      }
+    }
+
+    // 课程管理相关方法
+    const showAddCourseDialog = () => {
+      addCourseDialogVisible.value = true
+    }
+
+    const closeAddCourseDialog = () => {
+      addCourseDialogVisible.value = false
+    }
+
+    const editCourse = (course) => {
+      currentEditCourse.value = {...course}
+      editCourseDialogVisible.value = true
+    }
+
+    const closeEditCourseDialog = () => {
+      editCourseDialogVisible.value = false
+      currentEditCourse.value = null
+    }
+
+    const deleteCourse = (courseId) => {
+      showConfirmDialog('删除课程成绩', '确定要删除这条课程成绩记录吗？删除后不可恢复。', async () => {
+        try {
+          loading.value = true
+          const response = await academicProfileApi.deleteCourse(courseId)
+          if (response.code === 200 || response.success) {
+            await loadAdminData()
+            showConfirmDialog('删除成功', '课程成绩已删除')
+          } else {
+            showConfirmDialog('删除失败', response.message || '删除失败')
+          }
+        } catch (err) {
+          console.error('删除课程失败:', err)
+          showConfirmDialog('删除失败', '删除课程成绩时出错')
+        } finally {
+          loading.value = false
+        }
+      })
+    }
+
+    const handleSaveCourse = async (courseData) => {
+      try {
+        loading.value = true
+        const response = await academicProfileApi.createCourse(courseData)
+        if (response.code === 200 || response.success) {
+          await loadAdminData()
+          closeAddCourseDialog()
+          showConfirmDialog('添加成功', '课程成绩已添加')
+        } else {
+          showConfirmDialog('添加失败', response.message || '添加失败')
+        }
+      } catch (err) {
+        console.error('添加课程失败:', err)
+        showConfirmDialog('添加失败', '添加课程成绩时出错')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const handleUpdateCourse = async (courseData) => {
+      try {
+        loading.value = true
+        const response = await academicProfileApi.updateCourse(courseData.recordId, courseData)
+        if (response.code === 200 || response.success) {
+          await loadAdminData()
+          closeEditCourseDialog()
+          showConfirmDialog('更新成功', '课程成绩已更新')
+        } else {
+          showConfirmDialog('更新失败', response.message || '更新失败')
+        }
+      } catch (err) {
+        console.error('更新课程失败:', err)
+        showConfirmDialog('更新失败', '更新课程成绩时出错')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    // 实验室管理方法
+    const showAddLabDialog = () => {
+      addLabDialogVisible.value = true
+    }
+
+    const closeAddLabDialog = () => {
+      addLabDialogVisible.value = false
+    }
+
+    const editLab = (lab) => {
+      currentLab.value = lab
+      editLabDialogVisible.value = true
+    }
+
+    const closeEditLabDialog = () => {
+      editLabDialogVisible.value = false
+      currentLab.value = null
+    }
+
+    const deleteLab = (labId) => {
+      showConfirmDialog('删除实验室记录', '确定要删除这条实验室记录吗？删除后不可恢复。', async () => {
+        try {
+          loading.value = true
+          const response = await academicProfileApi.deleteLab(labId)
+          if (response.code === 200 || response.success) {
+            await loadAdminData()
+            showConfirmDialog('删除成功', '实验室记录已删除')
+          } else {
+            showConfirmDialog('删除失败', response.message || '删除失败')
+          }
+        } catch (err) {
+          console.error('删除实验室记录失败:', err)
+          showConfirmDialog('删除失败', '删除实验室记录时出错')
+        } finally {
+          loading.value = false
+        }
+      })
+    }
+
+    const handleAddLab = async (labData) => {
+      try {
+        loading.value = true
+        const response = await academicProfileApi.createLab(labData)
+        if (response.code === 200 || response.success) {
+          await loadAdminData()
+          closeAddLabDialog()
+          showConfirmDialog('添加成功', '实验室记录已添加')
+        } else {
+          showConfirmDialog('添加失败', response.message || '添加失败')
+        }
+      } catch (err) {
+        console.error('添加实验室记录失败:', err)
+        showConfirmDialog('添加失败', '添加实验室记录时出错')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const handleEditLab = async (labData) => {
+      try {
+        loading.value = true
+        const response = await academicProfileApi.updateLab(labData.attendanceId, labData)
+        if (response.code === 200 || response.success) {
+          await loadAdminData()
+          closeEditLabDialog()
+          showConfirmDialog('更新成功', '实验室记录已更新')
+        } else {
+          showConfirmDialog('更新失败', response.message || '更新失败')
+        }
+      } catch (err) {
+        console.error('更新实验室记录失败:', err)
+        showConfirmDialog('更新失败', '更新实验室记录时出错')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    // 图书管理方法
+    const showAddBookDialog = () => {
+      addBookDialogVisible.value = true
+    }
+
+    const closeAddBookDialog = () => {
+      addBookDialogVisible.value = false
+    }
+
+    const editBook = (book) => {
+      currentBook.value = {...book}
+      editBookDialogVisible.value = true
+    }
+
+    const closeEditBookDialog = () => {
+      editBookDialogVisible.value = false
+      currentBook.value = null
+    }
+
+    const deleteBook = (bookId) => {
+      showConfirmDialog('删除借阅记录', '确定要删除这条图书借阅记录吗？删除后不可恢复。', async () => {
+        try {
+          loading.value = true
+          const response = await academicProfileApi.deleteBook(bookId)
+          if (response.code === 200 || response.success) {
+            await loadAdminData()
+            showConfirmDialog('删除成功', '图书借阅记录已删除')
+          } else {
+            showConfirmDialog('删除失败', response.message || '删除失败')
+          }
+        } catch (err) {
+          console.error('删除图书借阅记录失败:', err)
+          showConfirmDialog('删除失败', '删除图书借阅记录时出错')
+        } finally {
+          loading.value = false
+        }
+      })
+    }
+
+    const handleAddBook = async (bookData) => {
+      try {
+        loading.value = true
+        const response = await academicProfileApi.createBook(bookData)
+        if (response.code === 200 || response.success) {
+          await loadAdminData()
+          closeAddBookDialog()
+          showConfirmDialog('添加成功', '图书借阅记录已添加')
+        } else {
+          showConfirmDialog('添加失败', response.message || '添加失败')
+        }
+      } catch (err) {
+        console.error('添加图书借阅记录失败:', err)
+        showConfirmDialog('添加失败', '添加图书借阅记录时出错')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const handleEditBook = async (bookData) => {
+      try {
+        loading.value = true
+        if (!bookData.record_id) {
+          showConfirmDialog('更新失败', '记录ID不存在')
+          return
+        }
+        const response = await academicProfileApi.updateBook(bookData.record_id, bookData)
+        if (response.code === 200 || response.success) {
+          await loadAdminData()
+          closeEditBookDialog()
+          showConfirmDialog('更新成功', '图书借阅记录已更新')
+        } else {
+          showConfirmDialog('更新失败', response.message || '更新失败')
+        }
+      } catch (err) {
+        console.error('更新图书借阅记录失败:', err)
+        showConfirmDialog('更新失败', '更新图书借阅记录时出错')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    // 添加学生管理相关方法
+    const showAddStudentDialog = () => {
+      addStudentDialogVisible.value = true
+    }
+
+    const closeAddStudentDialog = () => {
+      addStudentDialogVisible.value = false
+    }
+
+    const editStudent = (student) => {
+      currentStudent.value = student
+      editStudentDialogVisible.value = true
+    }
+
+    const closeEditStudentDialog = () => {
+      editStudentDialogVisible.value = false
+      currentStudent.value = null
+    }
+
+    const handleAddStudent = async (studentData) => {
+      try {
+        loading.value = true
+
+        // 格式化数据以匹配后端 User 实体
+        const formattedData = {
+          username: studentData.username,
+          password: studentData.password,
+          name: studentData.name,
+          studentId: studentData.studentId,
+          email: studentData.email || '',
+          phone: studentData.phone || '',
+          college: studentData.college || '',
+          major: studentData.major || '',
+          className: studentData.className || '',
+          grade: studentData.grade || '大一',
+          gender: studentData.gender || '',
+          enrollmentDate: studentData.enrollmentDate ?
+              `${studentData.enrollmentDate}T00:00:00` : null,
+          accountStatus: studentData.accountStatus || 'ACTIVE',
+          role: 'STUDENT'
+        }
+
+        console.log('发送的用户数据:', JSON.stringify(formattedData, null, 2))
+
+        const response = await userApi.createUser(formattedData)
+
+        if (response.code === 200 || response.success) {
+          await loadAdminData()
+          closeAddStudentDialog()
+          showConfirmDialog('添加成功', '学生信息已添加')
+        } else {
+          showConfirmDialog('添加失败', response.message || '添加失败')
+        }
+      } catch (err) {
+        console.error('添加学生失败:', err)
+        console.error('错误详情:', err.response?.data)
+        showConfirmDialog('添加失败', err.response?.data?.message || '添加学生信息时出错')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const handleEditStudent = async (studentData) => {
+      try {
+        loading.value = true
+        // 确保数据格式正确
+        const formattedData = {
+          name: studentData.name,
+          email: studentData.email || '',
+          phone: studentData.phone || '',
+          college: studentData.college || '',
+          major: studentData.major || '',
+          className: studentData.className || '',
+          grade: studentData.grade || '大一',
+          gender: studentData.gender || '',
+          enrollmentDate: studentData.enrollmentDate ?
+              `${studentData.enrollmentDate}T00:00:00` : null,
+          accountStatus: studentData.accountStatus || 'ACTIVE'
+        }
+
+        // 清理空字符串
+        Object.keys(formattedData).forEach(key => {
+          if (formattedData[key] === '') {
+            formattedData[key] = null
+          }
+        })
+        const response = await userApi.updateUser(studentData.id, formattedData)
+
+        if (response.code === 200 || response.success) {
+          await loadAdminData()
+          closeEditStudentDialog()
+          showConfirmDialog('更新成功', '学生信息已更新')
+        } else {
+          showConfirmDialog('更新失败', response.message || '更新失败')
+        }
+      } catch (err) {
+        console.error('更新学生失败:', err)
+        console.error('错误详情:', err.response?.data)
+        showConfirmDialog('更新失败', err.response?.data?.message || '更新学生信息时出错')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const toggleStudentStatus = async ({studentId, newStatus, studentName}) => {
+      const action = newStatus === 'ACTIVE' ? '激活' : '禁用'
+
+      showConfirmDialog(
+          `${action}学生`,
+          `确定要${action}学生 ${studentName} 吗？`,
+          async () => {
+            try {
+              loading.value = true
+              // 发送更新请求
+              const response = await userApi.updateUser(studentId, {
+                accountStatus: newStatus
+              })
+              if (response.success || response.code === 200) {
+                // 重新加载数据
+                await loadAdminData()
+
+                showConfirmDialog(
+                    `${action}成功`,
+                    `学生 ${studentName} 已${action}`,
+                    null,
+                    false,
+                    'success'
+                )
+              } else {
+                showConfirmDialog(
+                    `${action}失败`,
+                    response.message || '操作失败',
+                    null,
+                    false,
+                    'error'
+                )
               }
-            })
+            } catch (err) {
+              console.error(`${action}学生失败:`, err)
+              showConfirmDialog(
+                  `${action}失败`,
+                  err.response?.data?.message || '操作失败',
+                  null,
+                  false,
+                  'error'
+              )
+            } finally {
+              loading.value = false
+            }
           }
-        }
-      }, 100)
-
-      // 书籍详情图表
-      setTimeout(() => {
-        if (showAllBooks.value) {
-          const detailCategoryCtx = document.getElementById('detailCategoryChart')?.getContext('2d')
-          if (detailCategoryCtx) {
-            new Chart(detailCategoryCtx, {
-              type: 'pie',
-              data: {
-                labels: ['计算机科学', '人工智能', '编程语言', '数学', '英语', '其他'],
-                datasets: [{
-                  data: [15, 10, 8, 6, 4, 3],
-                  backgroundColor: ['#165DFF', '#36CFC9', '#722ED1', '#FAAD14', '#FF4D4F', '#A3A3A3']
-                }]
-              },
-              options: { responsive: true, maintainAspectRatio: false }
-            })
-          }
-
-          const detailTrendCtx = document.getElementById('detailTrendChart')?.getContext('2d')
-          if (detailTrendCtx) {
-            new Chart(detailTrendCtx, {
-              type: 'line',
-              data: {
-                labels: ['2023.01', '2023.04', '2023.07', '2023.10', '2024.01', '2024.04', '2024.07'],
-                datasets: [{
-                  label: '累计借阅量',
-                  data: [5, 12, 18, 25, 30, 34, 36],
-                  borderColor: '#165DFF',
-                  backgroundColor: 'rgba(22, 93, 255, 0.1)',
-                  tension: 0.3,
-                  fill: true
-                }]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
-              }
-            })
-          }
-        }
-      }, 100)
+      )
     }
 
-    // 退出登录
-    const handleLogout = () => {
-      localStorage.removeItem('isAuthenticated')
-      localStorage.removeItem('user')
-      localStorage.removeItem('token')
-      message.success('退出登录成功')
-      router.push('/')
+    // 添加状态格式化函数
+    const formatStatus = (status) => {
+      const statusMap = {
+        'ACTIVE': '正常',
+        'INACTIVE': '禁用',
+        'PENDING': '待审核',
+        'active': '正常',
+        'inactive': '禁用',
+        'pending': '待审核'
+      }
+      return statusMap[status] || '未知'
     }
 
-    onMounted(async () => {
-      await fetchUserInfo()
-      await fetchCourseData()
-      await fetchLabData()
-      await fetchBookData()
-      initCharts()
+    const deleteStudent = async (studentId) => {
+      showConfirmDialog('删除学生', '确定要删除这个学生吗？删除后所有相关数据也将被清除，此操作不可恢复。', async () => {
+        try {
+          loading.value = true
 
-      // 监听弹窗变化，初始化详情图表
-      setTimeout(() => {
-        initDetailCharts()
-      }, 500)
+          // 调用API删除学生
+          const response = await userApi.deleteUser(studentId)
+          if (response.code === 200 || response.success) {
+            await loadAdminData()
+            showConfirmDialog('删除成功', '学生信息已删除')
+          } else {
+            showConfirmDialog('删除失败', response.message || '删除失败')
+          }
+        } catch (err) {
+          console.error('删除学生失败:', err)
+          showConfirmDialog('删除失败', '删除学生信息时出错')
+        } finally {
+          loading.value = false
+        }
+      })
+    }
+
+    const loadLearningGoal = () => {
+      if (profile.value?.userInfo?.learningGoal) {
+        learningGoal.value = profile.value.userInfo.learningGoal
+      } else {
+        learningGoal.value = ''
+      }
+    }
+
+    const showEditLearningGoal = () => {
+      editGoalDialogVisible.value = true
+    }
+
+    const saveLearningGoal = async () => {
+      try {
+        if (!learningGoal.value.trim()) {
+          showConfirmDialog('保存失败', '学习目标不能为空')
+          return
+        }
+        const response = await userApi.updateLearningGoal(learningGoal.value)
+        editGoalDialogVisible.value = false
+
+        if (response.code === 200 || response.success) {
+          if (!profile.value.userInfo) {
+            profile.value.userInfo = {}
+          }
+          profile.value.userInfo.learningGoal = learningGoal.value
+          showConfirmDialog('保存成功', '学习目标已更新')
+        } else {
+          console.error('API 返回错误:', response.message)
+          showConfirmDialog('保存失败', response.message || '保存学习目标时出错')
+        }
+      } catch (err) {
+        console.error('保存学习目标失败:', err)
+        editGoalDialogVisible.value = false
+        showConfirmDialog('保存失败', '更新学习目标时出错')
+      }
+    }
+
+    const showAllCourses = async () => {
+      try {
+        loading.value = true
+        const response = await academicProfileApi.getAllCourses()
+        if (response.code === 200 || response.success) {
+          viewAllDialogTitle.value = '所有课程成绩'
+          viewAllDialogType.value = 'courses'
+          viewAllDialogData.value = response.data || response || []
+          viewAllDialogVisible.value = true
+        } else {
+          showConfirmDialog('获取失败', response.message || '获取课程数据失败')
+        }
+      } catch (err) {
+        console.error('获取课程数据失败:', err)
+        showConfirmDialog('获取失败', '获取课程数据时出错')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const showAllLabs = async () => {
+      try {
+        loading.value = true
+        const response = await academicProfileApi.getAllLabs()
+        if (response.code === 200 || response.success) {
+          viewAllDialogTitle.value = '所有实验室记录'
+          viewAllDialogType.value = 'labs'
+          viewAllDialogData.value = response.data || response || []
+          viewAllDialogVisible.value = true
+        } else {
+          showConfirmDialog('获取失败', response.message || '获取实验室数据失败')
+        }
+      } catch (err) {
+        console.error('获取实验室数据失败:', err)
+        showConfirmDialog('获取失败', '获取实验室数据时出错')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const showAllBooks = async () => {
+      try {
+        loading.value = true
+        const response = await academicProfileApi.getAllBooks()
+        if (response.code === 200 || response.success) {
+          viewAllDialogTitle.value = '所有图书借阅记录'
+          viewAllDialogType.value = 'books'
+          viewAllDialogData.value = response.data || response || []
+          viewAllDialogVisible.value = true
+        } else {
+          showConfirmDialog('获取失败', response.message || '获取图书数据失败')
+        }
+      } catch (err) {
+        console.error('获取图书数据失败:', err)
+        showConfirmDialog('获取失败', '获取图书数据时出错')
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const closeViewAllDialog = () => {
+      viewAllDialogVisible.value = false
+      viewAllDialogTitle.value = ''
+      viewAllDialogType.value = ''
+      viewAllDialogData.value = []
+    }
+
+    const switchAdminTab = (tab) => {
+      adminActiveTab.value = tab
+      loadAdminData()
+    }
+
+    const updateUserInfo = async (updateData) => {
+      try {
+        const userStr = localStorage.getItem('user')
+        if (!userStr) {
+          console.error('用户未登录')
+          return
+        }
+        const user = JSON.parse(userStr)
+        if (!user.id) {
+          console.error('用户ID不存在')
+          return
+        }
+        const updateInfo = {[updateData.field]: updateData.value}
+        const response = await userApi.updateUser(user.id, updateInfo)
+        if (response.success || response.code === 200) {
+          profile.value = {
+            ...profile.value,
+            userInfo: {
+              ...profile.value.userInfo,
+              [updateData.field]: updateData.value
+            }
+          }
+          const updatedUser = {...user, [updateData.field]: updateData.value}
+          localStorage.setItem('user', JSON.stringify(updatedUser))
+          if (typeof ElMessage !== 'undefined') {
+            ElMessage.success(`${getFieldLabel(updateData.field)}更新成功`)
+          } else {
+            showConfirmDialog('更新成功', `${getFieldLabel(updateData.field)}已更新`)
+          }
+        } else {
+          console.error('API返回错误:', response)
+          if (typeof ElMessage !== 'undefined') {
+            ElMessage.error('更新失败: ' + (response.message || '未知错误'))
+          }
+        }
+      } catch (err) {
+        console.error('更新异常:', err)
+        if (typeof ElMessage !== 'undefined') {
+          ElMessage.error('更新失败')
+        }
+      }
+    }
+
+    const updateAdminInfo = async (updateData) => {
+      try {
+        const userStr = localStorage.getItem('user')
+        if (!userStr) {
+          console.error('管理员未登录')
+          showConfirmDialog('更新失败', '请先登录')
+          return
+        }
+
+        const user = JSON.parse(userStr)
+        if (!user.id) {
+          console.error('管理员ID不存在')
+          showConfirmDialog('更新失败', '用户信息不完整')
+          return
+        }
+
+        const updateInfo = {[updateData.field]: updateData.value}
+        let response
+        try {
+          response = await userApi.updateCurrentUserProfile(updateInfo)
+        } catch (apiErr) {
+          console.warn('更新当前用户接口失败，尝试使用通用更新接口:', apiErr)
+          response = await userApi.updateUser(user.id, updateInfo)
+        }
+
+        if (response.code === 200 || response.success) {
+          adminInfo.value = {
+            ...adminInfo.value,
+            [updateData.field]: updateData.value
+          }
+
+          const updatedUser = {...user, [updateData.field]: updateData.value}
+          localStorage.setItem('user', JSON.stringify(updatedUser))
+
+          showConfirmDialog('更新成功', `${getFieldLabel(updateData.field)}已更新`)
+          await loadAdminInfo()
+
+        } else {
+          console.error('API返回错误:', response)
+          showConfirmDialog('更新失败', response.message || '未知错误')
+        }
+      } catch (err) {
+        console.error('更新管理员信息异常:', err)
+        showConfirmDialog('更新失败', '网络错误或服务器异常')
+      }
+    }
+
+    const getFieldLabel = (field) => {
+      const labels = {
+        email: '邮箱',
+        phone: '电话',
+        name: '姓名',
+        major: '专业',
+        college: '学院',
+        className: '班级',
+        studentId: '学号',
+        employeeId: '工号'
+      }
+      return labels[field] || field
+    }
+
+    // 工具函数
+    const getScoreClass = (score) => {
+      if (score >= 90) return 'bg-emerald-100 text-emerald-700'
+      if (score >= 80) return 'bg-blue-100 text-blue-700'
+      if (score >= 70) return 'bg-purple-100 text-purple-700'
+      if (score >= 60) return 'bg-amber-100 text-amber-700'
+      return 'bg-red-100 text-red-700'
+    }
+
+    const formatDate = (dateString) => {
+      if (!dateString) return '--'
+      try {
+        return new Date(dateString).toLocaleDateString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        })
+      } catch {
+        return dateString
+      }
+    }
+
+    // 初始化
+    onMounted(() => {
+      loadData()
     })
 
     return {
-      userInfo,
-      academicStats,
-      courses,
-      labProjects,
-      recentBooks,
-      allCourses,
-      allLabProjects,
-      allBooks,
+      // 状态
+      loading,
+      error,
+      profile,
+      isAdmin,
+      learningGoal,
+      adminActiveTab,
+      adminCourses,
+      adminLabs,
+      adminBooks,
+      adminStudents,
+      adminInfo,
+      adminStats,
+      viewAllDialogVisible,
+      viewAllDialogTitle,
+      viewAllDialogType,
+      viewAllDialogData,
+      editGoalDialogVisible,
+      confirmDialogVisible,
+      confirmDialogTitle,
+      confirmDialogMessage,
+      addCourseDialogVisible,
+      editCourseDialogVisible,
+      currentEditCourse,
+
+      addLabDialogVisible,
+      editLabDialogVisible,
+      currentLab,
+      closeAddLabDialog,
+      closeEditLabDialog,
+      handleAddLab,
+      handleEditLab,
+
+      addBookDialogVisible,
+      editBookDialogVisible,
+      currentBook,
+      closeAddBookDialog,
+      closeEditBookDialog,
+      handleAddBook,
+      handleEditBook,
+
+      addStudentDialogVisible,
+      editStudentDialogVisible,
+      currentStudent,
+      toggleStudentStatus,
+      handleAddStudent,
+      handleEditStudent,
+      closeEditStudentDialog,
+      closeAddStudentDialog,
+      deleteStudent,
+
+
+      // 方法
+      loadData,
       showAllCourses,
       showAllLabs,
       showAllBooks,
-      formatDate,
-      handleLogout
+      showEditLearningGoal,
+      switchAdminTab,
+      showAddCourseDialog,
+      closeAddCourseDialog,
+      editCourse,
+      closeEditCourseDialog,
+      deleteCourse,
+      showAddLabDialog,
+      editLab,
+      deleteLab,
+      showAddBookDialog,
+      editBook,
+      deleteBook,
+      showAddStudentDialog,
+      editStudent,
+      closeViewAllDialog,
+      showConfirmDialog,
+      handleCloseConfirmDialog,
+      handleConfirmAction,
+      saveLearningGoal,
+      updateUserInfo,
+      getFieldLabel,
+      updateAdminInfo,
+      handleSaveCourse,
+      handleUpdateCourse,
+      dialogCallback,
+
+
+      // 工具函数
+      getScoreClass,
+      formatDate
     }
   }
 }
 </script>
 
 <style scoped>
-.cursor-pointer {
-  cursor: pointer;
+/* 样式保持不变 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #EC4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.border-animate {
+  position: relative;
+}
+
+.border-animate::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6, #EC4899);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.border-animate:hover::before {
+  opacity: 1;
 }
 </style>

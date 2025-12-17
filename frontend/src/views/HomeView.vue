@@ -14,8 +14,6 @@
         <div class="absolute inset-0 bg-dark/20 z-0"></div>
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
           <div class="max-w-5xl mx-auto text-center py-16 md:py-24">
-            <!-- 优化主标题 - 改为一行 -->
-            <!-- 优化主标题 - 改为一行 -->
             <h1 class="text-[clamp(2.8rem,6vw,4.2rem)] font-bold mb-8 leading-[1.1] tracking-tight">
   <span class="bg-gradient-to-r from-white via-cyan-50 to-blue-50 bg-clip-text text-transparent">
     全方位掌握你的
@@ -201,10 +199,10 @@
 
 <script>
 import { ref, onMounted, computed, onUnmounted, reactive } from 'vue'
-import TopNavbar from '../components/TopNavbar.vue'
+import TopNavbar from '@/component/TopNavbar.vue'
 import LoginRegister from './LoginRegister.vue'
-import FeatureCard from '../components/FeatureCard.vue'
-import PageFooter from '../components/PageFooter.vue'
+import FeatureCard from '@/component/FeatureCard.vue'
+import PageFooter from '@/component/PageFooter.vue'
 
 // 导入背景图片
 import bgImage from '@/assets/bg1.jpg'

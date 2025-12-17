@@ -1,76 +1,98 @@
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\JobMatchingController.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\UserProfileDTO.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\JobMatchRequestDTO.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\UserProgressService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserCareerPreferenceRepository.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\PracticalProjectService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\EmotionRecord.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\PracticalProject.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\SwaggerConfig.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\LoginRequest.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\KnowledgeRelation.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\CourseSearchRequest.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\StudyPlanDto.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\LearningProgress.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\QARequest.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\CareerPreferenceService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserSkill.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\CorsConfig.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\ProjectLink.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserProgress.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\PsychologyRequest.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\LearnBuddyBackendApplication.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\LearningProgressRepository.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\QAResponse.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\PracticalProjectRepository.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\EmotionRecordRepository.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\SkillTagDTO.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\ApiResponse.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\User.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\PsychologyResponse.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\InterviewQuestion.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\ProgressService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\PsychologyController.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\JobMatchResponseDTO.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserAnswerDetail.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\JobPosition.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserSkillRepository.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\ProgressController.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\KnowledgeGraphService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\Course.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\UserProgressController.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\StudyPlan.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\PracticalTrainingController.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\KnowledgePointRepository.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\InterviewQuestionService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\KnowledgeGraphBuilder.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\InterviewController.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\JobPositionRepository.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\ProjectDetailDTO.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\CourseService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\KnowledgePoint.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\CourseDTO.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\DeepSeekService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserQuizRecord.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\QAHistory.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\StudyPlanController.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserProgressRepository.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\StudyPlanRepository.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\WebConfig.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\UserDto.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\QuizResultDTO.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\InterviewQuestionRepository.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\MatchedJobDTO.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\KnowledgeRelationRepository.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\UserController.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\CareerPreferenceDTO.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\SimpleCorsFilter.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\PsychologyService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\util\ApiResult.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\JobMatchingService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\CourseController.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\KnowledgeQAController.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\UserService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\StudyPlanService.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserCareerPreference.java
-D:\Git\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\AcademicProfileService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\StudyPlanController.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\GlobalExceptionHandler.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\vo\AcademicProfileVO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\CourseDTO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\PsychologyController.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\User.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\KnowledgeGraphService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\KnowledgeGraphBuilder.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\KnowledgePoint.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\LibraryRecordRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\LearningProgress.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\SwaggerConfig.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\AcademicRecord.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserRole.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\KnowledgeRelationRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\UserDto.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\LoginRequest.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\JobPosition.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\CourseSearchRequest.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\JobMatchResponseDTO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\ProjectDetailDTO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\AuthInterceptor.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\ProgressService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\common\Result.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\CareerPreferenceDTO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\UserProfileDTO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\PracticalProjectService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\EmotionRecordRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\PsychologyRequest.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\MockDataService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\util\JwtUtil.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\ApiResponse.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\JobPositionRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\CourseController.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\CourseService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\SimpleCorsFilter.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\EmotionRecord.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserSkillRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserProgress.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\Course.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\PracticalTrainingController.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\UserService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\CorsConfig.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserRoleRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserProgressRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\LibraryRecord.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\config\WebConfig.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserAnswerDetail.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\UserProgressService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\vo\AcademicOverviewVO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\LearningProgressRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\SkillTagDTO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\LearnBuddyBackendApplication.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\InterviewController.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\AcademicRecordRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\ProgressController.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\AcademicProfileController.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\UserProgressController.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserQuizRecord.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\CareerPreferenceService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserSkill.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\PsychologyResponse.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\StudyPlanDto.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\JobMatchingService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\PracticalProjectRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\InterviewQuestionService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\QAHistory.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\LabAttendanceRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\InterviewQuestion.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\MatchedJobDTO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\PracticalProject.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\LabAttendanceService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\UserCareerPreference.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\StudyPlanRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\LabAttendance.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\StudyPlanService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\QuizResultDTO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\QARequest.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\StudyPlan.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\KnowledgePointRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\DeepSeekService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\UserCareerPreferenceRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\LibraryRecordService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\util\ApiResult.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\repository\InterviewQuestionRepository.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\BaseResponse.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\ProjectLink.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\JobMatchingController.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\UserController.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\PsychologyService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\vo\AcademicStatsVO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\JobMatchRequestDTO.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\entity\KnowledgeRelation.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\service\AcademicRecordService.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\controller\KnowledgeQAController.java
+F:\IDEA project\ai-learning-partner\ai-learning-partner\learn-buddy-backend\src\main\java\com\digitalhorsepower\learnbuddy\dto\QAResponse.java

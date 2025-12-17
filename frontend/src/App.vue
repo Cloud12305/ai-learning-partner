@@ -19,7 +19,7 @@
 <script>
 import { ref, provide } from 'vue'
 import { message } from 'ant-design-vue'
-import TopNavbar from './components/TopNavbar.vue'
+import TopNavbar from './component/TopNavbar.vue'
 import LoginRegister from './views/LoginRegister.vue'
 
 export default {

@@ -4,9 +4,15 @@ const API_BASE_URL = 'http://localhost:8080/api';
 class CourseService {
     async request(endpoint, options = {}) {
         const url = `${API_BASE_URL}${endpoint}`;
+
+        // 获取令牌
+        const token = localStorage.getItem('token');
+
         const config = {
             headers: {
                 'Content-Type': 'application/json',
+                // 添加 Authorization 头
+                ...(token && { 'Authorization': `Bearer ${token}` }),
                 ...options.headers,
             },
             ...options,
@@ -18,10 +24,25 @@ class CourseService {
 
         try {
             const response = await fetch(url, config);
+            console.log('📡 课程请求详情:', {
+                url,
+                method: config.method,
+                headers: config.headers,
+                status: response.status,
+                statusText: response.statusText
+            });
 
             // 检查响应状态
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
+
+                // 如果是401未授权，清除令牌
+                if (response.status === 401) {
+                    console.warn('⚠️ 令牌无效，清除本地存储');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                }
+
                 throw new Error(errorData.message || `请求失败: ${response.status}`);
             }
 
