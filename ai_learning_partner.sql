@@ -228,11 +228,12 @@ INSERT INTO `lab_attendance` (`attendance_id`, `student_id`, `lab_id`, `lab_name
 	(21, '202301001', 'LAB004', '人工智能实验室', '机器学习实验', '2025-12-10 10:00:00', NULL, 120, NULL, '2025-11-17 01:48:31'),
 	(22, '202301001', 'LAB005', '数据库实验室', '数据库设计实验', '2024-03-01 10:00:00', '2024-03-01 12:00:00', 120, NULL, '2025-11-17 01:48:31'),
 	(23, '202301002', 'LAB001', '计算机基础实验室', '数据结构实验', '2025-12-16 20:00:00', NULL, 90, '', '2025-12-15 20:18:49'),
-	(24, '202301002', 'LAB002', '网络工程实验室', '网络协议分析实验', '2025-12-16 20:30:00', '2025-12-16 21:00:00', 90, '很简单', '2025-12-15 20:44:01'),
+	(24, '202301002', 'LAB002', '网络工程实验室', '网络协议分析实验', '2025-12-16 20:30:00', '2025-12-16 21:00:00', 120, '很简单', '2025-12-15 20:44:01'),
 	(25, '202301002', 'LAB002', '网络工程实验室', '网络协议分析实验', '2025-12-16 12:20:00', '2025-12-16 13:00:00', 30, '太难了', '2025-12-15 20:54:07'),
 	(26, '202301002', 'LAB003', '软件工程实验室', 'Web应用开发实验', '2025-12-15 19:00:00', '2025-12-15 21:00:00', 120, '', '2025-12-16 05:02:40'),
 	(27, '202301003', 'LAB001', '计算机基础实验室', '数据结构实验', '2025-12-14 16:00:00', '2025-12-14 17:10:00', 70, '', '2025-12-16 05:10:54'),
-	(28, '202301003', 'LAB004', '人工智能实验室', '机器学习实验', '2025-12-05 15:19:00', NULL, 90, '', '2025-12-16 05:19:56');
+	(28, '202301003', 'LAB004', '人工智能实验室', '机器学习实验', '2025-12-05 15:19:00', NULL, 90, '', '2025-12-16 05:19:56'),
+	(29, '202301003', 'LAB004', '人工智能实验室', '机器学习实验', '2025-12-20 16:00:00', NULL, 90, '', '2025-12-20 08:18:54');
 
 -- 导出  表 ai_learning_partner.learning_progress 结构
 CREATE TABLE IF NOT EXISTS `learning_progress` (
@@ -291,7 +292,8 @@ INSERT INTO `library_records` (`record_id`, `student_id`, `book_id`, `book_isbn`
 	(19, '202201001', 'B005', '9787111612729', '数据库系统概念', 'Abraham Silberschatz', '数据库', NULL, NULL, '2023-12-20', '2026-01-01', '2025-12-12', '2025-11-17 01:48:32'),
 	(20, '202301001', 'B006', '9787111558058', '编译原理', 'Alfred V. Aho', '计算机软件基础', NULL, NULL, '2023-12-15', '2024-03-15', '2024-03-09', '2025-11-17 01:48:32'),
 	(21, '202301001', 'B007', '9787111547434', '计算机组成与设计', 'David A. Patterson', '计算机系统 / 组成', '机械工业出版社', '2019', '2023-12-10', '2024-03-10', '2024-02-05', '2025-11-17 01:48:32'),
-	(22, '202301002', 'B001', '9787115546081', '深入理解计算机系统', 'Randal E. Bryant', '计算机系统 / 组成', NULL, NULL, '2025-12-17', '2026-01-23', NULL, '2025-12-17 10:17:47');
+	(22, '202301002', 'B001', '9787115546081', '深入理解计算机系统', 'Randal E. Bryant', '计算机系统 / 组成', NULL, NULL, '2025-12-17', '2026-01-23', '2025-12-20', '2025-12-17 10:17:47'),
+	(23, '202301002', 'B007', '9787111547434', '计算机组成与设计', 'David A. Patterson', '计算机系统 / 组成', NULL, NULL, '2025-12-19', '2026-01-22', NULL, '2025-12-20 08:19:55');
 
 -- 导出  表 ai_learning_partner.practical_projects 结构
 CREATE TABLE IF NOT EXISTS `practical_projects` (
@@ -413,18 +415,19 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `idx_college` (`college`)
 ) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表';
 
--- 正在导出表  ai_learning_partner.users 的数据：~10 rows (大约)
+-- 正在导出表  ai_learning_partner.users 的数据：~11 rows (大约)
 INSERT INTO `users` (`id`, `student_id`, `username`, `name`, `password`, `gender`, `major`, `college`, `grade`, `class_name`, `email`, `phone`, `avatar_url`, `enrollment_date`, `graduation_date`, `learning_goal`, `learning_preferences`, `account_status`, `last_login_time`, `create_time`, `update_time`, `created_at`, `login_count`, `updated_at`) VALUES
-	(30, '202301001', 'zhangsan', '张三', '123456', 'M', '计算机科学与技术', '计算机学院', '大三', '计科2301', 'zhan@edu.cn', '13800132563', 'https://picsum.photos/100/100?random=1', '2023-09-01', '2027-06-30', '成为软件工程师', '{"learning_style": "visual", "difficulty_level": "medium", "preferred_subjects": ["编程", "算法"], "preferred_study_time": "evening"}', 'ACTIVE', '2025-12-18 08:05:40', NULL, '2025-12-18 08:05:39.804937', NULL, 41, '2025-12-18 08:05:39.804937'),
-	(31, '202301002', 'lisi', '李四', '123456', 'M', '计算机科学与技术', '计算机学院', '大三', '计科2301', 'lisi@edu.cn', '13800138002', 'https://picsum.photos/100/100?random=2', '2023-09-01', '2027-06-30', '深入算法研究，参加ACM竞赛并获得奖项', '{"learning_style": "logical", "difficulty_level": "high", "preferred_subjects": ["算法", "数学"], "preferred_study_time": "morning"}', 'ACTIVE', '2025-11-10 10:27:07', NULL, NULL, NULL, NULL, NULL),
-	(32, '202301003', 'wangwu', '王五', '123456', 'F', '计算机科学与技术', '计算机学院', '大三', '计科2301', 'wangwu@edu.cn', '13800138003', 'https://picsum.photos/100/100?random=3', '2023-09-01', '2027-06-30', '提升编程能力，学习数据科学和机器学习', '{"learning_style": "practical", "difficulty_level": "medium", "preferred_subjects": ["数据科学", "统计学"], "preferred_study_time": "afternoon"}', 'ACTIVE', '2024-02-19 14:20:00', NULL, NULL, NULL, NULL, NULL),
-	(33, '202301021', 'zhaoliu', '赵六', '123456', 'M', '软件工程', '计算机学院', '大三', '软工2301', 'zhaoliu@edu.cn', '13800138004', 'https://picsum.photos/100/100?random=4', '2023-09-01', '2027-06-30', '掌握软件开发全流程，参与大型项目实战', '{"learning_style": "practical", "difficulty_level": "medium", "preferred_subjects": ["软件开发", "项目管理"], "preferred_study_time": "evening"}', 'INACTIVE', '2024-02-20 10:05:00', NULL, NULL, NULL, NULL, NULL),
-	(34, '202201001', 'zhengshiyi', '郑十一', '123456', 'M', '计算机科学与技术', '计算机学院', '大四', '计科2201', 'zhengshiyi@edu.cn', '13800138009', 'https://picsum.photos/100/100?random=6', '2022-09-01', '2026-06-30', '深入学习人工智能和机器学习，为研究生阶段做准备', '{"learning_style": "theoretical", "difficulty_level": "high", "preferred_subjects": ["人工智能", "机器学习"], "preferred_study_time": "morning"}', 'ACTIVE', '2025-12-16 21:47:59', NULL, '2025-12-16 21:47:59.007996', NULL, 3, '2025-12-16 21:47:59.007996'),
-	(35, '202102011', 'lishisan', '李十三', '123456', 'M', '新闻学', '文学院', '大一', '新闻2201', 'lishisan@edu.cn', '13800138014', 'https://picsum.photos/100/100?random=7', '2021-09-01', '2026-06-30', '准备考研，深入研究分布式系统和云计算技术', '{"learning_style": "comprehensive", "difficulty_level": "high", "preferred_subjects": ["分布式系统", "云计算"], "preferred_study_time": "whole_day"}', 'ACTIVE', '2024-02-20 11:20:00', NULL, '2025-12-18 02:19:04.985170', NULL, NULL, '2025-12-18 02:19:04.985170'),
-	(36, '202301023', 'Jasmine', '孙梦云', '123456', 'F', '软件工程', '计算机学院', '大三', '软工2301', '15268660761@163.com', '13965823245', 'https://picsum.photos/100/100?random=57', '2023-09-01', '2027-06-30', '实习', NULL, 'ACTIVE', '2025-11-10 08:39:59', NULL, NULL, NULL, NULL, NULL),
-	(37, 'ADMIN001', 'admin', '系统管理员', '123456', 'M', '计算机科学', '计算机学院', '大三', '管理员', 'admi@edu.cn', '13800138011', 'https://picsum.photos/100/100?random=99', '2020-08-10', NULL, NULL, NULL, 'ACTIVE', '2025-12-18 05:17:27', NULL, '2025-12-18 05:17:26.751718', NULL, 23, '2025-12-18 05:17:26.751718'),
-	(38, '202301024', 'peng', '彭雨淇', '123456', 'F', '软件工程', '计算机学院', '大三', '软工2301', '1235698256@qq.com', '19586235496', 'https://picsum.photos/100/100?random=19', '2023-09-01', '2027-06-30', '实习', NULL, 'ACTIVE', '2025-11-18 17:21:31', '2025-11-17 06:41:04.180004', '2025-11-18 17:21:31.078363', '2025-11-17 06:41:04.180004', 8, '2025-11-18 17:21:31.078363'),
-	(39, '202301027', 'gugugu', '顾时夜', '123456', 'M', '02-软件工程', '01-计算机科学与技术学院', '大三', '软工2301', '15743722263@qq.com', '19625321253', 'https://picsum.photos/100/100?random=94', '2023-09-01', NULL, '加油', NULL, 'ACTIVE', '2025-12-18 02:25:44', '2025-12-18 02:22:12.440809', '2025-12-18 02:26:17.984853', '2025-12-18 02:22:12.440809', 1, '2025-12-18 02:26:17.984853');
+	(30, '202301001', 'zhangsan', '张三', '123456', 'M', '01-计算机科学与技术', '01-计算机科学与技术学院', '大三', '计科2301', 'zhansan@edu.cn', '13800132536', 'https://picsum.photos/100/100?random=1', '2023-09-01', '2027-06-30', '成为一名软件工程师\n', '{"learning_style": "visual", "difficulty_level": "medium", "preferred_subjects": ["编程", "算法"], "preferred_study_time": "evening"}', 'ACTIVE', '2025-12-20 16:15:09', NULL, '2025-12-20 16:15:35.806344', NULL, 43, '2025-12-20 16:15:35.806344'),
+	(31, '202301002', 'lisi', '李四', '123456', 'M', '01-计算机科学与技术', '01-计算机科学与技术学院', '大三', '计科2301', 'lisi@edu.cn', '13800138002', 'https://picsum.photos/100/100?random=2', '2023-09-01', '2027-06-30', '深入算法研究，参加ACM竞赛并获得奖项', '{"learning_style": "logical", "difficulty_level": "high", "preferred_subjects": ["算法", "数学"], "preferred_study_time": "morning"}', 'ACTIVE', '2025-11-10 10:27:07', NULL, NULL, NULL, NULL, NULL),
+	(32, '202301003', 'wangwu', '王五', '123456', 'F', '01-计算机科学与技术', '01-计算机科学与技术学院', '大三', '计科2301', 'wangwu@edu.cn', '13800138003', 'https://picsum.photos/100/100?random=3', '2023-09-01', '2027-06-30', '提升编程能力，学习数据科学和机器学习', '{"learning_style": "practical", "difficulty_level": "medium", "preferred_subjects": ["数据科学", "统计学"], "preferred_study_time": "afternoon"}', 'ACTIVE', '2024-02-19 14:20:00', NULL, NULL, NULL, NULL, NULL),
+	(33, '202301021', 'zhaoliu', '赵六', '123456', 'M', '02-软件工程', '01-计算机科学与技术学院', '大三', '软工2301', 'zhaoliu@edu.cn', '13800138004', 'https://picsum.photos/100/100?random=4', '2023-09-01', '2027-06-30', '掌握软件开发全流程，参与大型项目实战', '{"learning_style": "practical", "difficulty_level": "medium", "preferred_subjects": ["软件开发", "项目管理"], "preferred_study_time": "evening"}', 'INACTIVE', '2024-02-20 10:05:00', NULL, NULL, NULL, NULL, NULL),
+	(34, '202201001', 'zhengshiyi', '郑十一', '123456', 'M', '01-计算机科学与技术', '01-计算机科学与技术学院', '大四', '计科2201', 'zhengshiyi@edu.cn', '13800138009', 'https://picsum.photos/100/100?random=6', '2022-09-01', '2026-06-30', '深入学习人工智能和机器学习，为研究生阶段做准备', '{"learning_style": "theoretical", "difficulty_level": "high", "preferred_subjects": ["人工智能", "机器学习"], "preferred_study_time": "morning"}', 'ACTIVE', '2025-12-16 21:47:59', NULL, '2025-12-16 21:47:59.007996', NULL, 3, '2025-12-16 21:47:59.007996'),
+	(35, '202102011', 'lishisan', '李十三', '123456', 'M', '03-新闻学', '15-文学院', '大一', '新闻2201', 'lishisan@edu.cn', '13800138014', 'https://picsum.photos/100/100?random=7', '2021-09-01', '2026-06-30', '准备考研，深入研究分布式系统和云计算技术', '{"learning_style": "comprehensive", "difficulty_level": "high", "preferred_subjects": ["分布式系统", "云计算"], "preferred_study_time": "whole_day"}', 'ACTIVE', '2024-02-20 11:20:00', NULL, '2025-12-20 16:22:06.334255', NULL, NULL, '2025-12-20 16:22:06.334255'),
+	(36, '202301023', 'Jasmine', '孙梦云', '123456', 'F', '02-应用化学', '11-化学学院', '大一', '软工2301', '15268660761@163.com', '13965823245', 'https://picsum.photos/100/100?random=57', '2023-09-01', '2027-06-30', '实习', NULL, 'ACTIVE', '2025-11-10 08:39:59', NULL, '2025-12-20 16:20:46.689957', NULL, NULL, '2025-12-20 16:20:46.689957'),
+	(37, 'ADMIN001', 'admin', '系统管理员', '123456', 'M', '01-计算机科学与技术', '01-计算机科学与技术学院', '大三', '管理员', 'admin@edu.cn', '13800138012', 'https://picsum.photos/100/100?random=99', '2020-08-10', NULL, NULL, NULL, 'ACTIVE', '2025-12-20 16:16:24', NULL, '2025-12-20 16:16:40.953689', NULL, 24, '2025-12-20 16:16:40.953689'),
+	(38, '202301024', 'peng', '彭雨淇', '123456', 'F', '02-软件工程', '01-计算机科学与技术学院', '大三', '软工2301', '1235698256@qq.com', '19586235496', 'https://picsum.photos/100/100?random=19', '2023-09-01', '2027-06-30', '实习', NULL, 'ACTIVE', '2025-11-18 17:21:31', '2025-11-17 06:41:04.180004', '2025-11-18 17:21:31.078363', '2025-11-17 06:41:04.180004', 8, '2025-11-18 17:21:31.078363'),
+	(39, '202301027', 'gugugu', '顾时夜', '123456', 'M', '02-软件工程', '01-计算机科学与技术学院', '大三', '软工2301', '15743722263@qq.com', '19625321253', 'https://picsum.photos/100/100?random=94', '2023-09-01', NULL, '加油', NULL, 'ACTIVE', '2025-12-18 02:25:44', '2025-12-18 02:22:12.440809', '2025-12-18 02:26:17.984853', '2025-12-18 02:22:12.440809', 1, '2025-12-18 02:26:17.984853'),
+	(40, '202301009', 'wang', '王明', '123456', 'M', '03-国际经济与贸易', '12-经济管理学院', '大三', '国贸2301', '1574372639@qq.com', '19632563256', 'https://picsum.photos/100/100?random=15', '2023-09-01', NULL, NULL, NULL, 'ACTIVE', NULL, '2025-12-20 16:21:56.778571', '2025-12-20 16:21:56.778571', '2025-12-20 16:21:56.778571', 0, '2025-12-20 16:21:56.778571');
 
 -- 导出  表 ai_learning_partner.user_answer_details 结构
 CREATE TABLE IF NOT EXISTS `user_answer_details` (
@@ -517,7 +520,8 @@ INSERT INTO `user_role` (`id`, `user_id`, `role`, `created_at`) VALUES
 	(7, 36, 'STUDENT', '2025-11-16 07:54:38'),
 	(8, 38, 'STUDENT', '2025-11-16 07:54:38'),
 	(9, 39, 'STUDENT', '2025-11-16 07:54:38'),
-	(16, 37, 'ADMIN', '2025-11-16 07:54:38');
+	(16, 37, 'ADMIN', '2025-11-16 07:54:38'),
+	(17, 40, 'STUDENT', '2025-12-20 08:21:57');
 
 -- 导出  表 ai_learning_partner.user_skills 结构
 CREATE TABLE IF NOT EXISTS `user_skills` (
