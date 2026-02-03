@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnBuddy - 知识图谱可视化</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .search-section {
+            padding: 25px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .search-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .graph-section {
+            flex: 3;
+            padding: 20px;
+            border-right: 1px solid #e9ecef;
+        }
+
+        #knowledgeGraph {
+            width: 100%;
+            height: 550px;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        .answer-section {
+            flex: 2;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .answer-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            height: 510px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+        }
+
+        .node-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f4fd;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .node-info h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .quick-questions {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .quick-questions h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .question-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .question-btn {
+            padding: 8px 16px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .question-btn:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .graph-section {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+
+            #knowledgeGraph {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🧠 LearnBuddy 知识图谱</h1>
+        <p>探索计算机科学知识的关联网络</p>
+    </div>
+
+    <div class="search-section">
+        <div class="search-box">
+            <input type="text" class="search-input" id="questionInput"
+                   placeholder="输入你想了解的知识点，例如：什么是KMP算法？"
+                   value="什么是KMP算法">
+            <button class="search-btn" onclick="loadKnowledgeGraph()">搜索知识</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="graph-section">
+            <div id="knowledgeGraph">
+                <div class="loading">
+                    <h3>正在加载知识图谱...</h3>
+                    <p>请稍等片刻</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="answer-section">
+            <h3>知识解答</h3>
+            <div class="answer-content" id="answerContent">
+                <div class="loading">
+                    <p>答案将在这里显示</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quick-questions">
+        <h3>快速提问</h3>
+        <div class="question-buttons">
+            <button class="question-btn" onclick="quickQuestion('什么是二叉树？')">什么是二叉树？</button>
+            <button class="question-btn" onclick="quickQuestion('链表和数组的区别？')">链表和数组的区别？</button>
+            <button class="question-btn" onclick="quickQuestion('解释快速排序算法')">快速排序算法</button>
+            <button class="question-btn" onclick="quickQuestion('TCP和UDP的区别')">TCP和UDP的区别</button>
+            <button class="question-btn" onclick="quickQuestion('数据库索引原理')">数据库索引原理</button>
+            <button class="question-btn" onclick="quickQuestion('面向对象编程特性')">面向对象编程</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentChart = null;
+
+    // 初始化页面
+    document.addEventListener('DOMContentLoaded', function() {
+        loadKnowledgeGraph();
+
+        // 回车键搜索
+        document.getElementById('questionInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loadKnowledgeGraph();
+            }
+        });
+    });
+
+    // 快速提问
+    function quickQuestion(question) {
+        document.getElementById('questionInput').value = question;
+        loadKnowledgeGraph();
+    }
+
+    // 渲染知识图谱
+    function renderKnowledgeGraph(graphData, answer) {
+        const chartContainer = document.getElementById('knowledgeGraph');
+        chartContainer.innerHTML = '';
+
+        const chart = echarts.init(chartContainer);
+        currentChart = chart;
+
+        // 更新答案显示
+        document.getElementById('answerContent').innerHTML =
+            `<div class="answer-text">${formatAnswer(answer)}</div>`;
+
+        const option = {
+            title: {
+                text: '知识图谱关系网络',
+                left: 'center',
+                textStyle: {
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    color: '#2c3e50'
+                }
+            },
+            tooltip: {
+                formatter: function(params) {
+                    if (params.dataType === 'node') {
+                        return `
+                                <div style="padding: 8px;">
+                                    <strong>${params.data.name}</strong><br/>
+                                    <span style="color: #666;">${params.data.definition || '暂无详细定义'}</span><br/>
+                                    <span style="color: #999;">分类: ${params.data.category}</span>
+                                </div>
+                            `;
+                    } else {
+                        return `
+                                <div style="padding: 8px;">
+                                    <strong>关系类型</strong>: ${params.data.relation}<br/>
+                                    <span style="color: #666;">${params.data.description || '暂无描述'}</span>
+                                </div>
+                            `;
+                    }
+                }
+            },
+            legend: {
+                data: [...new Set(graphData.nodes.map(node => node.category))],
+                top: 40,
+                textStyle: {
+                    fontSize: 12
+                }
+            },
+            series: [{
+                type: 'graph',
+                layout: 'force',
+                data: graphData.nodes,
+                links: graphData.links,
+                categories: [...new Set(graphData.nodes.map(node => node.category))].map(cat => ({
+                    name: cat
+                })),
+                roam: true,
+                focusNodeAdjacency: true,
+                label: {
+                    show: true,
+                    position: 'right',
+                    formatter: '{b}',
+                    fontSize: 12
+                },
+                lineStyle: {
+                    color: 'source',
+                    curveness: 0.2,
+                    width: 2
+                },
+                emphasis: {
+                    focus: 'adjacency',
+                    lineStyle: {
+                        width: 3
+                    }
+                },
+                force: {
+                    repulsion: graphData.layout?.repulsion || 100,
+                    gravity: graphData.layout?.gravity || 0.1,
+                    edgeLength: graphData.layout?.edgeLength || 100
+                }
+            }]
+        };
+
+        chart.setOption(option);
+
+        // 添加点击节点事件
+        chart.on('click', function(params) {
+            if (params.dataType === 'node') {
+                showNodeInfo(params.data);
+            }
+        });
+
+        // 窗口大小变化时重绘
+        window.addEventListener('resize', function() {
+            chart.resize();
+        });
+    }
+
+    // 格式化答案显示
+    function formatAnswer(answer) {
+        if (!answer) return '<p>暂无答案</p>';
+
+        // 将换行符转换为HTML段落
+        return answer.split('\n\n')
+            .map(paragraph => {
+                if (paragraph.trim()) {
+                    // 处理加粗文本
+                    paragraph = paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    return `<p>${paragraph}</p>`;
+                }
+                return '';
+            })
+            .join('');
+    }
+
+    // 显示节点详细信息
+    function showNodeInfo(node) {
+        const answerContent = document.getElementById('answerContent');
+        answerContent.innerHTML = `
+                <div class="node-info">
+                    <h4>${node.name}</h4>
+                    <p><strong>定义:</strong> ${node.definition || '暂无详细定义'}</p>
+                    <p><strong>分类:</strong> ${node.category}</p>
+                    <p><strong>节点ID:</strong> ${node.id}</p>
+                </div>
+                ${answerContent.innerHTML}
+            `;
+    }
+
+    // 从后端获取数据并渲染
+    async function loadKnowledgeGraph() {
+        const question = document.getElementById('questionInput').value.trim();
+        if (!question) {
+            alert('请输入问题');
+            return;
+        }
+
+        const chartContainer = document.getElementById('knowledgeGraph');
+        const answerContent = document.getElementById('answerContent');
+
+        // 显示加载状态
+        chartContainer.innerHTML = '<div class="loading"><h3>正在生成知识图谱...</h3><p>请稍等片刻</p></div>';
+        answerContent.innerHTML = '<div class="loading"><p>正在获取答案...</p></div>';
+
+        try {
+            const response = await fetch('/api/knowledge/qa', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    question: question,
+                    userId: 'web-user',
+                    contextKp: ''
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                const graphData = result.data.knowledgeGraphData;
+                const answer = result.data.answer;
+
+                if (graphData && graphData.nodes && graphData.nodes.length > 0) {
+                    renderKnowledgeGraph(graphData, answer);
+                } else {
+                    chartContainer.innerHTML = '<div class="loading"><h3>知识图谱生成失败</h3><p>请尝试其他问题</p></div>';
+                }
+            } else {
+                throw new Error(result.msg || '请求失败');
+            }
+        } catch (error) {
+            console.error('加载知识图谱失败:', error);
+            chartContainer.innerHTML = `
+                    <div class="loading">
+                        <h3>加载失败</h3>
+                        <p>错误: ${error.message}</p>
+                        <p>请检查网络连接或稍后重试</p>
+                    </div>
+                `;
+            answerContent.innerHTML = '<div class="loading"><p>无法获取答案，请检查网络连接</p></div>';
+        }
+    }
+</script>
+</body>
+</html>

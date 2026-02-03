@@ -1,0 +1,67 @@
+{
+  "name": "ai-learning-partner",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "dev": "vue-cli-service serve --open"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.0.2",
+    "ant-design-vue": "^3.2.20",
+    "axios": "^1.12.2",
+    "chart.js": "^4.4.8",
+    "core-js": "^3.8.3",
+    "d3": "^7.9.0",
+    "echarts": "^5.4.3",
+    "vue": "^3.2.13",
+    "vue-chartjs": "^5.2.0",
+    "vue-echarts": "^6.6.0",
+    "vue-router": "^4.2.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/eslint-parser": "^7.28.5",
+    "@vue/babel-plugin-jsx": "^1.5.0",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-service": "^5.0.9",
+    "ajv": "^6.12.6",
+    "autoprefixer": "^10.4.16",
+    "braces": "^3.0.3",
+    "cross-spawn": "^6.0.6",
+    "eslint": "^8.57.1",
+    "eslint-plugin-vue": "^9.33.0",
+    "form-data": "^2.5.5",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.3.3",
+    "tmp": "^0.2.5",
+    "tough-cookie": "^4.1.4",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.15.2"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}
